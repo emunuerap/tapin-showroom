@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-obsidian text-silver font-sans antialiased selection:bg-yuzu selection:text-obsidian overflow-x-hidden;
+  }
+
+  /* Premium font smoothing */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Hide native cursor on devices that have a real pointer + hover.
+     The custom cursor (CustomCursor.tsx) auto-disables on touch / reduced-motion,
+     so this rule only applies where the custom cursor is actually shown. */
+  @media (hover: hover) and (pointer: fine) {
+    html,
+    html * {
+      cursor: none !important;
+    }
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-glass border border-white/5 backdrop-blur-[20px] rounded-2xl;
+  }
+
+  .yuzu-glow {
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.2);
+  }
+
+  .section-shell {
+    @apply w-full flex flex-col relative py-20 lg:py-32;
+  }
+
+  .content-grid {
+    @apply w-full max-w-[1440px] mx-auto px-[clamp(20px,5vw,80px)];
+  }
+
+  .wide-grid {
+    @apply w-full max-w-[1600px] mx-auto px-[clamp(20px,5vw,80px)];
+  }
+
+  .visual-pane {
+    @apply w-full relative rounded-3xl overflow-hidden;
+  }
+}

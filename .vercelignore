@@ -1,0 +1,5 @@
+.DS_Store
+.npmcache
+.vercel
+dist
+node_modules

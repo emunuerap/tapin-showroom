@@ -1,0 +1,63 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+export const SentientFloorplan = () => {
+    const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+
+    const tables = [
+        { id: 1, x: 20, y: 20, size: 30 },
+        { id: 2, x: 70, y: 30, size: 40 },
+        { id: 3, x: 130, y: 20, size: 30 },
+        { id: 4, x: 30, y: 80, size: 50 },
+        { id: 5, x: 100, y: 90, size: 40 },
+        { id: 6, x: 160, y: 80, size: 30 },
+        { id: 7, x: 60, y: 150, size: 40 },
+        { id: 8, x: 130, y: 140, size: 50 },
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Pick a random table to highlight
+            const nextIdx = Math.floor(Math.random() * tables.length);
+            setHighlightedIndex(nextIdx);
+
+            // Turn off highlight shortly after
+            setTimeout(() => setHighlightedIndex(null), 1500);
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [tables.length]);
+
+    return (
+        <div className="w-full h-full flex flex-col items-center justify-center relative p-4">
+            <div className="relative w-[210px] h-[210px] border border-white/5 rounded-full flex items-center justify-center p-2">
+
+                {/* Tables rendering */}
+                {tables.map((t, idx) => {
+                    const isHighlighted = idx === highlightedIndex;
+                    return (
+                        <motion.div
+                            key={t.id}
+                            className={`absolute rounded-full border bg-transparent flex items-center justify-center transition-colors duration-1000 ${isHighlighted ? 'border-[#CCFF00] shadow-[0_0_20px_rgba(204,255,0,0.3)]' : 'border-white/10'
+                                }`}
+                            style={{
+                                width: t.size,
+                                height: t.size,
+                                left: t.x,
+                                top: t.y
+                            }}
+                        >
+                            {/* Inner dot if highlighted */}
+                            <motion.div
+                                className="w-1.5 h-1.5 rounded-full bg-[#CCFF00]"
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: isHighlighted ? 1 : 0, scale: isHighlighted ? 1 : 0 }}
+                                transition={{ duration: 0.5 }}
+                            />
+                        </motion.div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
