@@ -168,24 +168,19 @@ export function TasteGenomeVisualizer() {
                         return (
                             <g key={i}>
                                 {isRecent && (
-                                    <motion.circle
+                                    <circle
                                         cx={p.x} cy={p.y} r="4"
                                         fill="none"
                                         stroke="rgba(204,255,0,0.7)"
                                         strokeWidth="1"
-                                        initial={{ scale: 1, opacity: 0.8 }}
-                                        animate={{ scale: 3, opacity: 0 }}
-                                        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                                        style={{ transformOrigin: `${p.x}px ${p.y}px` }}
+                                        opacity="0.55"
                                     />
                                 )}
-                                <motion.circle
+                                <circle
                                     cx={p.x} cy={p.y}
                                     r={isHover ? 5 : 3.2}
                                     fill={isHover ? 'rgb(204,255,0)' : 'rgba(204,255,0,0.85)'}
                                     style={{ filter: 'drop-shadow(0 0 4px rgba(204,255,0,0.55))' }}
-                                    animate={{ cx: p.x, cy: p.y }}
-                                    transition={{ type: 'spring', stiffness: 120, damping: 18 }}
                                 />
                             </g>
                         );

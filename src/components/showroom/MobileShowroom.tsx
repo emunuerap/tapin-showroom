@@ -10,15 +10,32 @@ gsap.registerPlugin(ScrollTrigger);
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const VIEW_LABELS: Record<ViewMode, { primaryCta: string; alternate: string; heroMode: string }> = {
-  guests: { primaryCta: 'Join Waitlist', alternate: 'For venues', heroMode: 'Guest intelligence' },
-  venues: { primaryCta: 'Request Demo', alternate: 'For guests', heroMode: 'Venue operating system' },
+/* ─── LABELS · CONTENT ─────────────────────────────────────────────────── */
+
+const VIEW_LABELS: Record<ViewMode, {
+  primaryCta: string;
+  primarySubtitle: string;
+  alternate: string;
+  heroMode: string;
+}> = {
+  guests: {
+    primaryCta: 'Join Waitlist',
+    primarySubtitle: '30 seconds · no commitment',
+    alternate: 'Switch to venues',
+    heroMode: 'Guest intelligence',
+  },
+  venues: {
+    primaryCta: 'Request Demo',
+    primarySubtitle: '15 minutes · no obligation',
+    alternate: 'Switch to guests',
+    heroMode: 'Venue operating system',
+  },
 };
 
 const HERO_PIPELINE: Record<ViewMode, Array<{ label: string; value: string }>> = {
   guests: [
     { label: 'Identity', value: 'phone verified' },
-    { label: 'Taste', value: 'Chablis - corner - late' },
+    { label: 'Taste', value: 'Chablis · corner · late' },
     { label: 'Action', value: 'table 04 staged' },
   ],
   venues: [
@@ -28,42 +45,167 @@ const HERO_PIPELINE: Record<ViewMode, Array<{ label: string; value: string }>> =
   ],
 };
 
-const COMMANDS: Record<ViewMode, Array<{ label: string; prompt: string; result: string[]; visual: 'book' | 'memory' | 'vip' | 'invoice' | 'revenue' }>> = {
+/* Memory chapter — rich learned items per visit (now mirrors desktop GratitudeLoop) */
+interface MemoryVisit {
+  n: number;
+  when: string;
+  headline: string;
+  state: 'first' | 'recognised' | 'anticipated';
+  arrived: string;
+  learned: string[];
+}
+
+const MEMORY_VISITS_GUESTS: MemoryVisit[] = [
+  {
+    n: 1,
+    when: '12w ago',
+    headline: 'First tap',
+    state: 'first',
+    arrived: 'Phone tap at the door · no profile, no app',
+    learned: ['Wine · Chablis (2 glasses)', 'Table · quiet corner', 'Pace · 2h 14m slow'],
+  },
+  {
+    n: 2,
+    when: '4w ago',
+    headline: 'Recognised',
+    state: 'recognised',
+    arrived: 'Sofía welcomed by name · table pre-staged',
+    learned: ['Always Tuesdays · early', 'Same wine, never list-shopper', 'Anniversary on the way'],
+  },
+  {
+    n: 3,
+    when: 'Tonight',
+    headline: 'Anticipated',
+    state: 'anticipated',
+    arrived: 'Booking made itself · 19:30 · Sofía briefed',
+    learned: ['Bottle waiting at the table', 'Light dimmed by 1 stop', '"Welcome back, Marisol"'],
+  },
+];
+
+const MEMORY_VISITS_VENUES: MemoryVisit[] = [
+  {
+    n: 1,
+    when: 'After payment',
+    headline: 'Gratitude captured',
+    state: 'first',
+    arrived: 'Guest closes without queue · zero friction',
+    learned: ['+22% tip vs base', 'Sentiment +0.42', 'Dwell 96 min (above target)'],
+  },
+  {
+    n: 2,
+    when: 'Loop processed',
+    headline: 'Signal becomes action',
+    state: 'recognised',
+    arrived: 'Staff cue raised · supplier order auto-triggered',
+    learned: ['Server Sofía flagged as preferred', 'Bottle reorder scheduled', 'Repeat slot proposed Sat 20:00'],
+  },
+  {
+    n: 3,
+    when: 'Next visit',
+    headline: 'Return without effort',
+    state: 'anticipated',
+    arrived: 'Marta books · TapIn matches preferences automatically',
+    learned: ['Same booth held', 'Sofía rostered', '+47% return rate across cohort'],
+  },
+];
+
+/* Command terminal scenarios — full data for typewriter playback */
+type LineType = 'header' | 'detail' | 'check' | 'meta';
+interface ResponseLine { text: string; type: LineType; }
+interface CommandScenario {
+  id: string;
+  label: string;
+  command: string;
+  thinkingMs: number;
+  response: ResponseLine[];
+}
+
+const COMMAND_SCENARIOS: Record<ViewMode, CommandScenario[]> = {
   guests: [
     {
-      label: 'Book',
-      prompt: 'Find somewhere intimate, Italian, tonight at 20:30.',
-      result: ['Osteria Lumina - 94% fit', 'Table 04 held for 2', 'Chablis preference sent quietly'],
-      visual: 'book',
+      id: 'discover',
+      label: 'Discover',
+      command: 'Italian, intimate, tonight at 20:30',
+      thinkingMs: 720,
+      response: [
+        { type: 'header', text: '3 matches · all available' },
+        { type: 'detail', text: 'Osteria Lumina · 94% match · 0.4 km' },
+        { type: 'detail', text: 'Da Salvatore · 87% · 0.9 km' },
+        { type: 'meta',   text: 'Sorted by taste fit' },
+      ],
     },
     {
-      label: 'Remember',
-      prompt: 'What did we drink last time at Casa Marisol?',
-      result: ['Cotes du Rhone - 2021', 'Mussels, no dessert', 'Window table with Diego'],
-      visual: 'memory',
+      id: 'book',
+      label: 'Book',
+      command: 'Book Osteria Lumina, 2 people, 20:30',
+      thinkingMs: 600,
+      response: [
+        { type: 'header', text: 'Confirmed · 20:30' },
+        { type: 'detail', text: 'Table 04 held · party of 2' },
+        { type: 'check',  text: 'Chablis pre-noted to server' },
+        { type: 'check',  text: 'Calendar updated' },
+      ],
+    },
+    {
+      id: 'memory',
+      label: 'Memory',
+      command: 'What did I have last time at Casa Marisol?',
+      thinkingMs: 540,
+      response: [
+        { type: 'header', text: 'Last visit · 3 weeks ago' },
+        { type: 'detail', text: 'Mussels · Côtes du Rhône 2019' },
+        { type: 'detail', text: 'Server Diego · window table' },
+        { type: 'meta',   text: 'Recreate the visit?' },
+      ],
     },
   ],
   venues: [
     {
-      label: 'Floor',
-      prompt: 'VIP just arrived. Where should they go?',
-      result: ['Seat T09 - quiet booth', 'Server Sofia assigned', '2018 Barolo pre-staged'],
-      visual: 'vip',
+      id: 'vip',
+      label: 'VIP',
+      command: 'VIP just arrived. Where do I seat them?',
+      thinkingMs: 850,
+      response: [
+        { type: 'header', text: 'Suggested · Table 09' },
+        { type: 'check',  text: 'Booth · quiet corner · their preference' },
+        { type: 'check',  text: 'Server Sofía · their usual' },
+        { type: 'check',  text: '2018 Barolo pre-staged' },
+      ],
     },
     {
+      id: 'invoice',
       label: 'Invoices',
-      prompt: 'Process today supplier invoices and flag exceptions.',
-      result: ['La Finca Produce matched to PO', 'Wine House coded to COGS', '1 VAT mismatch needs review'],
-      visual: 'invoice',
+      command: 'Process today\'s supplier invoices',
+      thinkingMs: 720,
+      response: [
+        { type: 'header', text: '3 processed · 1 flagged' },
+        { type: 'detail', text: 'La Finca · matched to PO' },
+        { type: 'detail', text: 'Wine House · coded COGS' },
+        { type: 'meta',   text: 'VAT mismatch needs review' },
+      ],
     },
     {
+      id: 'yield',
       label: 'Yield',
-      prompt: 'Four walk-ins waiting. Protect revenue without rushing guests.',
-      result: ['T11 clears in 4 min', 'Bar alternative ready now', 'RevPASH impact +18%'],
-      visual: 'revenue',
+      command: 'Four walk-ins waiting. Protect revenue.',
+      thinkingMs: 680,
+      response: [
+        { type: 'header', text: 'T11 clears in 4 min' },
+        { type: 'detail', text: 'Bar alternative ready now' },
+        { type: 'check',  text: 'No party gets rushed' },
+        { type: 'meta',   text: 'RevPASH impact · +18%' },
+      ],
     },
   ],
 };
+
+const PRIVACY_COMMITMENTS = [
+  { keyword: 'Yours',   body: 'Your Genome belongs to you. Export, delete, take it anywhere.' },
+  { keyword: 'Sealed',  body: 'Never sold. Never used to target ads.' },
+  { keyword: 'Minimal', body: 'Only the signals hospitality needs. Nothing more.' },
+];
+
+/* ─── ROOT ─────────────────────────────────────────────────────────────── */
 
 export default function MobileShowroom({ activeView, setActiveView }: ShowroomProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -82,13 +224,13 @@ export default function MobileShowroom({ activeView, setActiveView }: ShowroomPr
       className="relative z-10 min-h-screen overflow-hidden bg-[#050505] text-white"
     >
       <MobileHeader activeView={activeView} setActiveView={setActiveView} />
-      <main className="relative pb-36">
+      <main className="relative pb-48">
         <MobileHero activeView={activeView} />
         <ArrivalChapter activeView={activeView} />
         <TasteChapter activeView={activeView} />
         <MemoryChapter activeView={activeView} />
         <VenueOSChapter activeView={activeView} />
-        <CommandChapter activeView={activeView} />
+        <CommandChapter key={`command-${activeView}`} activeView={activeView} />
         <TrustChapter
           activeView={activeView}
           onSwitchView={() => setActiveView(activeView === 'guests' ? 'venues' : 'guests')}
@@ -98,6 +240,8 @@ export default function MobileShowroom({ activeView, setActiveView }: ShowroomPr
     </motion.div>
   );
 }
+
+/* ─── HOOKS ────────────────────────────────────────────────────────────── */
 
 function useMobileSmoothScroll(disabled: boolean) {
   useEffect(() => {
@@ -124,6 +268,8 @@ function useMobileSmoothScroll(disabled: boolean) {
       gsap.ticker.add(raf);
       gsap.ticker.lagSmoothing(0);
       requestAnimationFrame(() => ScrollTrigger.refresh());
+    }).catch(() => {
+      // Lenis not available — site continues with native scroll
     });
 
     return () => {
@@ -226,13 +372,15 @@ function useMobileScrollTheatre(scope: React.RefObject<HTMLDivElement | null>, a
   );
 }
 
+/* ─── HEADER ───────────────────────────────────────────────────────────── */
+
 function MobileHeader({ activeView, setActiveView }: ShowroomProps) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-[max(14px,env(safe-area-inset-top))]">
       <div className="mx-auto flex max-w-[430px] items-center justify-between rounded-full border border-white/10 bg-[#080808]/88 px-3 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
         <div className="flex items-baseline text-sm font-bold tracking-tighter text-silver">
           TapIn
-          <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
+          <span className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
         </div>
         <div className="flex rounded-full border border-white/8 bg-black/70 p-0.5">
           <ToggleButton active={activeView === 'guests'} onClick={() => setActiveView('guests')}>
@@ -269,24 +417,41 @@ function ToggleButton({ active, onClick, children }: { active: boolean; onClick:
   );
 }
 
+/* ─── STICKY CTA ───────────────────────────────────────────────────────── */
+
 function StickyCTA({ activeView }: { activeView: ViewMode }) {
-  const label = VIEW_LABELS[activeView].primaryCta;
+  const { primaryCta, primarySubtitle } = VIEW_LABELS[activeView];
+
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 bg-gradient-to-t from-[#050505] via-[#050505]/82 to-transparent px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3">
-      <button
-        type="button"
-        className="mx-auto flex min-h-12 w-full max-w-[430px] items-center justify-center rounded-full bg-yuzu px-6 py-3 text-center font-sans text-[11px] font-extrabold uppercase tracking-[0.24em] text-obsidian shadow-[0_0_30px_rgba(204,255,0,0.26)] active:scale-[0.99]"
-      >
-        {label}
-      </button>
+    <div className="fixed inset-x-0 bottom-0 z-50 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-4">
+      <div className="mx-auto flex w-full max-w-[430px] flex-col items-center gap-1.5">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.button
+            key={`cta-${activeView}`}
+            type="button"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="flex min-h-11 w-full items-center justify-center rounded-full bg-yuzu px-6 py-2.5 text-center font-sans text-[10px] font-extrabold uppercase tracking-[0.24em] text-obsidian shadow-[0_0_30px_rgba(204,255,0,0.26)] active:scale-[0.99]"
+          >
+            {primaryCta}
+          </motion.button>
+        </AnimatePresence>
+        <div className="flex w-full items-center justify-center text-center font-mono text-[8px] uppercase tracking-[0.18em] text-silver/40">
+          <span className="whitespace-nowrap">{primarySubtitle}</span>
+        </div>
+      </div>
     </div>
   );
 }
 
+/* ─── HERO ─────────────────────────────────────────────────────────────── */
+
 function MobileHero({ activeView }: { activeView: ViewMode }) {
   const isGuests = activeView === 'guests';
   return (
-    <section className="mobile-hero relative overflow-hidden px-5 pb-12 pt-24">
+    <section className="mobile-hero relative overflow-hidden px-5 pb-0 pt-24">
       <HeroAtmosphere activeView={activeView} />
       <div className="relative z-10 mx-auto flex min-h-[calc(100svh-104px)] w-full max-w-[430px] flex-col justify-between gap-6">
         <div className="space-y-5">
@@ -308,10 +473,11 @@ function MobileHero({ activeView }: { activeView: ViewMode }) {
           <SignalPipeline activeView={activeView} />
         </div>
 
-        <div className="pb-[6.75rem]">
+        <div className="pb-0">
           <div className="hero-choreo">
             <HeroSignalCard activeView={activeView} />
           </div>
+          <HeroHandoffTrail activeView={activeView} />
         </div>
       </div>
     </section>
@@ -351,15 +517,12 @@ function HeroAtmosphere({ activeView }: { activeView: ViewMode }) {
               { x: 334, y: 138, label: 'Table' },
             ].map((node, i) => (
               <g key={node.label}>
-                <motion.circle
+                <circle
                   cx={node.x}
                   cy={node.y}
                   r={i === 1 ? 6 : 4}
                   fill="rgba(204,255,0,0.94)"
                   filter={`url(#mobile-glow-${activeView})`}
-                  animate={{ opacity: [0.45, 1, 0.45], scale: [1, 1.2, 1] }}
-                  transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{ transformOrigin: `${node.x}px ${node.y}px` }}
                 />
                 <text x={node.x + 10} y={node.y + 4} fill="rgba(255,255,255,0.38)" fontSize="8" letterSpacing="1.4">
                   {node.label.toUpperCase()}
@@ -448,7 +611,7 @@ function HeroSignalCard({ activeView }: { activeView: ViewMode }) {
           </div>
           <div className="grid gap-2">
             <Metric number="+18%" label="RevPASH" />
-            <Metric number="1" label="Exception" />
+            <Metric number="1" label="Exception" tone="warn" />
           </div>
         </div>
       )}
@@ -456,11 +619,38 @@ function HeroSignalCard({ activeView }: { activeView: ViewMode }) {
   );
 }
 
+function HeroHandoffTrail({ activeView }: { activeView: ViewMode }) {
+  const steps =
+    activeView === 'guests'
+      ? ['Phone verified', 'Taste matched', 'Table staged']
+      : ['Door detected', 'Floor routed', 'Invoice ready'];
+
+  return (
+    <div className="hero-choreo mx-auto mt-5 mb-6 w-full max-w-[300px]">
+      <div className="relative flex items-start justify-between">
+        <span className="absolute left-5 right-5 top-[7px] h-px bg-gradient-to-r from-yuzu/0 via-yuzu/35 to-yuzu/0" />
+        {steps.map((step, index) => (
+          <div key={step} className="relative flex w-[30%] flex-col items-center gap-2 text-center">
+            <span
+              className={`relative z-10 h-3.5 w-3.5 rounded-full border ${
+                index === 1
+                  ? 'border-yuzu bg-yuzu shadow-[0_0_18px_rgba(204,255,0,0.72)]'
+                  : 'border-yuzu/35 bg-[#050505] shadow-[0_0_12px_rgba(204,255,0,0.22)]'
+              }`}
+            />
+            <span className="font-mono text-[8px] uppercase leading-snug tracking-[0.16em] text-silver/42">{step}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SignalPipeline({ activeView }: { activeView: ViewMode }) {
   return (
-    <div className="hero-choreo grid grid-cols-3 gap-2">
+    <div className="hero-choreo grid grid-cols-3 gap-2 max-[375px]:grid-cols-2">
       {HERO_PIPELINE[activeView].map((item, i) => (
-        <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3">
+        <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3 max-[375px]:last:col-span-2">
           <div className="mb-2 font-serif text-lg italic leading-none text-yuzu">0{i + 1}</div>
           <div className="font-mono text-[8px] uppercase tracking-[0.18em] text-silver/40">{item.label}</div>
           <div className="mt-1 text-[10px] leading-snug text-silver/66">{item.value}</div>
@@ -469,6 +659,8 @@ function SignalPipeline({ activeView }: { activeView: ViewMode }) {
     </div>
   );
 }
+
+/* ─── ARRIVAL CHAPTER ──────────────────────────────────────────────────── */
 
 function ArrivalChapter({ activeView }: { activeView: ViewMode }) {
   const isGuests = activeView === 'guests';
@@ -537,7 +729,7 @@ function GuestArrivalVisual() {
 
 function VenueArrivalVisual() {
   const arrivals = [
-    ['VIP', 'Marta L.', 'T09 - Sofia'],
+    ['VIP', 'Marta L.', 'T09 · Sofía'],
     ['Walk-in', '4 guests', 'bar hold'],
     ['Regular', 'Diego party', 'T04 ready'],
     ['Late', '20:30', '15m buffer'],
@@ -547,15 +739,21 @@ function VenueArrivalVisual() {
     <div className="overflow-hidden rounded-2xl border border-white/12 bg-[#080808] p-4 shadow-[0_22px_55px_rgba(0,0,0,0.52)]">
       <div className="mb-4 flex items-center justify-between">
         <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-silver/42">Arrival router</span>
-        <span className="rounded-full border border-yuzu/30 bg-yuzu/[0.06] px-2 py-1 font-mono text-[8px] uppercase tracking-[0.18em] text-yuzu">live</span>
+        <span className="flex items-center gap-1.5 rounded-full border border-yuzu/30 bg-yuzu/[0.06] px-2 py-1 font-mono text-[8px] uppercase tracking-[0.18em] text-yuzu">
+          <span className="relative flex h-1 w-1">
+            <span className="absolute inset-0 animate-ping rounded-full bg-yuzu opacity-70" />
+            <span className="relative h-1 w-1 rounded-full bg-yuzu" />
+          </span>
+          live
+        </span>
       </div>
       <div className="grid gap-2">
         {arrivals.map(([type, guest, action], i) => (
           <motion.div
             key={`${type}-${guest}`}
             className="grid grid-cols-[58px_1fr_auto] items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3"
-            animate={{ borderColor: i === 0 ? ['rgba(255,255,255,0.1)', 'rgba(204,255,0,0.36)', 'rgba(255,255,255,0.1)'] : undefined }}
-            transition={{ duration: 3.2, repeat: Infinity, delay: i * 0.25 }}
+            animate={i === 0 ? { opacity: [0.88, 1, 0.88] } : undefined}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
           >
             <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-yuzu/75">{type}</span>
             <span className="font-sans text-[12px] font-semibold text-white/86">{guest}</span>
@@ -566,6 +764,8 @@ function VenueArrivalVisual() {
     </div>
   );
 }
+
+/* ─── TASTE CHAPTER ────────────────────────────────────────────────────── */
 
 function TasteChapter({ activeView }: { activeView: ViewMode }) {
   const isGuests = activeView === 'guests';
@@ -587,43 +787,63 @@ function TasteChapter({ activeView }: { activeView: ViewMode }) {
   );
 }
 
+/* Fixed-orbital: pill labels placed using angular math so they NEVER overlap
+   the centre or escape the container regardless of viewport. */
 function GuestTasteVisual() {
   const signals = [
-    ['Wine', 'Chablis, mineral whites', '92'],
-    ['Room', 'quiet corner, low light', '84'],
-    ['Pace', 'slow dinner, no rush', '78'],
-    ['Avoid', 'shellfish, loud bar', '100'],
-  ];
+    ['Wine', 'Chablis, mineral whites', 92],
+    ['Room', 'quiet corner, low light', 84],
+    ['Pace', 'slow dinner, no rush', 78],
+    ['Avoid', 'shellfish, loud bar', 100],
+  ] as const;
+
+  /* Orbital labels — angular distribution around the centre, math-based so it
+     scales correctly on any screen. */
+  const orbitalSize = 156;
+  const cx = orbitalSize / 2;
+  const cy = orbitalSize / 2;
+  const labelRadius = 78;
+  const orbitalLabels = ['Chablis', 'Corner', 'Late', 'No shellfish'];
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/12 bg-[#080808] p-4 shadow-[0_22px_55px_rgba(0,0,0,0.52)]">
       <div className="absolute left-1/2 top-7 h-36 w-36 -translate-x-1/2 rounded-full border border-yuzu/16 bg-yuzu/[0.018]" />
-      <div className="relative mx-auto mb-5 flex h-36 w-36 items-center justify-center">
-        <motion.div
-          className="absolute inset-0 rounded-full border border-dashed border-yuzu/24"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-        />
-        <motion.div
-          className="absolute inset-5 rounded-full border border-dashed border-white/12"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-        />
-        <div className="relative z-10 flex h-20 w-20 flex-col items-center justify-center rounded-full border border-yuzu/35 bg-yuzu/[0.06] text-center">
-          <span className="font-serif text-2xl italic text-yuzu">You</span>
-          <span className="font-mono text-[7px] uppercase tracking-[0.18em] text-silver/50">Genome</span>
+
+      {/* Orbital diagram */}
+      <div className="relative mx-auto mb-5" style={{ width: orbitalSize, height: orbitalSize + 36 }}>
+        <div className="absolute left-1/2 top-0 -translate-x-1/2" style={{ width: orbitalSize, height: orbitalSize }}>
+          <motion.div
+            className="absolute inset-0 rounded-full border border-dashed border-yuzu/24"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
+          />
+          <motion.div
+            className="absolute inset-5 rounded-full border border-dashed border-white/12"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+          />
+          <div className="absolute left-1/2 top-1/2 z-10 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-yuzu/35 bg-yuzu/[0.06] text-center">
+            <span className="font-serif text-2xl italic text-yuzu">You</span>
+            <span className="font-mono text-[7px] uppercase tracking-[0.18em] text-silver/50">Genome</span>
+          </div>
+          {orbitalLabels.map((label, i) => {
+            const angle = (Math.PI * 2 * i) / orbitalLabels.length - Math.PI / 2;
+            const x = cx + labelRadius * Math.cos(angle);
+            const y = cy + labelRadius * Math.sin(angle);
+            return (
+              <span
+                key={label}
+                className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-white/10 bg-black/80 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.12em] text-silver/65"
+                style={{ left: x, top: y }}
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
-        {[
-          ['Chablis', 'left-0 top-3'],
-          ['Corner', 'right-0 top-10'],
-          ['Late', 'bottom-3 left-3'],
-          ['No shellfish', 'bottom-1 right-0'],
-        ].map(([label, pos]) => (
-          <span key={label} className={`absolute ${pos} rounded-full border border-white/10 bg-black/80 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.12em] text-silver/62`}>
-            {label}
-          </span>
-        ))}
       </div>
+
+      {/* Signal bars below */}
       <div className="grid gap-2">
         {signals.map(([label, desc, value]) => (
           <div key={label} className="grid grid-cols-[54px_1fr_30px] items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-2.5">
@@ -655,14 +875,14 @@ function VenueGuestContextVisual() {
         <div className="flex items-center justify-between">
           <div>
             <p className="font-serif text-2xl italic leading-none text-white/92">Marta L.</p>
-            <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-silver/44">returning guest - permission scoped</p>
+            <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-silver/44">returning guest · permission scoped</p>
           </div>
           <span className="font-serif text-3xl italic text-yuzu">94</span>
         </div>
       </div>
       <div className="grid gap-2">
         {[
-          ['Seat', 'quiet booth, not center floor'],
+          ['Seat', 'quiet booth, not centre floor'],
           ['Offer', 'mineral white before menu'],
           ['Avoid', 'shellfish suggestions hidden'],
           ['Tone', 'low-touch, no birthday song'],
@@ -677,81 +897,99 @@ function VenueGuestContextVisual() {
   );
 }
 
+/* ─── MEMORY CHAPTER ───────────────────────────────────────────────────── */
+
 function MemoryChapter({ activeView }: { activeView: ViewMode }) {
   const isGuests = activeView === 'guests';
+  const visits = isGuests ? MEMORY_VISITS_GUESTS : MEMORY_VISITS_VENUES;
+
   return (
     <MobileSection
       index="03"
-      label={isGuests ? 'Memory' : 'Retention'}
+      label={isGuests ? 'Memory · Gratitude Loop' : 'Retention · Gratitude Loop'}
       title={isGuests ? "A visit doesn't end at payment." : 'Gratitude turns into return visits.'}
       copy={
         isGuests
-          ? 'Each visit leaves a service memory you control. The next welcome starts warmer because the last night was understood.'
-          : 'Tips, sentiment, dwell, and repeat behavior become an operating loop for loyalty, staff recognition, and revenue.'
+          ? 'Three visits to the same venue. Each one richer than the last — not because you did more, but because TapIn remembered.'
+          : 'Tips, sentiment, dwell, and repeat behaviour become an operating loop for loyalty, staff recognition, and revenue.'
       }
     >
-      <div className="m-reveal m-art">
-        {isGuests ? <GuestMemoryVisual /> : <VenueRetentionVisual />}
+      <div className="m-reveal m-art space-y-3">
+        {visits.map((v, i) => (
+          <MemoryVisitCard key={v.n} visit={v} isLast={i === visits.length - 1} />
+        ))}
       </div>
     </MobileSection>
   );
 }
 
-function GuestMemoryVisual() {
-  const visits = [
-    ['First tap', 'quiet corner learned'],
-    ['Second visit', 'wine pre-noted'],
-    ['Tonight', 'welcome already shaped'],
-  ];
+function MemoryVisitCard({ visit, isLast }: { visit: MemoryVisit; isLast: boolean }) {
+  const isAnticipated = visit.state === 'anticipated';
+  const borderClass =
+    visit.state === 'first'
+      ? 'border-white/12'
+      : visit.state === 'recognised'
+        ? 'border-yuzu/30'
+        : 'border-yuzu/60 shadow-[0_0_24px_rgba(204,255,0,0.10)]';
+
   return (
-    <div className="relative rounded-2xl border border-white/12 bg-[#080808] p-4 shadow-[0_22px_55px_rgba(0,0,0,0.52)]">
-      <div className="absolute left-[33px] top-10 h-[calc(100%-80px)] w-px bg-gradient-to-b from-yuzu/60 via-white/12 to-yuzu/30" />
-      <div className="space-y-3">
-        {visits.map(([title, body], i) => (
-          <div key={title} className="relative grid grid-cols-[42px_1fr] gap-4 rounded-xl border border-white/10 bg-white/[0.025] p-4">
-            <span className={`z-10 flex h-10 w-10 items-center justify-center rounded-full border bg-[#080808] font-serif text-lg italic ${
-              i === visits.length - 1 ? 'border-yuzu/60 text-yuzu' : 'border-white/14 text-silver/60'
-            }`}>
-              {i + 1}
-            </span>
-            <div>
-              <p className="font-sans text-[13px] font-semibold leading-snug text-white/88">{title}</p>
-              <p className="mt-1 text-[11px] leading-snug text-silver/58">{body}</p>
-              <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.2em] text-yuzu/50">{i === visits.length - 1 ? 'anticipated' : 'remembered'}</p>
-            </div>
-          </div>
-        ))}
+    <div className={`relative rounded-2xl border ${borderClass} bg-[#080808]/85 p-4`}>
+      {!isLast && (
+        <div className="absolute -bottom-3 left-7 z-10 flex h-3 w-px items-center justify-center bg-gradient-to-b from-yuzu/55 to-yuzu/15" />
+      )}
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="font-mono text-[9px] uppercase tracking-[0.24em] text-silver/45">
+          Visit · 0{visit.n}
+        </span>
+        <span className={`font-mono text-[9px] uppercase tracking-[0.22em] ${
+          visit.state === 'first' ? 'text-silver/55'
+            : visit.state === 'recognised' ? 'text-yuzu/80'
+              : 'text-yuzu'
+        }`}>
+          {visit.when}
+        </span>
+      </div>
+      <div className="mt-2.5 flex items-baseline gap-2">
+        <h4 className={`font-serif text-[1.7rem] italic leading-none tracking-tight ${
+          visit.state === 'first' ? 'text-silver/85'
+            : visit.state === 'recognised' ? 'text-white/95'
+              : 'text-yuzu'
+        }`}>
+          {visit.headline}
+        </h4>
+        {isAnticipated && (
+          <motion.span
+            animate={{ opacity: [0.55, 1, 0.55] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+            className="inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_6px_rgba(204,255,0,0.7)]"
+          />
+        )}
+      </div>
+      <p className="mt-2 text-[11px] leading-snug text-silver/60">{visit.arrived}</p>
+      <div className="mt-3 border-t border-white/8 pt-3">
+        <span className="font-mono text-[8px] uppercase tracking-[0.26em] text-silver/40">
+          {isAnticipated ? 'TapIn delivered' : 'TapIn learned'}
+        </span>
+        <ul className="mt-2 grid gap-1.5">
+          {visit.learned.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <span className={`mt-1.5 block h-1 w-1 shrink-0 rounded-full ${
+                isAnticipated ? 'bg-yuzu shadow-[0_0_3px_rgba(204,255,0,0.6)]' : 'bg-silver/45'
+              }`} />
+              <span className={`text-[11.5px] leading-snug tracking-tight ${
+                isAnticipated ? 'text-yuzu/90' : 'text-white/78'
+              }`}>
+                {item}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 }
 
-function VenueRetentionVisual() {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-white/12 bg-[#080808] p-4 shadow-[0_22px_55px_rgba(0,0,0,0.52)]">
-      <div className="mb-4 grid grid-cols-3 gap-2">
-        <Metric number="22%" label="Tip signal" />
-        <Metric number="+47%" label="Return" />
-        <Metric number="3.8x" label="Staff cue" />
-      </div>
-      <div className="grid gap-2">
-        {[
-          ['Payment', 'guest closes without queue'],
-          ['Signal', 'generosity and sentiment captured'],
-          ['Action', 'next visit opens with context'],
-        ].map(([label, body]) => (
-          <div key={label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3">
-            <span className="h-2 w-2 rounded-full bg-yuzu shadow-[0_0_10px_rgba(204,255,0,0.7)]" />
-            <div>
-              <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-yuzu/70">{label}</p>
-              <p className="mt-1 text-[11px] leading-snug text-silver/60">{body}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* ─── VENUE OS CHAPTER ─────────────────────────────────────────────────── */
 
 function VenueOSChapter({ activeView }: { activeView: ViewMode }) {
   const isGuests = activeView === 'guests';
@@ -771,7 +1009,7 @@ function VenueOSChapter({ activeView }: { activeView: ViewMode }) {
       </div>
       <div className="m-reveal grid grid-cols-3 gap-2">
         <Metric number={isGuests ? '3' : '+23%'} label={isGuests ? 'Cues' : 'Revenue'} />
-        <Metric number={isGuests ? '0' : '-4m'} label={isGuests ? 'Friction' : 'Door wait'} />
+        <Metric number={isGuests ? '0' : '-4m'} label={isGuests ? 'Friction' : 'Door wait'} tone={isGuests ? 'positive' : 'neutral'} />
         <Metric number={isGuests ? '1' : '94%'} label={isGuests ? 'Welcome' : 'Matched'} />
       </div>
     </MobileSection>
@@ -784,7 +1022,7 @@ function GuestInvisibleOS() {
       <MiniFloorMap active="guest" />
       <div className="mt-4 grid gap-2">
         {[
-          ['Host', 'Marta is recognized at the door.'],
+          ['Host', 'Marta is recognised at the door.'],
           ['Server', 'Chablis and quiet pace passed quietly.'],
           ['Payment', 'Gratitude loop opens after service.'],
         ].map(([label, body]) => (
@@ -806,7 +1044,7 @@ function VenueOpsConsole() {
         <div className="grid gap-2">
           <Metric number="+18%" label="RevPASH" />
           <Metric number="7" label="Auto tasks" />
-          <Metric number="1" label="Exception" />
+          <Metric number="1" label="Exception" tone="warn" />
         </div>
       </div>
       <div className="mt-4 rounded-2xl border border-yuzu/18 bg-yuzu/[0.035] p-3">
@@ -815,8 +1053,8 @@ function VenueOpsConsole() {
           <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-silver/40">AP live</span>
         </div>
         {[
-          ['La Finca Produce', 'invoice recognized - matched to PO'],
-          ['Wine House', 'bottle variance checked - coded COGS'],
+          ['La Finca Produce', 'invoice recognised · matched to PO'],
+          ['Wine House', 'bottle variance checked · coded COGS'],
           ['Nordic Laundry', 'recurring bill approved automatically'],
         ].map(([name, body]) => (
           <div key={name} className="border-t border-white/8 py-2 first:border-t-0 first:pt-0 last:pb-0">
@@ -829,6 +1067,22 @@ function VenueOpsConsole() {
   );
 }
 
+/* Cleanly typed floor map (was: heterogeneous arrays with Number() casts) */
+interface FloorShape {
+  shape: 'rect' | 'circle';
+  x: number;
+  y: number;
+  w: number;
+  h?: number;
+}
+const FLOOR_SHAPES: FloorShape[] = [
+  { shape: 'rect',   x: 30,  y: 28, w: 34, h: 28 },
+  { shape: 'circle', x: 148, y: 42, w: 24 },
+  { shape: 'rect',   x: 78,  y: 30, w: 42, h: 28 },
+  { shape: 'rect',   x: 46,  y: 84, w: 42, h: 28 },
+  { shape: 'circle', x: 134, y: 96, w: 25 },
+];
+
 function MiniFloorMap({ active }: { active: 'guest' | 'venue' }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-black/35 p-3">
@@ -839,48 +1093,103 @@ function MiniFloorMap({ active }: { active: 'guest' | 'venue' }) {
       <svg viewBox="0 0 210 152" className="h-[152px] w-full" aria-hidden="true">
         <rect x="10" y="10" width="190" height="120" rx="14" fill="none" stroke="rgba(255,255,255,0.15)" />
         <path d="M36 55H174M36 94H174M105 24V118" stroke="rgba(255,255,255,0.08)" />
-        {[
-          ['rect', 30, 28, 34, 28],
-          ['circle', 148, 42, 24, 24],
-          ['rect', 78, 30, 42, 28],
-          ['rect', 46, 84, 42, 28],
-          ['circle', 134, 96, 25, 25],
-        ].map(([shape, x, y, w, h], i) => {
+        {FLOOR_SHAPES.map((s, i) => {
           const isActive = active === 'guest' ? i === 3 : i === 2 || i === 4;
-          const common = {
-            fill: isActive ? 'rgba(204,255,0,0.1)' : 'rgba(255,255,255,0.03)',
-            stroke: isActive ? 'rgba(204,255,0,0.55)' : 'rgba(255,255,255,0.18)',
-          };
-          return shape === 'circle' ? (
-            <circle key={i} cx={Number(x)} cy={Number(y)} r={Number(w) / 2} {...common} />
+          const fill = isActive ? 'rgba(204,255,0,0.1)' : 'rgba(255,255,255,0.03)';
+          const stroke = isActive ? 'rgba(204,255,0,0.55)' : 'rgba(255,255,255,0.18)';
+          return s.shape === 'circle' ? (
+            <circle key={i} cx={s.x} cy={s.y} r={s.w / 2} fill={fill} stroke={stroke} />
           ) : (
-            <rect key={i} x={Number(x)} y={Number(y)} width={Number(w)} height={Number(h)} rx="7" {...common} />
+            <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h ?? s.w} rx="7" fill={fill} stroke={stroke} />
           );
         })}
-        <motion.circle
+        <circle
           cx={active === 'guest' ? 68 : 120}
           cy={active === 'guest' ? 98 : 44}
-          r="5"
+          r={5}
           fill="rgb(204,255,0)"
-          animate={{ opacity: [0.42, 1, 0.42], r: [4, 8, 4] }}
-          transition={{ duration: 2.3, repeat: Infinity, ease: 'easeInOut' }}
+          className="animate-pulse"
         />
         <text x="105" y="145" textAnchor="middle" fontSize="7" letterSpacing="1.8" fill="rgba(204,255,0,0.58)">
-          SENSE - DECIDE - ACT
+          SENSE · DECIDE · ACT
         </text>
       </svg>
     </div>
   );
 }
 
+/* ─── COMMAND CHAPTER — terminal-style typewriter demo (rebuilt) ───────── */
+
+type CommandPhase = 'typing' | 'thinking' | 'responding' | 'hold' | 'exit';
+
 function CommandChapter({ activeView }: { activeView: ViewMode }) {
+  const scenarios = COMMAND_SCENARIOS[activeView];
   const [idx, setIdx] = useState(0);
-  const scenarios = COMMANDS[activeView];
+  const [phase, setPhase] = useState<CommandPhase>('typing');
+  const [typedChars, setTypedChars] = useState(0);
+  const [revealedLines, setRevealedLines] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
+
+  /* Playback loop: typing → thinking → responding → hold → exit → next */
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const scenario = scenarios[idx];
+    if (!scenario) return;
+
+    let cancelled = false;
+    async function play() {
+      setPhase('typing');
+      setTypedChars(0);
+      setRevealedLines(0);
+
+      for (let i = 1; i <= scenario.command.length; i++) {
+        const c = scenario.command[i - 1];
+        const ms = c === ',' || c === '.' ? 110 : c === ' ' ? 45 : 28 + Math.random() * 22;
+        await waitMs(ms);
+        if (cancelled) return;
+        setTypedChars(i);
+      }
+      await waitMs(320);
+      if (cancelled) return;
+
+      setPhase('thinking');
+      await waitMs(scenario.thinkingMs);
+      if (cancelled) return;
+
+      setPhase('responding');
+      for (let i = 1; i <= scenario.response.length; i++) {
+        await waitMs(230);
+        if (cancelled) return;
+        setRevealedLines(i);
+      }
+      await waitMs(260);
+      if (cancelled) return;
+
+      setPhase('hold');
+      await waitMs(3200);
+      if (cancelled) return;
+
+      setPhase('exit');
+      await waitMs(520);
+      if (cancelled) return;
+      setIdx((i) => (i + 1) % scenarios.length);
+    }
+    play();
+    return () => { cancelled = true; };
+  }, [idx, scenarios, shouldReduceMotion]);
+
   const scenario = scenarios[idx] ?? scenarios[0];
+  const effectivePhase = shouldReduceMotion ? 'hold' : phase;
+  const effectiveTypedChars = shouldReduceMotion ? scenario.command.length : typedChars;
+  const effectiveRevealedLines = shouldReduceMotion ? scenario.response.length : revealedLines;
+  const visibleCommand = scenario.command.slice(0, effectiveTypedChars);
+  const showCursor = effectivePhase === 'typing' || effectivePhase === 'thinking';
+  const fadingOut = effectivePhase === 'exit';
+
   return (
     <MobileSection
       index="05"
-      label="Command"
+      label="Sentient Command"
       title={activeView === 'guests' ? 'Talk to your night.' : 'Talk to the whole operation.'}
       copy={
         activeView === 'guests'
@@ -889,110 +1198,173 @@ function CommandChapter({ activeView }: { activeView: ViewMode }) {
       }
     >
       <div className="m-reveal m-art">
-        <div className="overflow-hidden rounded-2xl border border-white/12 bg-[#080808]/95 shadow-[0_22px_55px_rgba(0,0,0,0.52)]">
-          <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
-            <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-silver/48">Sentient command</span>
-            <div className="flex gap-1.5">
-              {scenarios.map((item, i) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => setIdx(i)}
-                  className={`rounded-full px-2 py-1 font-mono text-[8px] uppercase tracking-[0.16em] ${
-                    i === idx ? 'bg-yuzu text-obsidian' : 'bg-white/8 text-silver/42'
-                  }`}
-                  aria-label={`Show ${item.label}`}
-                >
-                  {item.label}
-                </button>
-              ))}
+        <motion.div
+          animate={{ opacity: fadingOut ? 0.25 : 1 }}
+          transition={{ duration: 0.4, ease: EASE }}
+          className="overflow-hidden rounded-2xl border border-white/12 bg-[#080808]/95 shadow-[0_22px_55px_rgba(0,0,0,0.52)]"
+        >
+          {/* Terminal header */}
+          <div className="flex items-center justify-between border-b border-white/8 bg-white/[0.02] px-4 py-2.5">
+            <div className="flex items-center gap-1.5">
+              <span className="block h-2 w-2 rounded-full bg-white/20" />
+              <span className="block h-2 w-2 rounded-full bg-white/15" />
+              <span className="block h-2 w-2 rounded-full bg-white/10" />
             </div>
+            <span className="font-mono text-[8.5px] uppercase tracking-[0.28em] text-silver/55">
+              TapIn OS · Sentient
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="relative flex h-1 w-1">
+                <span className="absolute inset-0 animate-ping rounded-full bg-yuzu opacity-75" />
+                <span className="relative h-1 w-1 rounded-full bg-yuzu" />
+              </span>
+              <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-yuzu/75">Live</span>
+            </span>
           </div>
-          <div className="p-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${activeView}-${idx}`}
-                initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
-                transition={{ duration: 0.28 }}
-                className="space-y-4"
-              >
-                <div className="rounded-xl border border-yuzu/18 bg-yuzu/[0.035] p-3">
-                  <span className="font-mono text-[10px] text-yuzu/85">&gt;</span>
-                  <span className="ml-2 font-sans text-[13px] leading-snug text-white/92">{scenario.prompt}</span>
-                </div>
-                <CommandVisual visual={scenario.visual} />
-                <div className="grid gap-2">
-                  {scenario.result.map((line) => (
-                    <div key={line} className="flex items-start gap-2 text-[12px] leading-snug text-silver/72">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-yuzu" />
-                      {line}
-                    </div>
+
+          {/* Body */}
+          <div className="px-4 py-5 min-h-[210px]">
+            {/* Prompt with typewriter */}
+            <div className="flex items-baseline gap-2.5">
+              <span className="select-none font-mono text-[14px] leading-none text-yuzu/85">›</span>
+              <span className="font-mono text-[13px] leading-snug text-white/95">
+                {visibleCommand}
+                {showCursor && (
+                  <motion.span
+                    animate={{ opacity: [1, 0.2, 1] }}
+                    transition={{ duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
+                    className="-mb-[1px] ml-[1px] inline-block h-3.5 w-[7px] align-middle bg-yuzu/85"
+                  />
+                )}
+              </span>
+            </div>
+
+            {/* Thinking */}
+            <AnimatePresence>
+              {effectivePhase === 'thinking' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="mt-4 flex items-center gap-2 pl-6"
+                >
+                  <ThinkingDots />
+                  <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-silver/45">
+                    parsing intent
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Response */}
+            <AnimatePresence>
+              {(effectivePhase === 'responding' || effectivePhase === 'hold') && (
+                <motion.div
+                  key={`response-${scenario.id}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="mt-4 grid gap-1.5 pl-6"
+                >
+                  {scenario.response.slice(0, effectiveRevealedLines).map((line, lineIdx) => (
+                    <motion.div
+                      key={`${scenario.id}-${lineIdx}`}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, ease: EASE }}
+                      className="flex items-start gap-2"
+                    >
+                      <LineMarker type={line.type} />
+                      <span className={lineClass(line.type)}>{line.text}</span>
+                    </motion.div>
                   ))}
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
-        </div>
+
+          {/* Scenario tabs — larger tap targets, clearer affordance */}
+          <div className="flex border-t border-white/8 bg-white/[0.02]">
+            {scenarios.map((s, i) => {
+              const active = i === idx;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setIdx(i)}
+                  aria-label={`Play scenario: ${s.label}`}
+                  className={`relative flex-1 min-h-[44px] py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-colors ${
+                    active ? 'text-yuzu' : 'text-silver/45 active:text-silver/80'
+                  }`}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="mobile-command-active"
+                      className="absolute inset-x-2 bottom-0 h-px bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.5)]"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
+
+      {/* Affordance microcopy below */}
+      <p className="m-reveal pl-5 font-mono text-[9px] uppercase tracking-[0.22em] text-silver/40">
+        Tap a label to try another command
+      </p>
     </MobileSection>
   );
 }
 
-function CommandVisual({ visual }: { visual: 'book' | 'memory' | 'vip' | 'invoice' | 'revenue' }) {
-  if (visual === 'invoice') {
-    return (
-      <div className="grid gap-2 rounded-xl border border-white/10 bg-white/[0.025] p-3">
-        {['OCR read', 'PO match', 'GL code', 'Exception'].map((step, i) => (
-          <div key={step} className="grid grid-cols-[20px_1fr_auto] items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${i < 3 ? 'bg-yuzu' : 'bg-white/20'}`} />
-            <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-silver/48">{step}</span>
-            <span className="text-[10px] text-silver/62">{i < 3 ? 'done' : 'review'}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (visual === 'revenue') {
-    return (
-      <div className="rounded-xl border border-white/10 bg-white/[0.025] p-3">
-        {[62, 78, 91].map((value, i) => (
-          <div key={value} className="mb-2 last:mb-0">
-            <div className="mb-1 flex justify-between font-mono text-[8px] uppercase tracking-[0.16em] text-silver/42">
-              <span>{['Current', 'Re-route', 'Optimized'][i]}</span>
-              <span>{value}%</span>
-            </div>
-            <div className="h-1.5 rounded-full bg-white/8">
-              <motion.div
-                className="h-full rounded-full bg-yuzu"
-                initial={{ width: '16%' }}
-                animate={{ width: `${value}%` }}
-                transition={{ duration: 0.8, ease: EASE }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
+function ThinkingDots() {
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {[
-        visual === 'vip' ? ['T09', 'quiet booth'] : ['94', 'match'],
-        visual === 'memory' ? ['2021', 'wine'] : ['04', 'table'],
-        visual === 'book' ? ['20:30', 'held'] : ['Sofia', 'owner'],
-      ].map(([top, bottom]) => (
-        <div key={`${top}-${bottom}`} className="rounded-xl border border-white/10 bg-white/[0.025] p-3 text-center">
-          <p className="font-serif text-2xl italic leading-none text-yuzu">{top}</p>
-          <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.16em] text-silver/44">{bottom}</p>
-        </div>
+    <span className="inline-flex items-center gap-1">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="block h-1.5 w-1.5 rounded-full bg-yuzu"
+          animate={{ opacity: [0.3, 1, 0.3], scale: [0.85, 1.1, 0.85] }}
+          transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut', delay: i * 0.18 }}
+        />
       ))}
-    </div>
+    </span>
   );
 }
+
+function LineMarker({ type }: { type: LineType }) {
+  if (type === 'header') {
+    return <span className="mt-[1px] select-none font-mono text-[12px] leading-snug text-yuzu/95">✓</span>;
+  }
+  if (type === 'check') {
+    return <span className="mt-[2px] select-none font-mono text-[12px] leading-snug text-yuzu/85">·</span>;
+  }
+  if (type === 'meta') {
+    return <span className="mt-[2px] select-none font-mono text-[11px] leading-snug text-silver/40">›</span>;
+  }
+  return <span className="mt-[8px] block h-1 w-1 rounded-full bg-white/30" />;
+}
+
+function lineClass(type: LineType): string {
+  switch (type) {
+    case 'header': return 'font-sans text-[12.5px] font-medium leading-snug tracking-tight text-yuzu/95';
+    case 'check':  return 'font-sans text-[11.5px] leading-snug text-silver/85';
+    case 'meta':   return 'font-mono text-[10.5px] italic leading-snug text-silver/50';
+    case 'detail':
+    default:       return 'font-sans text-[12px] leading-snug tracking-tight text-white/85';
+  }
+}
+
+function waitMs(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+/* ─── TRUST CHAPTER — privacy commitments + monumental brand close ─────── */
 
 function TrustChapter({ activeView, onSwitchView }: { activeView: ViewMode; onSwitchView: () => void }) {
   const isGuests = activeView === 'guests';
@@ -1003,7 +1375,7 @@ function TrustChapter({ activeView, onSwitchView }: { activeView: ViewMode; onSw
   return (
     <MobileSection
       index="06"
-      label="Trust"
+      label="Trust · Brand"
       title={isGuests ? 'Anticipation requires control.' : 'Automation needs a paper trail.'}
       copy={
         isGuests
@@ -1011,33 +1383,63 @@ function TrustChapter({ activeView, onSwitchView }: { activeView: ViewMode; onSw
           : 'Every guest cue, staff action, supplier invoice, and automated approval stays permissioned, inspectable, and reversible.'
       }
     >
-      <div className="m-reveal grid gap-3">
+      {/* Privacy commitments — 3 cards (mirroring desktop PrivacyTrust) */}
+      <div className="m-reveal grid gap-2.5">
+        {PRIVACY_COMMITMENTS.map((c) => (
+          <div
+            key={c.keyword}
+            className="relative rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3.5"
+          >
+            <span className="absolute inset-y-3 left-0 w-px bg-yuzu/45" />
+            <div className="font-mono text-[9px] uppercase tracking-[0.26em] text-yuzu/75">
+              {c.keyword}
+            </div>
+            <p className="mt-1.5 font-sans text-[12px] leading-snug text-silver/68">{c.body}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Controls */}
+      <div className="m-reveal grid gap-2">
         {controls.map((item) => (
           <div key={item} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3">
-            <span className="font-sans text-[13px] text-white/82">{item}</span>
+            <span className="font-sans text-[12.5px] text-white/82">{item}</span>
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-yuzu/68">{isGuests ? 'Yours' : 'Logged'}</span>
           </div>
         ))}
       </div>
-      <div className="m-reveal mt-10 text-center">
-        <p className="font-serif text-[3.25rem] italic leading-[0.9] tracking-tight text-silver">
+
+      {/* Monumental brand close */}
+      <div className="m-reveal mt-12 flex flex-col items-center text-center">
+        <span className="mb-5 block h-px w-16 bg-gradient-to-r from-transparent via-yuzu/65 to-transparent" />
+        <p className="font-serif text-[clamp(3.5rem,18vw,5.5rem)] italic leading-[0.92] tracking-tight text-silver/90">
           Don't call.
-          <span className="block text-yuzu">Just TapIn.</span>
+          <span className="block text-yuzu drop-shadow-[0_0_28px_rgba(204,255,0,0.28)]">
+            Just TapIn.
+          </span>
+        </p>
+        <p className="mt-5 max-w-[20rem] font-sans text-[12px] leading-relaxed text-silver/55">
+          {isGuests
+            ? 'Every restaurant. One protocol. From the first tap to the last memory.'
+            : 'Every guest recognised. Every table optimised. The OS that runs the room with you.'}
         </p>
         <button
           type="button"
           onClick={onSwitchView}
-          className="mt-8 font-mono text-[10px] uppercase tracking-[0.28em] text-silver/48"
+          className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-silver/45 active:text-yuzu"
         >
           {VIEW_LABELS[activeView].alternate}
+          <span>→</span>
         </button>
-        <p className="mt-8 pb-3 font-mono text-[9px] uppercase tracking-[0.2em] text-silver/28">
-          {isGuests ? 'Guest protocol' : 'Venue protocol'} - TapIn OS
+        <p className="mt-10 pb-4 font-mono text-[9px] uppercase tracking-[0.2em] text-silver/26">
+          {isGuests ? 'Guest protocol' : 'Venue protocol'} · TapIn OS
         </p>
       </div>
     </MobileSection>
   );
 }
+
+/* ─── MOBILE SECTION WRAPPER ───────────────────────────────────────────── */
 
 function MobileSection({
   index,
@@ -1053,7 +1455,7 @@ function MobileSection({
   children: ReactNode;
 }) {
   return (
-    <section className="mobile-chapter relative px-5 py-14">
+    <section className="mobile-chapter relative px-5 py-10">
       <div className="pointer-events-none absolute bottom-8 left-5 top-16 w-px bg-white/8">
         <span className="m-progress absolute left-0 top-0 block h-full w-px origin-top bg-yuzu shadow-[0_0_12px_rgba(204,255,0,0.55)]" />
       </div>
@@ -1063,7 +1465,12 @@ function MobileSection({
             <span className="h-px w-8 bg-yuzu/42" />
             {label}
           </div>
-          <span className="font-serif text-4xl italic leading-none text-white/[0.07]">{index}</span>
+          {/* Section index — bolder, with yuzu accent line, easier to wayfind */}
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-silver/35">Chapter {index}/06</span>
+            <span className="h-px w-3 bg-yuzu/40" />
+            <span className="font-serif text-4xl italic leading-none text-white/22">{index}</span>
+          </div>
         </div>
         <h2 className="m-reveal max-w-[21rem] text-[clamp(2.35rem,11vw,4.3rem)] font-black leading-[0.9] tracking-tighter text-silver">
           {title}
@@ -1075,6 +1482,8 @@ function MobileSection({
   );
 }
 
+/* ─── SHARED HELPERS ───────────────────────────────────────────────────── */
+
 function SignalRow({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 rounded-lg border border-white/8 bg-white/[0.025] px-3 py-2">
@@ -1084,10 +1493,20 @@ function SignalRow({ label }: { label: string }) {
   );
 }
 
-function Metric({ number, label }: { number: string; label: string }) {
+function Metric({ number, label, tone = 'positive' }: { number: string; label: string; tone?: 'positive' | 'neutral' | 'warn' }) {
+  const toneClass =
+    tone === 'warn'
+      ? 'text-[#ffdf8a]'
+      : tone === 'neutral'
+        ? 'text-silver/78'
+        : 'text-yuzu';
+  const borderClass =
+    tone === 'warn'
+      ? 'border-[#ffdf8a]/20 bg-[#ffdf8a]/[0.035]'
+      : 'border-white/10 bg-white/[0.025]';
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3">
-      <div className="font-serif text-[24px] italic leading-none text-yuzu">{number}</div>
+    <div className={`rounded-xl border px-3 py-3 ${borderClass}`}>
+      <div className={`font-serif text-[24px] italic leading-none ${toneClass}`}>{number}</div>
       <div className="mt-2 font-mono text-[8px] uppercase tracking-[0.18em] text-silver/45">{label}</div>
     </div>
   );
