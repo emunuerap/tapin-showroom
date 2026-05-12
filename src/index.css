@@ -49,4 +49,8 @@
   .visual-pane {
     @apply w-full relative rounded-3xl overflow-hidden;
   }
+
+  .mobile-body {
+    @apply font-sans text-[15px] leading-relaxed text-silver/65;
+  }
 }

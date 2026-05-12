@@ -1,33 +1,17 @@
-import { useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion, AnimatePresence } from 'framer-motion';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
-import { Navbar } from './components/layout/Navbar';
 import { IntroSequence } from './components/sections/IntroSequence';
-import { Footer } from './components/layout/Footer';
-import { SmoothScroll } from './components/layout/SmoothScroll';
 import { CustomCursor } from './components/layout/CustomCursor';
-import { Hero } from './components/sections/Hero';
-import { Manifesto } from './components/sections/Manifesto';
-import { Ecosystem } from './components/sections/Ecosystem';
-import { WalkInExpress } from './components/sections/WalkInExpress';
-import { TasteGenomeVisualizer } from './components/sections/TasteGenomeVisualizer';
-import { ConsumerAppShowcase } from './components/sections/ConsumerAppShowcase';
-import { IAFloorShuffler } from './components/sections/IAFloorShuffler';
-import { BrandClose } from './components/sections/BrandClose';
-import { AICommandLayer } from './components/sections/AICommandLayer';
-import { GratitudeLoop } from './components/sections/GratitudeLoop';
-import { RevenueEngine } from './components/sections/RevenueEngine';
-import { PrivacyTrust } from './components/sections/PrivacyTrust';
+import type { ViewMode } from './types/showroom';
 
-gsap.registerPlugin(ScrollTrigger);
-
-
+const DesktopShowroom = lazy(() => import('./components/showroom/DesktopShowroom'));
+const MobileShowroom = lazy(() => import('./components/showroom/MobileShowroom'));
 
 function App() {
-  const [activeView, setActiveView] = useState<'guests' | 'venues'>('guests');
+  const [activeView, setActiveView] = useState<ViewMode>('guests');
   const [introComplete, setIntroComplete] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <div className="relative bg-[#050505] min-h-screen text-white font-sans overflow-x-hidden">
@@ -66,108 +50,40 @@ function App() {
         {!introComplete ? (
           <IntroSequence key="intro" onComplete={() => setIntroComplete(true)} />
         ) : (
-          <motion.div
-            key="main-app"
-            initial={{ opacity: 0, clipPath: 'inset(100% 0 0 0)' }}
-            animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)' }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-          >
-            <Navbar activeView={activeView} setActiveView={setActiveView} />
-
-            <SmoothScroll>
-              <main className="pt-32">
-                <Hero activeView={activeView} />
-
-                <AnimatePresence mode="wait">
-                  {activeView === 'guests' ? (
-                    <motion.div
-                      key="guests-view"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.5, ease: "easeInOut" }}
-                      className="w-full flex flex-col"
-                    >
-                      <div id="protocol">
-                        {/* Friction vs Flow / 5-Second Simulator */}
-                        <Manifesto />
-                      </div>
-                      
-                      <div id="walk-in">
-                        {/* Walk-In Express */}
-                        <WalkInExpress />
-                      </div>
-                      
-                      <div id="genome">
-                        {/* Taste Genome Visualizer */}
-                        <TasteGenomeVisualizer />
-                      </div>
-                      
-                      {/* Protocol monolith cards removed — they duplicated content
-                          that the dedicated sections (TasteGenome, ConsumerApp,
-                          GratitudeLoop) already deliver in greater depth. */}
-
-                      <div id="passport">
-                        <ConsumerAppShowcase />
-                      </div>
-
-                      {/* Emotional close of the guest journey — the visit becomes memory. */}
-                      <div id="gratitude-loop">
-                        <GratitudeLoop />
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="venues-view"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.5, ease: "easeInOut" }}
-                      className="w-full flex flex-col"
-                    >
-                      <div id="cockpit">
-                        {/* The Command Center / Hospitality OS */}
-                        <Ecosystem />
-                      </div>
-                      
-                      <div id="tetris">
-                        {/* The Tetris Agent Floorplan & Sentient Floorplan */}
-                        <IAFloorShuffler />
-                      </div>
-                      
-                      {/* Protocol Venues cards removed — Sentient Floorplan
-                          duplicated IAFloorShuffler, Prediction Matrix is now
-                          folded conceptually into RevenueEngine. */}
-
-                      {/* Concrete ROI — the operator's "numbers, not poetry" moment. */}
-                      <div id="revenue-engine">
-                        <RevenueEngine />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Universal — signature section. Demonstrates the AI Command Layer
-                    with scenarios adapted to the active view (Guests vs Venues). */}
-                <AICommandLayer activeView={activeView} />
-
-                {/* Universal — privacy & trust commitment. Required moment for any
-                    premium brand that captures behavioural data. */}
-                <PrivacyTrust />
-
-                {/* Universal brand close — CTA adapts to active view (Get the App
-                    for guests, Request a Demo for venues), plus a quiet secondary
-                    link inviting the visitor to the other perspective. */}
-                <BrandClose
-                  activeView={activeView}
-                  onSwitchView={() => setActiveView(activeView === 'guests' ? 'venues' : 'guests')}
-                />
-              </main>
-              <Footer />
-            </SmoothScroll>
-          </motion.div>
+          <Suspense fallback={<ShowroomFallback />}>
+            {isMobile ? (
+              <MobileShowroom activeView={activeView} setActiveView={setActiveView} />
+            ) : (
+              <DesktopShowroom activeView={activeView} setActiveView={setActiveView} />
+            )}
+          </Suspense>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const media = window.matchMedia('(max-width: 767px)');
+    const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
+  return isMobile;
+}
+
+function ShowroomFallback() {
+  return (
+    <div className="min-h-screen grid place-items-center bg-[#050505]">
+      <div className="h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_18px_rgba(204,255,0,0.8)]" />
     </div>
   );
 }
