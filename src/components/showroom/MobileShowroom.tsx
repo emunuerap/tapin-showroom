@@ -207,7 +207,7 @@ const PRIVACY_COMMITMENTS = [
 
 /* ─── ROOT ─────────────────────────────────────────────────────────────── */
 
-export default function MobileShowroom({ activeView, setActiveView }: ShowroomProps) {
+export default function MobileShowroom({ activeView, setActiveView, onNavigateProducts }: ShowroomProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
@@ -223,7 +223,7 @@ export default function MobileShowroom({ activeView, setActiveView }: ShowroomPr
       transition={{ duration: 0.8, ease: EASE }}
       className="relative z-10 min-h-screen overflow-hidden bg-[#050505] text-white"
     >
-      <MobileHeader activeView={activeView} setActiveView={setActiveView} />
+      <MobileHeader activeView={activeView} setActiveView={setActiveView} onNavigateProducts={onNavigateProducts} />
       <main className="relative pb-48">
         <MobileHero activeView={activeView} />
         <ArrivalChapter activeView={activeView} />
@@ -374,10 +374,10 @@ function useMobileScrollTheatre(scope: React.RefObject<HTMLDivElement | null>, a
 
 /* ─── HEADER ───────────────────────────────────────────────────────────── */
 
-function MobileHeader({ activeView, setActiveView }: ShowroomProps) {
+function MobileHeader({ activeView, setActiveView, onNavigateProducts }: ShowroomProps) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-[max(14px,env(safe-area-inset-top))]">
-      <div className="mx-auto flex max-w-[430px] items-center justify-between rounded-full border border-white/10 bg-[#080808]/88 px-3 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
+      <div className="mx-auto flex max-w-[430px] items-center justify-between gap-2 rounded-full border border-white/10 bg-[#080808]/88 px-3 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
         <div className="flex items-baseline text-sm font-bold tracking-tighter text-silver">
           TapIn
           <span className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
@@ -385,6 +385,9 @@ function MobileHeader({ activeView, setActiveView }: ShowroomProps) {
         <div className="flex rounded-full border border-white/8 bg-black/70 p-0.5">
           <ToggleButton active={activeView === 'guests'} onClick={() => setActiveView('guests')}>
             Guests
+          </ToggleButton>
+          <ToggleButton active={false} onClick={() => onNavigateProducts?.()}>
+            Products
           </ToggleButton>
           <ToggleButton active={activeView === 'venues'} onClick={() => setActiveView('venues')}>
             Venues
@@ -401,7 +404,7 @@ function ToggleButton({ active, onClick, children }: { active: boolean; onClick:
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`relative rounded-full px-4 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors ${
+      className={`relative rounded-full px-2.5 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] transition-colors min-[390px]:px-3.5 min-[390px]:text-[10px] ${
         active ? 'text-white' : 'text-white/35'
       }`}
     >

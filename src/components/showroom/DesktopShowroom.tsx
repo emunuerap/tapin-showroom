@@ -17,7 +17,7 @@ import { TasteGenomeVisualizer } from '../sections/TasteGenomeVisualizer';
 import { WalkInExpress } from '../sections/WalkInExpress';
 import type { ShowroomProps } from '../../types/showroom';
 
-export default function DesktopShowroom({ activeView, setActiveView }: ShowroomProps) {
+export default function DesktopShowroom({ activeView, setActiveView, routeMode, onNavigateProducts }: ShowroomProps) {
   return (
     <motion.div
       key="desktop-showroom"
@@ -25,7 +25,12 @@ export default function DesktopShowroom({ activeView, setActiveView }: ShowroomP
       animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)' }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
     >
-      <Navbar activeView={activeView} setActiveView={setActiveView} />
+      <Navbar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        routeMode={routeMode}
+        onNavigateProducts={onNavigateProducts}
+      />
 
       <SmoothScroll>
         <main className="pt-32">

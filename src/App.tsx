@@ -3,15 +3,47 @@ import { AnimatePresence } from 'framer-motion';
 
 import { IntroSequence } from './components/sections/IntroSequence';
 import { CustomCursor } from './components/layout/CustomCursor';
-import type { ViewMode } from './types/showroom';
+import type { RouteMode, ViewMode } from './types/showroom';
 
 const DesktopShowroom = lazy(() => import('./components/showroom/DesktopShowroom'));
 const MobileShowroom = lazy(() => import('./components/showroom/MobileShowroom'));
+const ProductsPage = lazy(() => import('./products/ProductsPage'));
 
 function App() {
   const [activeView, setActiveView] = useState<ViewMode>('guests');
-  const [introComplete, setIntroComplete] = useState(false);
+  const [routeMode, setRouteMode] = useState<RouteMode>(() => getRouteMode());
+  const [introComplete, setIntroComplete] = useState(() => getRouteMode() === 'products');
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const onPopState = () => {
+      const nextRoute = getRouteMode();
+      setRouteMode(nextRoute);
+      if (nextRoute === 'products') setIntroComplete(true);
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  const navigateToProducts = () => {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/products') {
+      window.history.pushState(null, '', '/products');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    setIntroComplete(true);
+    setRouteMode('products');
+  };
+
+  const navigateToShowroom = () => {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      window.history.pushState(null, '', '/');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    setRouteMode('showroom');
+  };
 
   return (
     <div className="relative bg-[#050505] min-h-screen text-white font-sans overflow-x-hidden">
@@ -47,20 +79,41 @@ function App() {
       </div>
 
       <AnimatePresence mode="wait">
-        {!introComplete ? (
+        {routeMode === 'products' ? (
+          <Suspense key="products-route" fallback={<ShowroomFallback />}>
+            <ProductsPage onNavigateShowroom={navigateToShowroom} />
+          </Suspense>
+        ) : !introComplete ? (
           <IntroSequence key="intro" onComplete={() => setIntroComplete(true)} />
         ) : (
-          <Suspense fallback={<ShowroomFallback />}>
+          <Suspense key="showroom-route" fallback={<ShowroomFallback />}>
             {isMobile ? (
-              <MobileShowroom activeView={activeView} setActiveView={setActiveView} />
+              <MobileShowroom
+                activeView={activeView}
+                setActiveView={setActiveView}
+                routeMode={routeMode}
+                onNavigateProducts={navigateToProducts}
+                onNavigateShowroom={navigateToShowroom}
+              />
             ) : (
-              <DesktopShowroom activeView={activeView} setActiveView={setActiveView} />
+              <DesktopShowroom
+                activeView={activeView}
+                setActiveView={setActiveView}
+                routeMode={routeMode}
+                onNavigateProducts={navigateToProducts}
+                onNavigateShowroom={navigateToShowroom}
+              />
             )}
           </Suspense>
         )}
       </AnimatePresence>
     </div>
   );
+}
+
+function getRouteMode(): RouteMode {
+  if (typeof window === 'undefined') return 'showroom';
+  return window.location.pathname === '/products' ? 'products' : 'showroom';
 }
 
 function useIsMobile() {
