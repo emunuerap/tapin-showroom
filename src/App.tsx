@@ -37,10 +37,11 @@ function App() {
     setRouteMode('products');
   };
 
-  const navigateToShowroom = () => {
+  const navigateToShowroom = (view?: ViewMode) => {
+    if (view) setActiveView(view);
     if (typeof window !== 'undefined' && window.location.pathname !== '/') {
       window.history.pushState(null, '', '/');
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
     setRouteMode('showroom');
   };
@@ -81,7 +82,13 @@ function App() {
       <AnimatePresence mode="wait">
         {routeMode === 'products' ? (
           <Suspense key="products-route" fallback={<ShowroomFallback />}>
-            <ProductsPage onNavigateShowroom={navigateToShowroom} />
+            <ProductsPage
+              activeView={activeView}
+              setActiveView={setActiveView}
+              routeMode={routeMode}
+              onNavigateProducts={navigateToProducts}
+              onNavigateShowroom={navigateToShowroom}
+            />
           </Suspense>
         ) : !introComplete ? (
           <IntroSequence key="intro" onComplete={() => setIntroComplete(true)} />

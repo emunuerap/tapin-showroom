@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import type { ProductDefinition, ProductScene as ProductSceneName } from '../content/products';
+import { KineticWords } from './KineticText';
 import { AICoreScene } from '../scenes/AICoreScene';
 import { ConsumerAppScene } from '../scenes/ConsumerAppScene';
 import { HospitalityOSScene } from '../scenes/HospitalityOSScene';
@@ -18,26 +19,28 @@ interface ProductStageProps {
 }
 
 export function ProductStage({ products }: ProductStageProps) {
-  const desktopRailRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const desktop = window.matchMedia('(min-width: 768px)').matches;
-    if (reduce || !desktop || !desktopRailRef.current || !trackRef.current) return;
+    if (reduce || !desktop || !sectionRef.current || !trackRef.current) return;
 
     const ctx = gsap.context(() => {
       const panels = gsap.utils.toArray<HTMLElement>('.product-panel');
-      const distance = Math.max(0, trackRef.current!.scrollWidth - window.innerWidth);
+      const distance = Math.max(0, window.innerWidth * (panels.length - 1));
 
       const railTween = gsap.to(trackRef.current, {
-        x: -distance,
+        xPercent: -100 * (panels.length - 1),
         ease: 'none',
         scrollTrigger: {
-          trigger: desktopRailRef.current,
+          trigger: sectionRef.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: () => `+=${distance}`,
+          pin: true,
+          anticipatePin: 1,
           scrub: 0.8,
           invalidateOnRefresh: true,
         },
@@ -45,6 +48,29 @@ export function ProductStage({ products }: ProductStageProps) {
 
       panels.forEach((panel, index) => {
         if (index === 0) return;
+
+        const words = panel.querySelectorAll('.products-kinetic-word');
+        if (words.length) {
+          gsap.fromTo(
+            words,
+            { yPercent: 115, rotateX: -28, opacity: 0, filter: 'blur(10px)' },
+            {
+              yPercent: 0,
+              rotateX: 0,
+              opacity: 1,
+              filter: 'blur(0px)',
+              stagger: 0.025,
+              duration: 0.72,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: panel,
+                containerAnimation: railTween,
+                start: 'left 68%',
+                toggleActions: 'play none none reverse',
+              },
+            }
+          );
+        }
 
         gsap.fromTo(
           panel.querySelectorAll('.product-reveal'),
@@ -66,26 +92,24 @@ export function ProductStage({ products }: ProductStageProps) {
           }
         );
       });
-    }, desktopRailRef);
+    }, sectionRef);
 
     requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => ctx.revert();
   }, [products.length]);
 
   return (
-    <section id="product-rail" className="relative overflow-hidden">
-      <div ref={desktopRailRef} className="relative hidden md:block" style={{ height: `${products.length * 100}vh` }}>
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <div ref={trackRef} className="flex h-full w-max">
-            {products.map((product, index) => (
-              <article key={product.id} className="product-panel grid h-screen w-screen grid-cols-[0.88fr_1.12fr] items-center gap-10 px-[clamp(2rem,5vw,5rem)]">
-                <ProductCopy product={product} index={index} />
-                <div className="product-reveal">
-                  <Scene scene={product.scene} />
-                </div>
-              </article>
-            ))}
-          </div>
+    <section id="product-rail" ref={sectionRef} className="relative overflow-hidden">
+      <div className="hidden h-screen overflow-hidden md:block">
+        <div ref={trackRef} className="flex h-full w-max">
+          {products.map((product, index) => (
+            <article key={product.id} className="product-panel grid h-screen w-screen grid-cols-[0.88fr_1.12fr] items-center gap-10 px-[clamp(2rem,5vw,5rem)]">
+              <ProductCopy product={product} index={index} />
+              <div className="product-reveal">
+                <Scene scene={product.scene} />
+              </div>
+            </article>
+          ))}
         </div>
       </div>
 
@@ -111,8 +135,8 @@ function ProductCopy({ product, index }: { product: ProductDefinition; index: nu
         <span className="h-px w-16 bg-white/18" />
         <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-silver/42">{product.eyebrow}</span>
       </div>
-      <h2 className="text-[clamp(2.8rem,5.6vw,6.2rem)] font-black leading-[0.86] tracking-tighter text-silver">
-        {product.headline}
+      <h2 className="products-kinetic text-[clamp(2.8rem,5.6vw,6.2rem)] font-black leading-[0.86] tracking-tighter text-silver">
+        <KineticWords text={product.headline} />
       </h2>
       <p className="mt-7 text-base leading-relaxed text-silver/62 md:max-w-lg">{product.description}</p>
       <div className="mt-8 grid gap-3">

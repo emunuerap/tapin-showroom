@@ -6,11 +6,17 @@ interface NavbarProps {
     setActiveView: (view: ViewMode) => void;
     routeMode?: RouteMode;
     onNavigateProducts?: () => void;
+    onNavigateShowroom?: (view?: ViewMode) => void;
 }
 
-export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNavigateProducts }: NavbarProps) {
+export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNavigateProducts, onNavigateShowroom }: NavbarProps) {
+    const selectView = (view: ViewMode) => {
+        setActiveView(view);
+        onNavigateShowroom?.(view);
+    };
+
     return (
-        <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col items-center w-full max-w-[92%] md:max-w-3xl">
+        <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] hidden flex-col items-center w-full max-w-[92%] md:flex md:max-w-3xl">
             {/* Minimalist Dock */}
             <div className="flex items-center justify-between w-full px-2 py-1.5 bg-[#0A0A0A]/80 backdrop-blur-2xl border border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.6)] rounded-full">
                 {/* Left (Logo) — circular yuzu dot for visual consistency with hero wordmark */}
@@ -28,7 +34,7 @@ export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNa
                 <div className="flex justify-center items-center">
                     <div className="flex items-center p-0.5 bg-black/60 border border-white/5 rounded-full relative">
                         <button
-                            onClick={() => setActiveView('guests')}
+                            onClick={() => selectView('guests')}
                             className={`relative z-10 px-4 py-1 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] font-sans uppercase transition-colors duration-300 ${activeView === 'guests' && routeMode === 'showroom' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
                         >
                             For Guests
@@ -54,7 +60,7 @@ export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNa
                             )}
                         </button>
                         <button
-                            onClick={() => setActiveView('venues')}
+                            onClick={() => selectView('venues')}
                             className={`relative z-10 px-4 py-1 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] font-sans uppercase transition-colors duration-300 ${activeView === 'venues' && routeMode === 'showroom' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
                         >
                             For Venues
@@ -71,7 +77,11 @@ export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNa
 
                 {/* Right (CTA) */}
                 <div className="flex justify-end pr-1 items-center">
-                    {activeView === 'guests' ? (
+                    {routeMode === 'products' ? (
+                        <button className="px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold text-obsidian bg-yuzu rounded-full hover:scale-105 transition-all shadow-[0_0_10px_rgba(204,255,0,0.2)] whitespace-nowrap">
+                            Request Demo
+                        </button>
+                    ) : activeView === 'guests' ? (
                         <button className="px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold text-white/90 bg-white/5 border border-white/5 rounded-full hover:bg-white/10 transition-all whitespace-nowrap">
                             Get the App
                         </button>

@@ -6,5 +6,5 @@ export interface ShowroomProps {
   setActiveView: (view: ViewMode) => void;
   routeMode?: RouteMode;
   onNavigateProducts?: () => void;
-  onNavigateShowroom?: () => void;
+  onNavigateShowroom?: (view?: ViewMode) => void;
 }

@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { MobileRouteHeader } from '../layout/MobileRouteHeader';
 import type { ShowroomProps, ViewMode } from '../../types/showroom';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -207,7 +208,7 @@ const PRIVACY_COMMITMENTS = [
 
 /* ─── ROOT ─────────────────────────────────────────────────────────────── */
 
-export default function MobileShowroom({ activeView, setActiveView, onNavigateProducts }: ShowroomProps) {
+export default function MobileShowroom({ activeView, setActiveView, routeMode, onNavigateProducts, onNavigateShowroom }: ShowroomProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
@@ -223,7 +224,13 @@ export default function MobileShowroom({ activeView, setActiveView, onNavigatePr
       transition={{ duration: 0.8, ease: EASE }}
       className="relative z-10 min-h-screen overflow-hidden bg-[#050505] text-white"
     >
-      <MobileHeader activeView={activeView} setActiveView={setActiveView} onNavigateProducts={onNavigateProducts} />
+      <MobileRouteHeader
+        activeView={activeView}
+        setActiveView={setActiveView}
+        routeMode={routeMode}
+        onNavigateProducts={onNavigateProducts}
+        onNavigateShowroom={onNavigateShowroom}
+      />
       <main className="relative pb-48">
         <MobileHero activeView={activeView} />
         <ArrivalChapter activeView={activeView} />
@@ -369,54 +376,6 @@ function useMobileScrollTheatre(scope: React.RefObject<HTMLDivElement | null>, a
       return () => ctx.revert();
     },
     { dependencies: [activeView, disabled], revertOnUpdate: true }
-  );
-}
-
-/* ─── HEADER ───────────────────────────────────────────────────────────── */
-
-function MobileHeader({ activeView, setActiveView, onNavigateProducts }: ShowroomProps) {
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-[max(14px,env(safe-area-inset-top))]">
-      <div className="mx-auto flex max-w-[430px] items-center justify-between gap-2 rounded-full border border-white/10 bg-[#080808]/88 px-3 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
-        <div className="flex items-baseline text-sm font-bold tracking-tighter text-silver">
-          TapIn
-          <span className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
-        </div>
-        <div className="flex rounded-full border border-white/8 bg-black/70 p-0.5">
-          <ToggleButton active={activeView === 'guests'} onClick={() => setActiveView('guests')}>
-            Guests
-          </ToggleButton>
-          <ToggleButton active={false} onClick={() => onNavigateProducts?.()}>
-            Products
-          </ToggleButton>
-          <ToggleButton active={activeView === 'venues'} onClick={() => setActiveView('venues')}>
-            Venues
-          </ToggleButton>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function ToggleButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={`relative rounded-full px-2.5 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] transition-colors min-[390px]:px-3.5 min-[390px]:text-[10px] ${
-        active ? 'text-white' : 'text-white/35'
-      }`}
-    >
-      {active && (
-        <motion.span
-          layoutId="mobile-active-view"
-          className="absolute inset-0 -z-10 rounded-full border border-yuzu/35 bg-yuzu/15 shadow-[0_0_16px_rgba(204,255,0,0.18)]"
-          transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-        />
-      )}
-      {children}
-    </button>
   );
 }
 
