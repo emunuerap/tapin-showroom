@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { TiltCard } from '../ui/TiltCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -106,20 +107,25 @@ export function PrivacyTrust() {
 
 function CommitmentCard({ commitment }: { commitment: typeof COMMITMENTS[number] }) {
     return (
-        <div className="priv-card relative bg-[#0A0A0A]/85 backdrop-blur-sm border border-white/12 hover:border-yuzu/35 rounded-lg p-6 md:p-7 transition-colors duration-300 group overflow-hidden">
-            {/* Vertical accent on left */}
-            <span className="absolute top-5 bottom-5 left-0 w-px bg-yuzu/40" />
+        <TiltCard intensity={10} className="h-full">
+            <div className="priv-card relative bg-[#0A0A0A]/85 backdrop-blur-sm border border-white/12 hover:border-yuzu/35 rounded-lg p-6 md:p-7 transition-colors duration-300 group overflow-hidden h-full shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                {/* Vertical accent on left */}
+                <span className="absolute top-5 bottom-5 left-0 w-px bg-yuzu/40" />
 
-            <div className="font-mono text-[9.5px] uppercase tracking-[0.28em] text-yuzu/75 mb-4">
-                {commitment.keyword}
+                {/* Subtle glow on hover */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(204,255,0,0.1)_0%,transparent_50%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                <div className="font-mono text-[9.5px] uppercase tracking-[0.28em] text-yuzu/75 mb-4 relative z-10">
+                    {commitment.keyword}
+                </div>
+                <h3 className="font-serif italic text-[20px] md:text-[22px] text-white/95 leading-tight tracking-tight mb-3 relative z-10">
+                    {commitment.title}
+                </h3>
+                <p className="font-sans text-[12.5px] text-silver/65 leading-relaxed relative z-10">
+                    {commitment.body}
+                </p>
             </div>
-            <h3 className="font-serif italic text-[20px] md:text-[22px] text-white/95 leading-tight tracking-tight mb-3">
-                {commitment.title}
-            </h3>
-            <p className="font-sans text-[12.5px] text-silver/65 leading-relaxed">
-                {commitment.body}
-            </p>
-        </div>
+        </TiltCard>
     );
 }
 

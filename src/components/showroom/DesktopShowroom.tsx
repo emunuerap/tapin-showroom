@@ -86,7 +86,7 @@ export default function DesktopShowroom({ activeView, setActiveView }: ShowroomP
           </AnimatePresence>
 
           <AICommandLayer activeView={activeView} />
-          <PrivacyTrust />
+          {activeView === 'guests' && <PrivacyTrust />}
           <BrandClose
             activeView={activeView}
             onSwitchView={() => setActiveView(activeView === 'guests' ? 'venues' : 'guests')}

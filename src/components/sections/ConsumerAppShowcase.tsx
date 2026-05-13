@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { TiltCard } from '../ui/TiltCard';
+import { CinematicText } from '../ui/CinematicText';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,13 +25,26 @@ export function ConsumerAppShowcase() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        gsap.from('.passport-copy > *', {
-            opacity: 0, y: 18, duration: 0.95, ease: 'power4.out', stagger: 0.1,
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
+        const toggleActions = "play none none reverse";
+        gsap.from('.passport-eyebrow', {
+            opacity: 0, y: 20, duration: 1.0, ease: 'power4.out',
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%', toggleActions },
+        });
+        gsap.from('.passport-headline', {
+            opacity: 0, y: 30, scale: 0.98, duration: 1.2, ease: 'power4.out', delay: 0.1,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%', toggleActions },
+        });
+        gsap.from('.passport-body', {
+            opacity: 0, y: 15, duration: 1.0, ease: 'power3.out', delay: 0.25,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%', toggleActions },
+        });
+        gsap.from('.passport-feature', {
+            opacity: 0, x: -20, duration: 0.9, ease: 'power3.out', delay: 0.4, stagger: 0.15,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%', toggleActions },
         });
         gsap.from('.passport-card', {
-            opacity: 0, y: 28, scale: 0.97, duration: 1.2, ease: 'power4.out', delay: 0.15,
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
+            opacity: 0, scale: 0.85, rotateY: -10, duration: 1.5, ease: 'power4.out', delay: 0.3,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 80%', toggleActions },
         });
     }, { scope: containerRef });
 
@@ -38,17 +53,17 @@ export function ConsumerAppShowcase() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-20 items-center">
                 {/* Left — copy */}
                 <div className="passport-copy flex flex-col gap-6 lg:gap-7 text-center lg:text-left">
-                    <span className="inline-flex items-center gap-3 self-center lg:self-start font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-yuzu/80">
+                    <span className="passport-eyebrow inline-flex items-center gap-3 self-center lg:self-start font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-yuzu/80">
                         <span className="block w-8 h-px bg-yuzu/40" />
                         Module · Identity
                     </span>
-                    <h2 className="font-serif italic text-4xl md:text-6xl text-silver/90 leading-[1.04] tracking-tight">
-                        The Gastronomic
+                    <h2 className="passport-headline font-serif italic text-4xl md:text-6xl text-silver/90 leading-[1.04] tracking-tight">
+                        <CinematicText text="The Gastronomic" />
                         <br />
-                        <span className="text-yuzu">Passport.</span>
+                        <span className="text-yuzu"><CinematicText text="Passport." delay={0.2} /></span>
                     </h2>
-                    <p className="font-sans text-base md:text-lg text-silver/65 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                        One cryptographic identity that travels with you. Your phone number is the passport. Every venue recognises you instantly — no app to download, no profile to set up, no card to remember.
+                    <p className="passport-body font-sans text-base md:text-lg text-silver/65 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        One cryptographic identity that travels with you. Your phone number is the passport. Every venue recognises you instantly — no app to download, no profile to set up.
                     </p>
 
                     <ul className="flex flex-col gap-3 mt-2 max-w-xl mx-auto lg:mx-0">
@@ -69,7 +84,9 @@ export function ConsumerAppShowcase() {
 
                 {/* Right — passport card */}
                 <div className="passport-card flex justify-center lg:justify-end">
-                    <PassportCard />
+                    <TiltCard intensity={12}>
+                        <PassportCard />
+                    </TiltCard>
                 </div>
             </div>
         </section>
@@ -78,7 +95,7 @@ export function ConsumerAppShowcase() {
 
 function Feature({ label, body }: { label: string; body: string }) {
     return (
-        <li className="flex items-start gap-3">
+        <li className="passport-feature flex items-start gap-3">
             <span className="mt-1.5 block w-1 h-1 rounded-full bg-yuzu shadow-[0_0_4px_rgba(204,255,0,0.7)] shrink-0" />
             <div className="flex flex-col gap-0.5">
                 <span className="font-sans text-[12px] font-semibold text-white/90 tracking-tight">
@@ -110,9 +127,12 @@ const RECENT_STAMPS = [
 
 function PassportCard() {
     return (
-        <div className="relative w-full max-w-[440px] rounded-2xl bg-gradient-to-b from-[#0E0E0E] to-[#070707] border border-white/12 shadow-[0_30px_70px_rgba(0,0,0,0.6),0_0_30px_rgba(204,255,0,0.04)] overflow-hidden">
+        <div className="relative w-full max-w-[440px] rounded-[1.5rem] bg-[#070707] border border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_2px_20px_rgba(255,255,255,0.03)] overflow-hidden group">
+            {/* Ambient Holographic Glow */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(204,255,0,0.15)_0%,transparent_70%)] opacity-50 group-hover:opacity-100 transition-opacity duration-700 z-0" />
+
             {/* Top accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yuzu/50 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yuzu/70 to-transparent shadow-[0_0_15px_rgba(204,255,0,0.5)]" />
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
@@ -125,13 +145,13 @@ function PassportCard() {
                         TapIn OS · Passport
                     </span>
                 </div>
-                <span className="font-mono text-[8.5px] text-yuzu/65 tracking-[0.2em]">
+                <span className="font-mono text-[8.5px] text-yuzu/65 tracking-[0.2em] relative z-10">
                     No. 0A·4F2B·9E7D
                 </span>
             </div>
 
             {/* Body */}
-            <div className="px-6 py-7 flex flex-col gap-7">
+            <div className="px-6 py-7 flex flex-col gap-7 relative z-10">
                 {/* Sigil + owner */}
                 <div className="flex items-center gap-5">
                     <Sigil />
@@ -192,11 +212,12 @@ function PassportCard() {
             </div>
 
             {/* Footer — cryptographic signature line */}
-            <div className="px-6 py-3 border-t border-white/8 bg-white/[0.02] flex items-center justify-between">
+            <div className="px-6 py-3 border-t border-white/8 bg-white/[0.02] flex items-center justify-between relative z-10 backdrop-blur-md">
                 <span className="font-mono text-[8.5px] text-silver/40 tracking-wide truncate max-w-[60%]">
                     sig · 0x9F·2A4B·D7E1·…·8C42
                 </span>
-                <span className="font-mono text-[8.5px] uppercase tracking-[0.22em] text-yuzu/65">
+                <span className="font-mono text-[8.5px] uppercase tracking-[0.22em] text-yuzu/65 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yuzu shadow-[0_0_5px_rgba(204,255,0,0.8)]" />
                     Verified · TapIn OS
                 </span>
             </div>

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { TiltCard } from '../ui/TiltCard';
 import { HospitalityCockpit } from '../ui/HospitalityCockpit';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,21 +15,13 @@ export const Ecosystem = () => {
     const container = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        gsap.from('.eco-eyebrow', {
-            opacity: 0, y: 14, duration: 0.8, ease: 'power3.out',
-            scrollTrigger: { trigger: container.current, start: 'top 78%' },
-        });
-        gsap.from('.eco-headline', {
-            opacity: 0, y: 24, duration: 1.1, ease: 'power4.out', delay: 0.05,
-            scrollTrigger: { trigger: container.current, start: 'top 78%' },
-        });
-        gsap.from('.eco-sub', {
-            opacity: 0, y: 12, duration: 0.9, ease: 'power3.out', delay: 0.2,
-            scrollTrigger: { trigger: container.current, start: 'top 78%' },
+        gsap.from('.eco-eyebrow, .eco-headline, .eco-sub', {
+            opacity: 0, y: 50, scale: 0.95, stagger: 0.1,
+            scrollTrigger: { trigger: container.current, start: 'top 90%', end: 'top 40%', scrub: 1 },
         });
         gsap.from('.eco-cockpit', {
-            opacity: 0, y: 30, scale: 0.97, duration: 1.2, ease: 'power4.out', delay: 0.3,
-            scrollTrigger: { trigger: container.current, start: 'top 78%' },
+            opacity: 0, y: 150, scale: 0.8, rotateX: 15,
+            scrollTrigger: { trigger: container.current, start: 'top 85%', end: 'top 30%', scrub: 1 },
         });
     }, { scope: container });
 
@@ -48,8 +41,12 @@ export const Ecosystem = () => {
                 </p>
             </div>
 
-            <div className="eco-cockpit max-w-6xl mx-auto">
-                <HospitalityCockpit />
+            <div className="eco-cockpit max-w-6xl mx-auto perspective-[1200px]">
+                <TiltCard intensity={15}>
+                    <div className="shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_2px_20px_rgba(255,255,255,0.03)] rounded-2xl overflow-hidden border border-white/10">
+                        <HospitalityCockpit />
+                    </div>
+                </TiltCard>
             </div>
         </section>
     );

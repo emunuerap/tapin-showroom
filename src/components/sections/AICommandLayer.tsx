@@ -336,14 +336,16 @@ export function AICommandLayer({ activeView = 'guests' as 'guests' | 'venues' }:
                             key={s.id}
                             onClick={() => jumpTo(i)}
                             aria-label={`Show scenario: ${s.label}`}
-                            className={`group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${
+                            className={`group relative flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-500 overflow-hidden ${
                                 i === scenarioIdx
-                                    ? 'border-yuzu/55 bg-yuzu/[0.07] text-yuzu'
-                                    : 'border-white/12 bg-transparent text-silver/45 hover:border-yuzu/35 hover:text-silver/75'
+                                    ? 'border-yuzu/40 bg-yuzu/[0.08] text-yuzu shadow-[0_0_20px_rgba(204,255,0,0.15),inset_0_1px_5px_rgba(204,255,0,0.2)]'
+                                    : 'border-white/10 bg-black/40 text-silver/45 hover:border-yuzu/30 hover:text-silver/75 hover:bg-yuzu/[0.02] shadow-[0_5px_15px_rgba(0,0,0,0.3)]'
                             }`}
                         >
-                            <span className={`block w-1 h-1 rounded-full ${i === scenarioIdx ? 'bg-yuzu' : 'bg-silver/35 group-hover:bg-yuzu/60'}`} />
-                            <span className="font-mono text-[9.5px] uppercase tracking-[0.2em]">{s.label}</span>
+                            {/* Glass reflection */}
+                            <div className="absolute inset-0 rounded-full pointer-events-none bg-gradient-to-b from-white/[0.08] to-transparent opacity-50" />
+                            <span className={`relative z-10 block w-1.5 h-1.5 rounded-full ${i === scenarioIdx ? 'bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.8)]' : 'bg-silver/30 group-hover:bg-yuzu/60'}`} />
+                            <span className="relative z-10 font-mono text-[10px] font-medium uppercase tracking-[0.2em]">{s.label}</span>
                         </button>
                     ))}
                 </div>

@@ -74,21 +74,13 @@ export function IAFloorShuffler() {
     }, []);
 
     useGSAP(() => {
-        gsap.from('.floor-eyebrow', {
-            opacity: 0, y: 14, duration: 0.8, ease: 'power3.out',
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
-        });
-        gsap.from('.floor-headline', {
-            opacity: 0, y: 24, duration: 1.1, ease: 'power4.out', delay: 0.05,
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
-        });
-        gsap.from('.floor-sub', {
-            opacity: 0, y: 12, duration: 0.9, ease: 'power3.out', delay: 0.2,
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
+        gsap.from('.floor-eyebrow, .floor-headline, .floor-sub', {
+            opacity: 0, y: 50, scale: 0.95, stagger: 0.1,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 90%', end: 'top 40%', scrub: 1 },
         });
         gsap.from('.floor-cockpit', {
-            opacity: 0, y: 28, scale: 0.98, duration: 1.2, ease: 'power4.out', delay: 0.3,
-            scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
+            opacity: 0, y: 150, scale: 0.9, rotateX: 10,
+            scrollTrigger: { trigger: containerRef.current, start: 'top 85%', end: 'top 30%', scrub: 1 },
         });
     }, { scope: containerRef });
 
@@ -113,9 +105,10 @@ export function IAFloorShuffler() {
             </div>
 
             {/* Unified cockpit — left: sentiment stream · right: Tetris agent */}
-            <div className="floor-cockpit grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-4 lg:gap-5 bg-[#0A0A0A]/82 backdrop-blur-md border border-white/12 rounded-2xl p-4 lg:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.55),0_0_24px_rgba(204,255,0,0.04)]">
-                {/* Left panel — Sentiment Stream */}
-                <SentimentPanel entries={entries} />
+            <div className="floor-cockpit perspective-[1200px]">
+                <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-4 lg:gap-5 bg-[#0A0A0A]/82 backdrop-blur-md border border-white/12 rounded-2xl p-4 lg:p-5 shadow-[0_40px_80px_rgba(0,0,0,0.8),inset_0_2px_20px_rgba(255,255,255,0.03)]">
+                    {/* Left panel — Sentiment Stream */}
+                    <SentimentPanel entries={entries} />
 
                 {/* Right panel — Tetris Agent simulator */}
                 <div className="rounded-xl border border-white/8 bg-[#070707] overflow-hidden">
@@ -138,6 +131,7 @@ export function IAFloorShuffler() {
                     </div>
                     <div className="p-4 lg:p-5">
                         <TetrisAgentSimulator />
+                    </div>
                     </div>
                 </div>
             </div>

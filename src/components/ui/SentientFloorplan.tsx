@@ -30,7 +30,20 @@ export const SentientFloorplan = () => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center relative p-4">
-            <div className="relative w-[210px] h-[210px] border border-white/5 rounded-full flex items-center justify-center p-2">
+            <motion.div
+                className="relative w-[800px] h-[800px] rounded-[100px] border border-white/5 flex items-center justify-center p-2 cursor-grab active:cursor-grabbing bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.01)_0%,transparent_100%)]"
+                drag
+                dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
+                dragElastic={0.2}
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+            >
+                {/* Simulated Infinite Grid Background */}
+                <div
+                    className="absolute inset-0 z-0 pointer-events-none opacity-20"
+                    style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(204,255,0,0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }}
+                />
 
                 {/* Tables rendering */}
                 {tables.map((t, idx) => {
@@ -38,14 +51,15 @@ export const SentientFloorplan = () => {
                     return (
                         <motion.div
                             key={t.id}
-                            className={`absolute rounded-full border bg-transparent flex items-center justify-center transition-colors duration-1000 ${isHighlighted ? 'border-[#CCFF00] shadow-[0_0_20px_rgba(204,255,0,0.3)]' : 'border-white/10'
+                            className={`absolute rounded-full border bg-black/40 backdrop-blur-sm flex items-center justify-center transition-colors duration-1000 z-10 ${isHighlighted ? 'border-[#CCFF00] shadow-[0_0_20px_rgba(204,255,0,0.3)]' : 'border-white/10'
                                 }`}
                             style={{
                                 width: t.size,
                                 height: t.size,
-                                left: t.x,
-                                top: t.y
+                                left: t.x + 300, // Offset to center in new 800x800 canvas
+                                top: t.y + 300
                             }}
+                            whileHover={{ scale: 1.1 }}
                         >
                             {/* Inner dot if highlighted */}
                             <motion.div
@@ -57,7 +71,7 @@ export const SentientFloorplan = () => {
                         </motion.div>
                     );
                 })}
-            </div>
+            </motion.div>
         </div>
     );
 };

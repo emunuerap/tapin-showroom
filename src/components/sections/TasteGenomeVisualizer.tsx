@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { TasteGenomeVisualizer as TasteGenomeUI } from '../ui/TasteGenomeVisualizer';
+import { TiltCard } from '../ui/TiltCard';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,7 +56,7 @@ export function TasteGenomeVisualizer() {
             scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
         });
         gsap.from('.genome-viz', {
-            opacity: 0, scale: 0.95, duration: 1.2, ease: 'power4.out', delay: 0.3,
+            opacity: 0, scale: 0.85, rotateY: 15, rotateX: 10, duration: 1.5, ease: 'power4.out', delay: 0.3,
             scrollTrigger: { trigger: containerRef.current, start: 'top 78%' },
         });
     }, { scope: containerRef });
@@ -104,8 +105,13 @@ export function TasteGenomeVisualizer() {
                 </div>
 
                 {/* Right — visualisation */}
-                <div className="genome-viz flex justify-center lg:justify-end mt-8 lg:mt-0">
-                    <TasteGenomeUI />
+                <div className="genome-viz flex justify-center lg:justify-end mt-8 lg:mt-0 perspective-[1000px]">
+                    <TiltCard intensity={20}>
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-yuzu/5 blur-3xl rounded-full scale-110 pointer-events-none" />
+                            <TasteGenomeUI />
+                        </div>
+                    </TiltCard>
                 </div>
             </div>
         </section>

@@ -94,7 +94,9 @@ export function TasteGenomeVisualizer() {
         .join(':');
 
     return (
-        <div className="relative w-full max-w-[400px] bg-[#0A0A0A]/85 backdrop-blur-md border border-white/12 rounded-2xl px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.55),0_0_24px_rgba(204,255,0,0.04)]">
+        <div className="relative w-full max-w-[440px] bg-[#0A0A0A]/85 backdrop-blur-md border border-white/12 rounded-2xl px-8 py-9 shadow-[0_30px_80px_rgba(0,0,0,0.8),0_0_40px_rgba(204,255,0,0.06)] group">
+            {/* Cinematic depth background */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(204,255,0,0.08)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0" />
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/8">
                 <span className="font-mono text-[9.5px] uppercase tracking-[0.28em] text-silver/55">
@@ -111,10 +113,15 @@ export function TasteGenomeVisualizer() {
                 </span>
             </div>
 
-            {/* Radar */}
-            <div className="relative w-full flex items-center justify-center">
-                <svg width="340" height="340" viewBox="0 0 340 340" className="overflow-visible">
-                    {/* Background concentric rings (web) */}
+            {/* Radar - Cinematic 3D Projection */}
+            <div className="relative w-full flex items-center justify-center my-6 perspective-[1000px]">
+                <motion.div
+                    animate={{ rotateY: [0, 5, 0, -5, 0], rotateX: [20, 25, 20, 15, 20] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                    style={{ transformStyle: 'preserve-3d' }}
+                >
+                    <svg width="360" height="360" viewBox="0 0 340 340" className="overflow-visible" style={{ filter: 'drop-shadow(0 20px 20px rgba(0,0,0,0.8))' }}>
+                        {/* Background concentric rings (web) */}
                     {[25, 50, 75, 100].map((level) => {
                         const r = (level / 100) * radius;
                         const webPoints = AXES.map((_, i) => {
@@ -224,6 +231,7 @@ export function TasteGenomeVisualizer() {
                         );
                     })}
                 </svg>
+                </motion.div>
             </div>
 
             {/* Hover description or default helper text */}

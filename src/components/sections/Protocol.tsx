@@ -85,7 +85,7 @@ export function Protocol({ activeView = 'guests' }: { activeView?: 'guests' | 'v
                 {activeProtocols.map((p) => (
                     <div
                         key={p.title}
-                        className="protocol-card w-full h-full rounded-[32px] bg-[#0A0A0A] border border-white/5 relative flex flex-col group hover:-translate-y-2 hover:border-[#CCFF00]/30 transition-all duration-500 overflow-hidden"
+                        className="protocol-card card-beam w-full h-full rounded-[32px] bg-[#0A0A0A] border border-white/5 relative flex flex-col group hover:-translate-y-2 transition-all duration-500 overflow-visible z-10"
                     >
                         {/* The Artifact (Top Flexible Space) - Filling Width */}
                         <div className="w-full flex-1 min-h-[350px] flex items-center justify-center relative z-10 p-8 pointer-events-none">

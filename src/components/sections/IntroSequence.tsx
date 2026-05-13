@@ -76,9 +76,11 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
             key="intro-sequence"
             exit={{
                 opacity: 0,
-                filter: 'blur(6px)',
-                transition: { duration: 0.7, ease: customEase },
+                scale: 2.5,
+                filter: 'blur(10px)',
+                transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] }, // Cinematic ease-in-out
             }}
+            style={{ transformOrigin: 'center center' }}
             className="fixed inset-0 z-[99999] bg-[#050505] overflow-hidden"
         >
             {/* Ambient radial glow */}
