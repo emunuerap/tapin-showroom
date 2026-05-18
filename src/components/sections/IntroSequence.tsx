@@ -66,9 +66,10 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
 
     // Auto-complete timer
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         const ms = isReducedMotion ? 1500 : T.finish * 1000;
-        const t = setTimeout(onComplete, ms);
-        return () => clearTimeout(t);
+        const t = window.setTimeout(onComplete, ms);
+        return () => window.clearTimeout(t);
     }, [isReducedMotion, onComplete]);
 
     return (

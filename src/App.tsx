@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
 import { IntroSequence } from './components/sections/IntroSequence';
 import { CustomCursor } from './components/layout/CustomCursor';
+import { SmoothScroll } from './components/layout/SmoothScroll';
 import type { RouteMode, ViewMode } from './types/showroom';
 
 const DesktopShowroom = lazy(() => import('./components/showroom/DesktopShowroom'));
@@ -14,6 +15,10 @@ function App() {
   const [routeMode, setRouteMode] = useState<RouteMode>(() => getRouteMode());
   const [introComplete, setIntroComplete] = useState(() => getRouteMode() === 'products');
   const isMobile = useIsMobile();
+
+  const completeIntro = useCallback(() => {
+    setIntroComplete(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -79,41 +84,45 @@ function App() {
         />
       </div>
 
-      <AnimatePresence mode="wait">
-        {routeMode === 'products' ? (
-          <Suspense key="products-route" fallback={<ShowroomFallback />}>
-            <ProductsPage
-              activeView={activeView}
-              setActiveView={setActiveView}
-              routeMode={routeMode}
-              onNavigateProducts={navigateToProducts}
-              onNavigateShowroom={navigateToShowroom}
-            />
-          </Suspense>
-        ) : !introComplete ? (
-          <IntroSequence key="intro" onComplete={() => setIntroComplete(true)} />
-        ) : (
-          <Suspense key="showroom-route" fallback={<ShowroomFallback />}>
-            {isMobile ? (
-              <MobileShowroom
+      {/* Single Lenis instance — bridges all routes. ProductsPage no longer
+          wraps its own SmoothScroll to avoid a nested Lenis on /products. */}
+      <SmoothScroll>
+        <AnimatePresence mode="wait">
+          {routeMode === 'products' ? (
+            <Suspense key="products-route" fallback={<ShowroomFallback />}>
+              <ProductsPage
                 activeView={activeView}
                 setActiveView={setActiveView}
                 routeMode={routeMode}
                 onNavigateProducts={navigateToProducts}
                 onNavigateShowroom={navigateToShowroom}
               />
-            ) : (
-              <DesktopShowroom
-                activeView={activeView}
-                setActiveView={setActiveView}
-                routeMode={routeMode}
-                onNavigateProducts={navigateToProducts}
-                onNavigateShowroom={navigateToShowroom}
-              />
-            )}
-          </Suspense>
-        )}
-      </AnimatePresence>
+            </Suspense>
+          ) : !introComplete ? (
+            <IntroSequence key="intro" onComplete={completeIntro} />
+          ) : (
+            <Suspense key="showroom-route" fallback={<ShowroomFallback />}>
+              {isMobile ? (
+                <MobileShowroom
+                  activeView={activeView}
+                  setActiveView={setActiveView}
+                  routeMode={routeMode}
+                  onNavigateProducts={navigateToProducts}
+                  onNavigateShowroom={navigateToShowroom}
+                />
+              ) : (
+                <DesktopShowroom
+                  activeView={activeView}
+                  setActiveView={setActiveView}
+                  routeMode={routeMode}
+                  onNavigateProducts={navigateToProducts}
+                  onNavigateShowroom={navigateToShowroom}
+                />
+              )}
+            </Suspense>
+          )}
+        </AnimatePresence>
+      </SmoothScroll>
     </div>
   );
 }

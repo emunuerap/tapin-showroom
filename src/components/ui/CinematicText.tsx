@@ -12,6 +12,10 @@ interface CinematicTextProps {
 export function CinematicText({ text, as: Component = 'span', className = '', delay = 0 }: CinematicTextProps) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
+    // Polymorphic component — TS 5 + R3F JSX augmentation can over-narrow
+    // `ElementType` to `never` here, so we widen for the actual JSX call.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Tag = Component as any;
 
     const words = text.split(" ");
 
@@ -44,7 +48,7 @@ export function CinematicText({ text, as: Component = 'span', className = '', de
     };
 
     return (
-        <Component ref={ref} className={className}>
+        <Tag ref={ref} className={className}>
             <motion.span
                 variants={container}
                 initial="hidden"
@@ -57,6 +61,6 @@ export function CinematicText({ text, as: Component = 'span', className = '', de
                     </motion.span>
                 ))}
             </motion.span>
-        </Component>
+        </Tag>
     );
 }

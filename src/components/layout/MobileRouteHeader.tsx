@@ -23,21 +23,21 @@ export function MobileRouteHeader({
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 w-screen max-w-[100vw] overflow-hidden px-4 pt-[max(14px,env(safe-area-inset-top))] md:hidden">
-      <div className="mx-auto flex w-full max-w-[430px] items-center justify-between gap-1.5 rounded-full border border-white/10 bg-[#080808]/88 px-2.5 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
-        <div className="flex items-baseline text-xs font-bold tracking-tighter text-silver min-[390px]:text-sm">
+    <header className="fixed inset-x-0 top-0 z-50 overflow-hidden px-3 pt-[max(14px,env(safe-area-inset-top))] md:hidden">
+      <div className="mx-auto grid w-[calc(100vw-1.5rem)] max-w-[340px] grid-cols-[2.9rem_minmax(0,1fr)] items-center gap-1.5 rounded-full border border-white/10 bg-[#080808]/88 px-2 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl min-[390px]:max-w-[352px]">
+        <div className="flex min-w-0 items-baseline text-xs font-bold tracking-normal text-silver">
           TapIn
           <span className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
         </div>
-        <div className="flex rounded-full border border-white/8 bg-black/70 p-0.5">
+        <div className="grid min-w-0 grid-cols-3 rounded-full border border-white/8 bg-black/70 p-0.5">
           <MobileRouteButton active={routeMode === 'showroom' && activeView === 'guests'} onClick={() => selectView('guests')}>
-            Guests
+            Guest
           </MobileRouteButton>
           <MobileRouteButton active={routeMode === 'products'} onClick={() => onNavigateProducts?.()}>
             Products
           </MobileRouteButton>
           <MobileRouteButton active={routeMode === 'showroom' && activeView === 'venues'} onClick={() => selectView('venues')}>
-            Venues
+            Venue
           </MobileRouteButton>
         </div>
       </div>
@@ -51,7 +51,7 @@ function MobileRouteButton({ active, onClick, children }: { active: boolean; onC
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`relative rounded-full px-1.5 py-1.5 font-mono text-[7px] font-semibold uppercase tracking-[0.08em] transition-colors min-[390px]:px-2 min-[390px]:text-[8px] ${
+      className={`relative min-h-8 min-w-0 overflow-hidden rounded-full px-0.5 py-1.5 text-center font-mono text-[7px] font-semibold uppercase tracking-normal transition-colors min-[390px]:text-[8px] ${
         active ? 'text-white' : 'text-white/35'
       }`}
     >

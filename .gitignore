@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+test-bounds*.js
+test-bounds*.cjs
 
 node_modules
 .npmcache
@@ -13,6 +15,9 @@ node_modules
 dist
 dist-ssr
 *.local
+pnpm-lock.yaml
+* 2.ts
+* 2.tsx
 
 # Editor directories and files
 .vscode/*

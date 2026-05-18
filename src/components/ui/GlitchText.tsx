@@ -58,9 +58,13 @@ export function GlitchText({ text, as: Component = 'span', className = '', delay
         };
     }, [text, delay]);
 
+    // Polymorphic component — TS 5 + R3F JSX augmentation can over-narrow
+    // `ElementType` to `never` here, so we widen for the actual JSX call.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const Tag = Component as any;
     return (
-        <Component ref={elRef} className={className}>
+        <Tag ref={elRef} className={className}>
             {scrambled}
-        </Component>
+        </Tag>
     );
 }

@@ -212,7 +212,6 @@ export default function MobileShowroom({ activeView, setActiveView, routeMode, o
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  useMobileSmoothScroll(Boolean(shouldReduceMotion));
   useMobileScrollTheatre(rootRef, activeView, Boolean(shouldReduceMotion));
 
   return (
@@ -249,43 +248,6 @@ export default function MobileShowroom({ activeView, setActiveView, routeMode, o
 }
 
 /* ─── HOOKS ────────────────────────────────────────────────────────────── */
-
-function useMobileSmoothScroll(disabled: boolean) {
-  useEffect(() => {
-    if (disabled || typeof window === 'undefined') return;
-    if (!window.matchMedia('(max-width: 767px)').matches) return;
-
-    let cancelled = false;
-    let raf: ((time: number) => void) | null = null;
-    let lenis: { raf: (time: number) => void; destroy: () => void; on: (event: string, cb: () => void) => void } | null = null;
-
-    void import('lenis').then((mod) => {
-      if (cancelled) return;
-      const Lenis = mod.default;
-      const instance = new Lenis({
-        duration: 0.92,
-        smoothWheel: true,
-        syncTouch: false,
-        wheelMultiplier: 0.82,
-        touchMultiplier: 1,
-      });
-      lenis = instance;
-      instance.on('scroll', ScrollTrigger.update);
-      raf = (time: number) => lenis?.raf(time * 1000);
-      gsap.ticker.add(raf);
-      gsap.ticker.lagSmoothing(0);
-      requestAnimationFrame(() => ScrollTrigger.refresh());
-    }).catch(() => {
-      // Lenis not available — site continues with native scroll
-    });
-
-    return () => {
-      cancelled = true;
-      if (raf) gsap.ticker.remove(raf);
-      lenis?.destroy();
-    };
-  }, [disabled]);
-}
 
 function useMobileScrollTheatre(scope: React.RefObject<HTMLDivElement | null>, activeView: ViewMode, disabled: boolean) {
   useGSAP(

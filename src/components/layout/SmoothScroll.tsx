@@ -22,6 +22,11 @@ export const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
         if (typeof window === 'undefined') return;
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (reducedMotion) return;
+        const mobileOrTouch = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches;
+        if (mobileOrTouch) {
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+            return;
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let lenis: any = null;
@@ -36,7 +41,9 @@ export const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
                 const Lenis = (mod as any).default ?? mod;
 
                 lenis = new Lenis({
-                    duration: 1.15,
+                    // Slightly longer duration + an ease-out-expo curve gives
+                    // the inertial "luxury car" feel. Curve = 1 - 2^(-10*t).
+                    duration: 1.25,
                     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                     smoothWheel: true,
                     wheelMultiplier: 1,
@@ -50,8 +57,15 @@ export const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
                 gsap.ticker.add(raf);
                 gsap.ticker.lagSmoothing(0);
 
-                // Recalculate after fonts / images settle
+                // Expose Lenis on window for programmatic scrolls (route
+                // changes, "scroll to next section" buttons, anchor links).
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (window as any).__tapin_lenis = lenis;
+
+                // Recalculate after fonts / images settle. Two refresh passes
+                // (immediate + 500ms) cover late-mounting lazy sections.
                 requestAnimationFrame(() => ScrollTrigger.refresh());
+                window.setTimeout(() => ScrollTrigger.refresh(), 500);
             } catch (err) {
                 // Lenis not available — site continues with native scroll
                 if (typeof console !== 'undefined') {
@@ -67,6 +81,8 @@ export const SmoothScroll = ({ children }: { children: React.ReactNode }) => {
             destroyed = true;
             if (raf) gsap.ticker.remove(raf);
             if (lenis) lenis.destroy();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (typeof window !== 'undefined') (window as any).__tapin_lenis = null;
         };
     }, []);
 

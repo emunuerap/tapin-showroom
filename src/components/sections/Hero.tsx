@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 
 import { DistrictMap } from '../ui/DistrictMap';
 import { FloorAtmosphere } from '../ui/FloorAtmosphere';
+import { SplitChars } from '../ui/SplitChars';
 
 interface HeroProps {
     /** Drives which atmosphere is rendered: city map (guests) vs. floor plan (venues). */
@@ -83,11 +84,13 @@ export function Hero({ activeView = 'guests' }: HeroProps) {
                     },
                     0.50
                 )
+                // Note: the cinematic char-level reveal of "Sentient." is now
+                // driven by <SplitChars trigger="mount" delay={0.85}> below.
+                // We only animate the outer wrapper here for the soft entrance.
                 .from(
                     '.hero-accent',
                     {
                         opacity: 0,
-                        y: 56,
                         scale: 0.96,
                         filter: 'blur(8px)',
                         duration: 1.2,
@@ -182,7 +185,15 @@ export function Hero({ activeView = 'guests' }: HeroProps) {
                     className="hero-accent font-serif italic font-normal text-6xl md:text-9xl text-yuzu mt-3 md:mt-4 block leading-none drop-shadow-[0_0_30px_rgba(204,255,0,0.28)] will-change-transform"
                     style={{ x: accentX, y: accentY }}
                 >
-                    Sentient.
+                    <SplitChars
+                        text="Sentient."
+                        trigger="mount"
+                        delay={0.92}
+                        duration={1.05}
+                        stagger={0.038}
+                        rotateJitter={18}
+                        yPercent={120}
+                    />
                 </motion.span>
 
                 <p className="hero-description mt-10 font-mono text-xs md:text-sm text-silver/60 max-w-md leading-relaxed tracking-wide min-h-[3.4em]">
