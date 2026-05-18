@@ -3,3 +3,12 @@
 .vercel
 dist
 node_modules
+pnpm-lock.yaml
+test-bounds*.js
+test-bounds*.cjs
+* 2.ts
+* 2.tsx
+genome_3d.png
+privacy_cube.png
+privacy_ring.png
+privacy_sphere.png
