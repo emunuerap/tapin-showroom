@@ -18,6 +18,10 @@ dist-ssr
 pnpm-lock.yaml
 * 2.ts
 * 2.tsx
+public/genome_3d.png
+public/privacy_cube.png
+public/privacy_ring.png
+public/privacy_sphere.png
 
 # Editor directories and files
 .vscode/*
