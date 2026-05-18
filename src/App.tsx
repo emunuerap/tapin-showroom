@@ -6,9 +6,13 @@ import { CustomCursor } from './components/layout/CustomCursor';
 import { SmoothScroll } from './components/layout/SmoothScroll';
 import type { RouteMode, ViewMode } from './types/showroom';
 
-const DesktopShowroom = lazy(() => import('./components/showroom/DesktopShowroom'));
-const MobileShowroom = lazy(() => import('./components/showroom/MobileShowroom'));
-const ProductsPage = lazy(() => import('./products/ProductsPage'));
+const loadDesktopShowroom = () => import('./components/showroom/DesktopShowroom');
+const loadMobileShowroom = () => import('./components/showroom/MobileShowroom');
+const loadProductsPage = () => import('./products/ProductsPage');
+
+const DesktopShowroom = lazy(loadDesktopShowroom);
+const MobileShowroom = lazy(loadMobileShowroom);
+const ProductsPage = lazy(loadProductsPage);
 
 function App() {
   const [activeView, setActiveView] = useState<ViewMode>('guests');
@@ -33,7 +37,18 @@ function App() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  useEffect(() => {
+    if (routeMode === 'products') {
+      void loadProductsPage();
+      return;
+    }
+
+    void loadDesktopShowroom();
+    void loadMobileShowroom();
+  }, [routeMode]);
+
   const navigateToProducts = () => {
+    void loadProductsPage();
     if (typeof window !== 'undefined' && window.location.pathname !== '/products') {
       window.history.pushState(null, '', '/products');
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -151,9 +166,7 @@ function useIsMobile() {
 
 function ShowroomFallback() {
   return (
-    <div className="min-h-screen grid place-items-center bg-[#050505]">
-      <div className="h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_18px_rgba(204,255,0,0.8)]" />
-    </div>
+    <div aria-hidden="true" className="min-h-screen bg-[#050505]" />
   );
 }
 
