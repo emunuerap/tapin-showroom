@@ -37,18 +37,17 @@
     />
 
     <!--
-      NOTE: The dark obsidian showroom uses system fallbacks (sans-serif /
-      serif / monospace) declared in tailwind.config.js — it references none
-      of the families below, so its look is unchanged.
+      The dark obsidian showroom uses system fallbacks (sans / serif / mono)
+      from tailwind.config.js and references none of the families below, so its
+      look is unchanged.
 
-      Fraunces (display) + Hanken Grotesk (sans) are the deliberate type pair
-      for the light-immersive redesign (/redesign, .tapin-light scope). This
-      is the "later phase, validated" font step the previous note anticipated.
+      Type pair for the light-immersive redesign (/redesign, .tapin-light):
+      Clash Display (display) + General Sans (UI), from Fontshare — a more
+      expressive, modern pairing than the previous Fraunces.
     -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600,700&display=swap"
       rel="stylesheet"
     />
   </head>

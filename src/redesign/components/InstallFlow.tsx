@@ -24,9 +24,6 @@ export function InstallFlow() {
         whileInView="show"
         viewport={inView}
       >
-        <motion.span className="rd-tag" variants={fadeUp}>
-          Install
-        </motion.span>
         <h2 className="rd-display rd-head__title">
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>

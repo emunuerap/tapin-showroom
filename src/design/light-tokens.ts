@@ -1,19 +1,15 @@
 /**
  * TapIn — "Liquid Light" design tokens.
  *
- * Light-immersive showroom direction (redesign/light-immersive-showroom-v1).
- * A new language built from scratch — not a recolour of the dark obsidian site.
+ * Light-immersive showroom direction. A tight, lively palette: warm paper,
+ * ink black, and a FRESH green identity (not muted). One electric spark (yuzu)
+ * reserved for moments of action / intelligence.
  *
- * The palette is intentionally tight: warm paper, ink black, and a GREEN
- * identity. Two greens do the work —
- *   - basil  : a deep herb green, used with confidence (accents, lines,
- *              highlighted words, the blueprint floor). This is the brand green.
- *   - sage   : a soft, calm green for fills and quiet surfaces.
- * Plus one sharp spark —
- *   - yuzu   : the electric green, reserved for a moment of intelligence or
- *              action (a confirm, a swipe fill, a live AI signal). Never ambient.
+ * The same values are mirrored into tailwind.config.js (primary / accent /
+ * leaf / paper / ink…) so they can be used as utilities, and into
+ * src/redesign/redesign.css as CSS variables under `.tapin-light`.
  *
- * No other hues. (No amber, no neon ambience.)
+ * Type: Clash Display (display) + General Sans (UI) — loaded in index.html.
  */
 
 export type Cubic = [number, number, number, number];
@@ -27,21 +23,20 @@ export const colors = {
   ink: '#121212',
   charcoal: '#2A2A2A',
   slate: '#6B675F',
-  // Green identity
-  basil: '#2E4636', // deep herb green — the brand green, used confidently
-  moss: '#5E7355', // mid green — borders, secondary structure
-  sage: '#A6B09A', // soft sage — fills, calm surfaces
+  // Green identity — fresh, not muted
+  leaf: '#1FA85D', // vivid primary green — accents, links, highlights
+  leafDeep: '#15633C', // deeper green for small text on light
+  pine: '#16412B', // deep green — table fills / strong surfaces
+  sage: '#AFC6A6', // soft light-green wash
   // Spark
-  yuzu: '#CCFF00', // electric green — intelligence / action only, never ambient
+  yuzu: '#CCFF00', // electric green — intelligence / action only
 } as const;
 
 export const fonts = {
-  display: '"Fraunces", "Times New Roman", Georgia, serif',
-  sans: '"Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif',
-  mono: '"Hanken Grotesk", ui-monospace, "SFMono-Regular", monospace',
+  display: '"Clash Display", "Hanken Grotesk", system-ui, sans-serif',
+  sans: '"General Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
 } as const;
 
-/** Organic, "liquid" easing curves. Tuples are framer-motion `ease` ready. */
 export const ease = {
   liquid: [0.22, 1, 0.36, 1] as Cubic,
   reveal: [0.16, 1, 0.3, 1] as Cubic,
@@ -67,7 +62,7 @@ export const shadow = {
   hairline: '0 1px 0 rgba(18,18,18,0.06)',
   soft: '0 10px 30px -18px rgba(18,18,18,0.25)',
   lifted: '0 30px 60px -30px rgba(18,18,18,0.30)',
-  glowYuzu: '0 0 0 1px rgba(204,255,0,0.6), 0 8px 24px -8px rgba(204,255,0,0.45)',
+  glowLeaf: '0 0 0 1px rgba(31,168,93,0.5), 0 10px 30px -10px rgba(31,168,93,0.4)',
 } as const;
 
 export const z = {

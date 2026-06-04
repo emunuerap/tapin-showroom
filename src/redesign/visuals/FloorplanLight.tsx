@@ -6,83 +6,87 @@ import { useMediaQuery } from '../motion/useMediaQuery';
 import { ease } from '../../design/light-tokens';
 
 /**
- * FloorplanLight — the interactive blueprint floor + live intelligence feed.
+ * FloorplanLight — the full-bleed, drag-to-explore restaurant blueprint.
  *
- * A light-language reimagining of the dark site's HospitalityCockpit: a
- * technical blueprint of the dining room (basil line-work on porcelain),
- * tables you can hover for seat-level POS data, a yuzu-traced route to the
- * next party's table, and a live feed of what the OS is doing on the floor.
- * Auto-demos itself (cycling table focus) until you take over with the mouse.
+ * A large pannable floor (drag anywhere to move around the room), with a
+ * pinned HUD of live KPIs + activity feed, hoverable tables that reveal
+ * seat-level POS data, a yuzu-traced route to the next party, and the Tetris
+ * Agent working in the background. Inherits the intelligence of the dark
+ * site's HospitalityCockpit, reimagined as one immersive ops canvas.
  */
 
 type Seat = { n: string; o: string };
 type Status = 'occupied' | 'free' | 'next';
 type Table = {
-  id: string;
-  shape: 'rect' | 'circle';
-  x: number;
-  y: number;
-  w?: number;
-  h?: number;
-  r?: number;
-  status: Status;
-  score: number;
-  turn: number; // turnaround completion %
-  pax: number;
-  seats: Seat[];
+  id: string; shape: 'rect' | 'circle';
+  x: number; y: number; w?: number; h?: number; r?: number;
+  status: Status; score: number; turn: number; pax: number; seats: Seat[];
 };
 
-const VBW = 400;
-const VBH = 230;
+const PLANE_W = 1700;
+const PLANE_H = 1050;
 
 const TABLES: Table[] = [
-  { id: '01', shape: 'rect', x: 28, y: 50, w: 58, h: 44, status: 'occupied', score: 9.2, turn: 72, pax: 2, seats: [{ n: 'Alex', o: 'Oysters · Chablis' }, { n: 'Emma', o: 'Truffle risotto' }] },
-  { id: '02', shape: 'rect', x: 102, y: 50, w: 46, h: 44, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
-  { id: '03', shape: 'rect', x: 166, y: 50, w: 88, h: 44, status: 'occupied', score: 8.6, turn: 40, pax: 3, seats: [{ n: 'Guest', o: 'Wagyu A5' }, { n: 'Guest', o: 'Black cod' }, { n: 'Guest', o: 'Spicy tuna' }] },
-  { id: '04', shape: 'circle', x: 322, y: 72, r: 27, status: 'occupied', score: 9.8, turn: 88, pax: 1, seats: [{ n: 'Jordan', o: 'Omakase menu' }] },
-  { id: '05', shape: 'rect', x: 28, y: 126, w: 58, h: 58, status: 'occupied', score: 8.1, turn: 28, pax: 2, seats: [{ n: 'Guest', o: 'Steak frites' }, { n: 'Guest', o: 'Burrata' }] },
-  { id: '06', shape: 'circle', x: 150, y: 158, r: 24, status: 'next', score: 0, turn: 0, pax: 0, seats: [] },
-  { id: '07', shape: 'rect', x: 200, y: 128, w: 74, h: 56, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
-  { id: '08', shape: 'circle', x: 324, y: 156, r: 31, status: 'occupied', score: 9.4, turn: 55, pax: 3, seats: [{ n: 'Sarah', o: 'Champagne' }, { n: 'Tom', o: 'Caviar service' }, { n: 'Mia', o: 'Tartare' }] },
+  { id: '01', shape: 'rect', x: 150, y: 175, w: 150, h: 110, status: 'occupied', score: 9.2, turn: 72, pax: 2, seats: [{ n: 'Alex', o: 'Oysters · Chablis' }, { n: 'Emma', o: 'Truffle risotto' }] },
+  { id: '02', shape: 'rect', x: 350, y: 175, w: 120, h: 110, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
+  { id: '03', shape: 'rect', x: 520, y: 175, w: 210, h: 110, status: 'occupied', score: 8.6, turn: 40, pax: 4, seats: [{ n: 'Guest', o: 'Wagyu A5' }, { n: 'Guest', o: 'Black cod' }, { n: 'Guest', o: 'Spicy tuna' }, { n: 'Guest', o: 'Uni' }] },
+  { id: '04', shape: 'circle', x: 880, y: 230, r: 72, status: 'occupied', score: 9.8, turn: 88, pax: 1, seats: [{ n: 'Jordan', o: 'Omakase menu' }] },
+  { id: '05', shape: 'rect', x: 1030, y: 175, w: 150, h: 110, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
+  { id: '06', shape: 'circle', x: 1380, y: 235, r: 82, status: 'occupied', score: 9.4, turn: 55, pax: 3, seats: [{ n: 'Sarah (VIP)', o: 'Champagne' }, { n: 'Tom', o: 'Caviar service' }, { n: 'Mia', o: 'Tartare' }] },
+  { id: '07', shape: 'rect', x: 150, y: 500, w: 150, h: 150, status: 'occupied', score: 8.1, turn: 28, pax: 2, seats: [{ n: 'Guest', o: 'Steak frites' }, { n: 'Guest', o: 'Burrata' }] },
+  { id: '08', shape: 'circle', x: 470, y: 580, r: 70, status: 'next', score: 0, turn: 0, pax: 0, seats: [] },
+  { id: '09', shape: 'rect', x: 640, y: 500, w: 200, h: 150, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
+  { id: '10', shape: 'circle', x: 1040, y: 580, r: 86, status: 'occupied', score: 9.0, turn: 64, pax: 4, seats: [{ n: 'Guest', o: 'Tasting menu' }, { n: 'Guest', o: 'Sommelier pairing' }, { n: 'Guest', o: 'Lobster' }, { n: 'Guest', o: 'Dover sole' }] },
+  { id: '11', shape: 'rect', x: 1280, y: 505, w: 180, h: 150, status: 'occupied', score: 8.8, turn: 36, pax: 2, seats: [{ n: 'Guest', o: 'Cacio e pepe' }, { n: 'Guest', o: 'Negroni' }] },
+  { id: '12', shape: 'rect', x: 300, y: 800, w: 190, h: 130, status: 'occupied', score: 7.9, turn: 18, pax: 3, seats: [{ n: 'Guest', o: 'Margherita' }, { n: 'Guest', o: 'Spritz' }, { n: 'Guest', o: 'Tiramisù' }] },
+  { id: '13', shape: 'circle', x: 700, y: 865, r: 70, status: 'free', score: 0, turn: 0, pax: 0, seats: [] },
+  { id: '14', shape: 'rect', x: 880, y: 800, w: 230, h: 130, status: 'occupied', score: 9.6, turn: 80, pax: 4, seats: [{ n: 'Guest', o: 'Chef counter' }, { n: 'Guest', o: 'Sake flight' }, { n: 'Guest', o: 'A5 nigiri' }, { n: 'Guest', o: 'Toro' }] },
+  { id: '15', shape: 'circle', x: 1320, y: 865, r: 78, status: 'occupied', score: 8.4, turn: 48, pax: 2, seats: [{ n: 'Guest', o: 'Bistecca' }, { n: 'Guest', o: 'Barolo' }] },
 ];
 
-const ROUTE = 'M 26 212 C 72 196, 96 180, 150 160';
-
-function center(t: Table): { cx: number; cy: number } {
-  if (t.shape === 'circle') return { cx: t.x, cy: t.y };
-  return { cx: t.x + (t.w ?? 0) / 2, cy: t.y + (t.h ?? 0) / 2 };
-}
+const ROUTE = 'M 150 1010 C 270 900, 330 690, 470 590';
 
 const FEED: { t: string; yuzu: boolean }[] = [
-  { t: 'VIP detected at host stand · routing to T08', yuzu: true },
-  { t: 'Gratitude signal · T04 · sentiment +0.32', yuzu: false },
+  { t: 'VIP detected at host stand · routing to T06', yuzu: true },
+  { t: 'Gratitude signal · T14 · sentiment +0.32', yuzu: false },
   { t: 'Walk-in arrived · 4-top · est. wait 4m', yuzu: true },
   { t: 'Course pacing slow at T03 · prompting server', yuzu: false },
   { t: 'Re-optimisation cycle · +15% RevPASH today', yuzu: true },
-  { t: 'Table 07 freeing in 6m · pre-staged', yuzu: false },
+  { t: 'T09 freeing in 6m · pre-staged for the 8:00', yuzu: false },
   { t: 'No-show predicted · smart deposit requested', yuzu: true },
   { t: 'Dwell time optimal · 92% covers on time', yuzu: false },
 ];
 
 type FeedEntry = { id: string; time: string; t: string; yuzu: boolean };
-
+// Module-scoped monotonic id — never collides across instances or StrictMode
+// double-invocation (which is what produced duplicate-key warnings).
+let FEED_SEQ = 0;
 function clockNow(): string {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
+function center(t: Table): { cx: number; cy: number } {
+  if (t.shape === 'circle') return { cx: t.x, cy: t.y };
+  return { cx: t.x + (t.w ?? 0) / 2, cy: t.y + (t.h ?? 0) / 2 };
+}
+
+const KPIS = [
+  { v: '86', l: 'Covers tonight' },
+  { v: '78%', l: 'Occupancy' },
+  { v: '41′', l: 'Avg turn' },
+  { v: '+15%', em: true, l: 'RevPASH' },
+];
 
 export function FloorplanLight() {
   const reduced = useReducedMotion();
-  // Hover tooltips are a desktop interaction — on the small mobile floor the
-  // tooltip would cover the room, so we keep both it and the auto-demo to wide
-  // screens. Mobile gets the live floor + AI cue + activity feed instead.
   const isWide = useMediaQuery('(min-width: 768px)');
+  const zoneRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [dragged, setDragged] = useState(false);
   const interacted = useRef(false);
 
   const occupiedIds = TABLES.filter((t) => t.status === 'occupied').map((t) => t.id);
 
-  // Auto-demo: cycle focus across occupied tables until the user takes over.
   useEffect(() => {
     if (reduced || !isWide) return;
     let i = 0;
@@ -94,10 +98,9 @@ export function FloorplanLight() {
       setHovered(occupiedIds[i % occupiedIds.length]);
       i += 1;
     }, 2600);
-    // seed quickly so the tooltip is present on arrival
     const seed = window.setTimeout(() => {
       if (!interacted.current) setHovered(occupiedIds[0]);
-    }, 900);
+    }, 1000);
     return () => {
       window.clearInterval(id);
       window.clearTimeout(seed);
@@ -108,142 +111,138 @@ export function FloorplanLight() {
   const active = hovered ? TABLES.find((t) => t.id === hovered) ?? null : null;
 
   return (
-    <div className="rd-cockpit">
-      <div className="rd-cockpit__main">
-        <div className="rd-cockpit__bar">
-          <span className="rd-cockpit__title">
-            <span className="rd-yuzu-dot" /> Floor · Tetris Agent active
-          </span>
-          <div className="rd-legend" aria-hidden="true">
-            <span><i data-k="occupied" /> Seated</span>
-            <span><i data-k="free" /> Open</span>
-            <span><i data-k="next" /> Next</span>
-          </div>
-        </div>
+    <div className="rd-floorzone" ref={zoneRef}>
+      <div className="rd-floorzone__grid rd-blueprint-grid" aria-hidden="true" />
 
-        <div
-          className="rd-floor"
-          onMouseLeave={() => {
-            if (interacted.current) setHovered(null);
-          }}
-        >
-          <div className="rd-floor__grid rd-blueprint-grid" aria-hidden="true" />
-          <span className="rd-floor__corner rd-floor__corner--tl" aria-hidden="true" />
-          <span className="rd-floor__corner rd-floor__corner--tr" aria-hidden="true" />
-          <span className="rd-floor__corner rd-floor__corner--bl" aria-hidden="true" />
-          <span className="rd-floor__corner rd-floor__corner--br" aria-hidden="true" />
+      <motion.div
+        className="rd-floor__plane"
+        drag
+        dragConstraints={zoneRef}
+        dragElastic={0.05}
+        dragMomentum={false}
+        onDragStart={() => {
+          interacted.current = true;
+          setDragged(true);
+        }}
+      >
+        <svg viewBox={`0 0 ${PLANE_W} ${PLANE_H}`} width={PLANE_W} height={PLANE_H} fill="none" aria-label="Restaurant floor plan">
+          {/* pass / bar */}
+          <rect x={150} y={92} width={520} height={40} rx={18} fill="rgba(175,198,166,0.5)" />
+          <text x={170} y={118} fontFamily="General Sans, sans-serif" fontSize={18} fill="#16412B" letterSpacing="2">THE PASS</text>
 
-          <motion.svg
-            className="rd-floor__svg"
-            viewBox={`0 0 ${VBW} ${VBH}`}
-            fill="none"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
-            role="img"
-            aria-label="Interactive restaurant floor plan with live table status."
-          >
-            {/* bar / pass */}
-            <rect x={22} y={18} width={150} height={15} rx={7} fill="rgba(166,176,154,0.4)" />
-            <text x={26} y={29} fontFamily="Hanken Grotesk, sans-serif" fontSize={7.5} fill="#2E4636" letterSpacing="1">THE PASS</text>
+          {/* route to the next party */}
+          <AnimatedPath d={ROUTE} stroke="rgba(31,168,93,0.5)" strokeWidth={3} delay={0.3} />
+          {!reduced && (
+            <circle r={8} fill="#CCFF00">
+              <animateMotion dur="4s" repeatCount="indefinite" path={ROUTE} begin="1s" />
+              <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.85;1" dur="4s" repeatCount="indefinite" begin="1s" />
+            </circle>
+          )}
 
-            {/* route to the next party */}
-            <AnimatedPath d={ROUTE} stroke="rgba(46,70,54,0.45)" strokeWidth={1.4} delay={0.3} />
-            {!reduced && (
-              <circle r={4} fill="#CCFF00">
-                <animateMotion dur="3.8s" repeatCount="indefinite" path={ROUTE} begin="1.2s" />
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.85;1" dur="3.8s" repeatCount="indefinite" begin="1.2s" />
-              </circle>
-            )}
-
-            {/* tables */}
-            {TABLES.map((t, idx) => {
-              const isHovered = hovered === t.id;
-              const occ = t.status === 'occupied';
-              const next = t.status === 'next';
-              const stroke = isHovered ? '#CCFF00' : next ? '#CCFF00' : occ ? 'transparent' : 'rgba(46,70,54,0.4)';
-              const fill = occ ? '#2E4636' : next ? 'rgba(247,244,238,0.85)' : 'transparent';
-              const dash = t.status === 'free' ? '4 4' : undefined;
-              const { cx, cy } = center(t);
-              const common = {
-                fill,
-                stroke,
-                strokeWidth: isHovered || next ? 2 : 1.2,
-                strokeDasharray: dash,
-                style: { cursor: 'pointer', transition: 'stroke 0.3s ease' } as const,
-                onMouseEnter: () => {
-                  interacted.current = true;
-                  setHovered(t.id);
-                },
-              };
-              return (
-                <motion.g
-                  key={t.id}
-                  variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { delay: 0.4 + idx * 0.07, duration: 0.5 } } }}
-                >
-                  {t.shape === 'circle' ? (
-                    <circle cx={t.x} cy={t.y} r={t.r} {...common} />
-                  ) : (
-                    <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={9} {...common} />
-                  )}
-                  <text
-                    x={cx}
-                    y={cy + (occ ? 0 : 2.5)}
-                    textAnchor="middle"
-                    fontFamily="Hanken Grotesk, sans-serif"
-                    fontSize={9}
-                    fontWeight={600}
-                    fill={occ ? '#F7F4EE' : next ? '#2E4636' : 'rgba(46,70,54,0.55)'}
-                    style={{ pointerEvents: 'none' }}
-                  >
-                    T{t.id}
+          {TABLES.map((t) => {
+            const isHovered = hovered === t.id;
+            const occ = t.status === 'occupied';
+            const next = t.status === 'next';
+            const stroke = isHovered || next ? '#CCFF00' : occ ? 'transparent' : 'rgba(31,168,93,0.45)';
+            const fill = occ ? '#16412B' : next ? 'rgba(247,244,238,0.85)' : 'transparent';
+            const dash = t.status === 'free' ? '8 8' : undefined;
+            const { cx, cy } = center(t);
+            const common = {
+              fill, stroke,
+              strokeWidth: isHovered || next ? 4 : 2,
+              strokeDasharray: dash,
+              style: { transition: 'stroke 0.3s ease' } as const,
+              onMouseEnter: () => {
+                interacted.current = true;
+                setHovered(t.id);
+              },
+            };
+            return (
+              <g key={t.id}>
+                {t.shape === 'circle' ? (
+                  <circle cx={t.x} cy={t.y} r={t.r} {...common} />
+                ) : (
+                  <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={18} {...common} />
+                )}
+                <text x={cx} y={cy + (occ ? 2 : 6)} textAnchor="middle" fontFamily="General Sans, sans-serif" fontWeight={600} fontSize={22} fill={occ ? '#F7F4EE' : next ? '#16412B' : 'rgba(31,168,93,0.6)'} style={{ pointerEvents: 'none' }}>
+                  T{t.id}
+                </text>
+                {occ && (
+                  <text x={cx} y={cy + 24} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={14} fill="rgba(247,244,238,0.7)" style={{ pointerEvents: 'none' }}>
+                    {t.pax}P · {t.turn}%
                   </text>
-                  {occ && (
-                    <text x={cx} y={cy + 10} textAnchor="middle" fontFamily="Hanken Grotesk, sans-serif" fontSize={6} fill="rgba(247,244,238,0.7)" style={{ pointerEvents: 'none' }}>
-                      {t.pax}P
-                    </text>
-                  )}
-                </motion.g>
-              );
-            })}
+                )}
+              </g>
+            );
+          })}
 
-            {/* dimension tick line at the foot — blueprint signature */}
-            <line x1={22} y1={222} x2={378} y2={222} stroke="rgba(46,70,54,0.25)" strokeWidth={0.8} />
-            <line x1={22} y1={219} x2={22} y2={225} stroke="rgba(46,70,54,0.25)" strokeWidth={0.8} />
-            <line x1={378} y1={219} x2={378} y2={225} stroke="rgba(46,70,54,0.25)" strokeWidth={0.8} />
-            <text x={200} y={221} textAnchor="middle" fontFamily="Hanken Grotesk, sans-serif" fontSize={6} fill="rgba(46,70,54,0.5)" letterSpacing="1.5">DINING ROOM · 86 COVERS</text>
-          </motion.svg>
+          <line x1={150} y1={1000} x2={1480} y2={1000} stroke="rgba(31,168,93,0.3)" strokeWidth={1.5} />
+          <text x={815} y={1024} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={15} fill="rgba(31,168,93,0.55)" letterSpacing="4">OSTERIA LUMINA · DINING ROOM · 86 COVERS</text>
+        </svg>
 
-          {/* hover / demo tooltip — desktop only (would cover the mobile floor) */}
-          <AnimatePresence>
-            {isWide && active && (
-              <TableTip key={active.id} table={active} />
-            )}
-          </AnimatePresence>
+        {/* AI cue near the next table — pans with the plane */}
+        <motion.div
+          className="rd-floor__aitag"
+          style={{ left: 470, top: 580, transform: 'translate(-50%, 70px)' }}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.6, ease: ease.liquid }}
+        >
+          <span className="rd-yuzu-dot" /> Seat the 8:00 → T08 · ready 8:12
+        </motion.div>
 
-          {/* the always-on intelligence cue near the next table */}
-          <motion.div
-            className="rd-ai-tag"
-            style={{ left: `${(150 / VBW) * 100}%`, top: `${(158 / VBH) * 100}%`, transform: 'translate(-46%, 18px)', position: 'absolute', zIndex: 4 }}
-            initial={{ opacity: 0, y: 6 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ delay: 1, duration: 0.6, ease: ease.liquid }}
-          >
-            <span className="rd-yuzu-dot" /> Seat the 8:00 → T06 · ready 8:12
-          </motion.div>
+        {/* hover tooltip — desktop only */}
+        <AnimatePresence>
+          {isWide && active && <TableTip key={active.id} table={active} />}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* pinned HUD */}
+      <div className="rd-hud">
+        <div className="rd-hud__kpis">
+          {KPIS.map((k) => (
+            <div key={k.l} className="rd-kpi">
+              <div className="rd-kpi__v">{k.em ? <em>{k.v}</em> : k.v}</div>
+              <div className="rd-kpi__l">{k.l}</div>
+            </div>
+          ))}
         </div>
-      </div>
 
-      <LiveFeed reduced={reduced} />
+        <div className="rd-hud__legend" aria-hidden="true">
+          <span><i data-k="occupied" /> Seated</span>
+          <span><i data-k="free" /> Open</span>
+          <span><i data-k="next" /> Next</span>
+        </div>
+
+        <div className="rd-hud__feed">
+          <div className="rd-feed__head"><span className="rd-yuzu-dot" /> Tetris Agent · live</div>
+          <LiveFeed reduced={reduced} />
+        </div>
+
+        <AnimatePresence>
+          {!dragged && (
+            <motion.div
+              className="rd-hud__hint"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ delay: 1.4, duration: 0.6 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M5 12l4-4M5 12l4 4M19 12l-4-4M19 12l-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Drag to explore the floor
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
 
 function TableTip({ table }: { table: Table }) {
   const { cx, cy } = center(table);
-  const left = Math.min(82, Math.max(18, (cx / VBW) * 100));
-  const below = (cy / VBH) * 100 < 46;
+  const below = cy < 360;
   return (
     <motion.div
       className="rd-floor__tip"
@@ -251,14 +250,10 @@ function TableTip({ table }: { table: Table }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 6, scale: 0.97 }}
       transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-      style={{
-        left: `${left}%`,
-        top: `${(cy / VBH) * 100}%`,
-        transform: `translate(-50%, ${below ? '16px' : 'calc(-100% - 16px)'})`,
-      }}
+      style={{ left: cx, top: cy, transform: `translate(-50%, ${below ? '40px' : 'calc(-100% - 40px)'})` }}
     >
       <div className="rd-floor__tip-head">
-        <span>TABLE {table.id} · check #890{table.id}</span>
+        <span>TABLE {table.id} · check #89{table.id}</span>
         <b>★ {table.score.toFixed(1)}</b>
       </div>
       {table.seats.length > 0 ? (
@@ -277,12 +272,7 @@ function TableTip({ table }: { table: Table }) {
           <span>{table.turn}%</span>
         </div>
         <div className="rd-floor__bar-track">
-          <motion.div
-            className="rd-floor__bar-fill"
-            initial={{ width: 0 }}
-            animate={{ width: `${table.turn}%` }}
-            transition={{ duration: 0.9, ease: ease.liquid }}
-          />
+          <motion.div className="rd-floor__bar-fill" initial={{ width: 0 }} animate={{ width: `${table.turn}%` }} transition={{ duration: 0.9, ease: ease.liquid }} />
         </div>
       </div>
     </motion.div>
@@ -291,10 +281,9 @@ function TableTip({ table }: { table: Table }) {
 
 function LiveFeed({ reduced }: { reduced: boolean }) {
   const [entries, setEntries] = useState<FeedEntry[]>(() =>
-    reduced ? FEED.slice(0, 6).map((f, i) => ({ id: `seed${i}`, time: '—', t: f.t, yuzu: f.yuzu })) : []
+    reduced ? FEED.slice(0, 4).map((f, i) => ({ id: `seed${i}`, time: '—', t: f.t, yuzu: f.yuzu })) : []
   );
   const cursor = useRef(0);
-  const seq = useRef(0);
 
   useEffect(() => {
     if (reduced) return;
@@ -302,9 +291,9 @@ function LiveFeed({ reduced }: { reduced: boolean }) {
     const push = () => {
       const tpl = FEED[cursor.current % FEED.length];
       cursor.current += 1;
-      seq.current += 1;
-      const entry: FeedEntry = { id: `e${seq.current}`, time: clockNow(), t: tpl.t, yuzu: tpl.yuzu };
-      setEntries((prev) => [entry, ...prev].slice(0, 6));
+      FEED_SEQ += 1;
+      const id = `fe${FEED_SEQ}`;
+      setEntries((prev) => [{ id, time: clockNow(), t: tpl.t, yuzu: tpl.yuzu }, ...prev].slice(0, 4));
     };
     push();
     push();
@@ -322,34 +311,27 @@ function LiveFeed({ reduced }: { reduced: boolean }) {
   }, [reduced]);
 
   return (
-    <div className="rd-feed">
-      <div className="rd-feed__head">
-        <span className="rd-yuzu-dot" /> Live activity
-      </div>
-      <div className="rd-feed__list">
-        <AnimatePresence initial={false}>
-          {entries.map((e) => (
-            <motion.div
-              key={e.id}
-              className="rd-feed__item"
-              data-yuzu={e.yuzu}
-              layout
-              initial={{ opacity: 0, y: -14, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-              transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-            >
-              <div className="rd-feed__meta">
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <i /> SYS
-                </span>
-                <span>{e.time}</span>
-              </div>
-              <div className="rd-feed__text">{e.t}</div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+    <div className="rd-feed__list">
+      <AnimatePresence initial={false}>
+        {entries.map((e) => (
+          <motion.div
+            key={e.id}
+            className="rd-feed__item"
+            data-yuzu={e.yuzu}
+            layout
+            initial={{ opacity: 0, y: -12, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+          >
+            <div className="rd-feed__meta">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><i /> SYS</span>
+              <span>{e.time}</span>
+            </div>
+            <div className="rd-feed__text">{e.t}</div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

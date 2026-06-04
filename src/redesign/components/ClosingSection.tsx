@@ -11,10 +11,6 @@ export function ClosingSection() {
         whileInView="show"
         viewport={inView}
       >
-        <motion.span className="rd-tag" variants={fadeUp} style={{ marginBottom: '1.4rem' }}>
-          Give your floor a brain
-        </motion.span>
-
         <h2 className="rd-display rd-close__title">
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>
