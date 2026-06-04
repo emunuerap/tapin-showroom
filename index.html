@@ -37,11 +37,20 @@
     />
 
     <!--
-      NOTE: Google Fonts loading was removed. The site uses the system fallbacks
-      declared in tailwind.config.js (sans-serif / serif / monospace), which is
-      the look the project actually wants. Reintroducing custom web fonts will
-      be a deliberate, validated step in a later phase.
+      NOTE: The dark obsidian showroom uses system fallbacks (sans-serif /
+      serif / monospace) declared in tailwind.config.js — it references none
+      of the families below, so its look is unchanged.
+
+      Fraunces (display) + Hanken Grotesk (sans) are the deliberate type pair
+      for the light-immersive redesign (/redesign, .tapin-light scope). This
+      is the "later phase, validated" font step the previous note anticipated.
     -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body class="bg-obsidian">
     <div id="root"></div>

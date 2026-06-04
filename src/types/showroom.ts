@@ -1,5 +1,5 @@
 export type ViewMode = 'guests' | 'venues';
-export type RouteMode = 'showroom' | 'products';
+export type RouteMode = 'showroom' | 'products' | 'redesign';
 
 export interface ShowroomProps {
   activeView: ViewMode;

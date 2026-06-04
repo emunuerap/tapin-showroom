@@ -9,10 +9,13 @@ import type { RouteMode, ViewMode } from './types/showroom';
 const loadDesktopShowroom = () => import('./components/showroom/DesktopShowroom');
 const loadMobileShowroom = () => import('./components/showroom/MobileShowroom');
 const loadProductsPage = () => import('./products/ProductsPage');
+// Light-immersive redesign (redesign/light-immersive-showroom-v1) — served at /redesign.
+const loadHomeRedesign = () => import('./redesign/pages/HomeRedesign');
 
 const DesktopShowroom = lazy(loadDesktopShowroom);
 const MobileShowroom = lazy(loadMobileShowroom);
 const ProductsPage = lazy(loadProductsPage);
+const HomeRedesign = lazy(loadHomeRedesign);
 
 function App() {
   const [activeView, setActiveView] = useState<ViewMode>('guests');
@@ -42,6 +45,10 @@ function App() {
       void loadProductsPage();
       return;
     }
+    if (routeMode === 'redesign') {
+      void loadHomeRedesign();
+      return;
+    }
 
     void loadDesktopShowroom();
     void loadMobileShowroom();
@@ -65,6 +72,20 @@ function App() {
     }
     setRouteMode('showroom');
   };
+
+  // Light-immersive redesign route — its own clean shell (no dark wrapper,
+  // ambient glow, custom cursor or intro). Lenis smooth scroll is shared.
+  if (routeMode === 'redesign') {
+    return (
+      <SmoothScroll>
+        <Suspense
+          fallback={<div aria-hidden="true" className="min-h-screen" style={{ backgroundColor: '#F7F4EE' }} />}
+        >
+          <HomeRedesign />
+        </Suspense>
+      </SmoothScroll>
+    );
+  }
 
   return (
     <div className="relative bg-[#050505] min-h-screen text-white font-sans overflow-x-hidden">
@@ -144,7 +165,10 @@ function App() {
 
 function getRouteMode(): RouteMode {
   if (typeof window === 'undefined') return 'showroom';
-  return window.location.pathname === '/products' ? 'products' : 'showroom';
+  const path = window.location.pathname;
+  if (path === '/products') return 'products';
+  if (path === '/redesign') return 'redesign';
+  return 'showroom';
 }
 
 function useIsMobile() {
