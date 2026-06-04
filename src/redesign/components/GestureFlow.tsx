@@ -25,8 +25,8 @@ export function GestureFlow() {
         whileInView="show"
         viewport={inView}
       >
-        <motion.span className="rd-eyebrow" variants={fadeUp}>
-          The Gesture
+        <motion.span className="rd-tag" variants={fadeUp}>
+          The gesture
         </motion.span>
         <h2 className="rd-display rd-head__title">
           <span className="rd-line">
@@ -36,7 +36,7 @@ export function GestureFlow() {
           </span>
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>
-              craving to <span className="rd-amber">confirmed</span>.
+              craving to <span className="rd-accent">confirmed</span>.
             </motion.span>
           </span>
         </h2>

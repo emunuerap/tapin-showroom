@@ -1,41 +1,40 @@
 /* ============================================================
-   TapIn — Liquid Light redesign
-   Scoped styles for the light-immersive showroom.
-   Everything lives under `.tapin-light` so it cannot leak into
-   the archived dark obsidian site. Fonts (Fraunces + Hanken
-   Grotesk) are loaded in index.html.
+   TapIn — Liquid Light redesign (base layer)
+   Scoped under `.tapin-light` so nothing leaks into the archived
+   dark obsidian site. Palette: warm paper + ink + green (basil /
+   sage) with a single electric-green (yuzu) spark. Fonts: Fraunces
+   + Hanken Grotesk (loaded in index.html).
    ============================================================ */
 
-/* When the redesign route is mounted, paint the document warm so
-   overscroll / rubber-banding never reveals the obsidian body. */
 html.tapin-light-active,
 html.tapin-light-active body {
   background-color: #f7f4ee;
 }
 
 .tapin-light {
-  /* ---- palette ---- */
+  /* palette */
   --warm-white: #f7f4ee;
   --porcelain: #efeae1;
   --mist: #d9d4ca;
-  --ink: #111111;
+  --ink: #121212;
   --charcoal: #2a2a2a;
   --slate: #6b675f;
-  --yuzu: #ccff00;
-  --amber: #ffb800;
+  --basil: #2e4636;
+  --moss: #5e7355;
   --sage: #a6b09a;
+  --yuzu: #ccff00;
 
-  /* ---- type ---- */
+  /* type */
   --font-display: "Fraunces", "Times New Roman", Georgia, serif;
   --font-sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* ---- fluid display scale ---- */
-  --d1: clamp(2.85rem, 1.4rem + 6.4vw, 8.5rem);
-  --d2: clamp(2.25rem, 1.2rem + 4.6vw, 5.5rem);
-  --d3: clamp(1.7rem, 1.1rem + 2.6vw, 3rem);
-  --lead: clamp(1.05rem, 0.95rem + 0.55vw, 1.4rem);
+  /* fluid display scale */
+  --d1: clamp(2.85rem, 1.4rem + 6.4vw, 8.25rem);
+  --d2: clamp(2.2rem, 1.2rem + 4.4vw, 5.25rem);
+  --d3: clamp(1.55rem, 1.05rem + 2.4vw, 2.75rem);
+  --lead: clamp(1.05rem, 0.96rem + 0.5vw, 1.35rem);
 
-  /* ---- motion ---- */
+  /* motion */
   --ease-liquid: cubic-bezier(0.22, 1, 0.36, 1);
 
   position: relative;
@@ -51,46 +50,35 @@ html.tapin-light-active body {
 }
 
 .tapin-light ::selection {
-  background: var(--ink);
+  background: var(--basil);
   color: var(--warm-white);
 }
 
-/* ---- warm atmosphere: layered radial washes + paper grain ---- */
+/* ---- warm atmosphere: slow green washes + paper grain ---- */
 .tapin-light__atmosphere {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 }
-
 .tapin-light__washes {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(60vw 60vw at 8% 4%, rgba(255, 184, 0, 0.10), transparent 60%),
-    radial-gradient(55vw 55vw at 92% 12%, rgba(166, 176, 154, 0.16), transparent 62%),
-    radial-gradient(70vw 70vw at 78% 96%, rgba(255, 184, 0, 0.07), transparent 64%),
-    radial-gradient(60vw 60vw at 4% 88%, rgba(166, 176, 154, 0.12), transparent 60%);
+    radial-gradient(58vw 58vw at 6% 2%, rgba(166, 176, 154, 0.20), transparent 60%),
+    radial-gradient(52vw 52vw at 94% 10%, rgba(46, 70, 54, 0.08), transparent 62%),
+    radial-gradient(70vw 70vw at 82% 98%, rgba(166, 176, 154, 0.16), transparent 64%),
+    radial-gradient(56vw 56vw at 2% 92%, rgba(94, 115, 85, 0.10), transparent 60%);
 }
-
 .tapin-light__grain {
   position: absolute;
   inset: 0;
-  opacity: 0.045;
+  opacity: 0.05;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ---- editorial helpers ---- */
-.tapin-light .rd-eyebrow {
-  font-family: var(--font-sans);
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--slate);
-}
-
 .tapin-light .rd-display {
   font-family: var(--font-display);
   font-weight: 400;
@@ -99,53 +87,70 @@ html.tapin-light-active body {
   color: var(--ink);
   text-wrap: balance;
 }
-
 .tapin-light .rd-display em {
   font-style: italic;
   font-optical-sizing: auto;
 }
 
-/* line-mask reveal: an overflow-hidden block whose inner span slides up */
-.tapin-light .rd-line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.06em;
+/* small sentence-case kicker (NOT an uppercase eyebrow) — a thin green tag */
+.tapin-light .rd-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: var(--basil);
 }
-.tapin-light .rd-line__inner {
-  display: block;
-}
-
-/* amber human-warmth highlight — a hand-laid wash under a word */
-.tapin-light .rd-amber {
-  position: relative;
-  white-space: nowrap;
-  color: var(--ink);
-}
-.tapin-light .rd-amber::after {
-  content: '';
-  position: absolute;
-  left: -0.04em;
-  right: -0.04em;
-  bottom: 0.08em;
-  height: 0.4em;
-  background: linear-gradient(90deg, rgba(255, 184, 0, 0.55), rgba(255, 184, 0, 0.2));
-  z-index: -1;
-  border-radius: 2px;
+.tapin-light .rd-tag::before {
+  content: "";
+  width: 1.6rem;
+  height: 1px;
+  background: var(--moss);
+  display: inline-block;
 }
 
 .tapin-light .rd-lead {
   font-family: var(--font-sans);
   font-size: var(--lead);
-  line-height: 1.5;
-  color: var(--slate);
-  max-width: 46ch;
+  line-height: 1.55;
+  color: var(--charcoal);
+  max-width: 48ch;
 }
 
-/* ---- hairline + dot signatures ---- */
+/* line-mask reveal */
+.tapin-light .rd-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.tapin-light .rd-line__inner {
+  display: block;
+}
+
+/* basil-green highlight — a hand-laid wash under a word */
+.tapin-light .rd-accent {
+  position: relative;
+  white-space: nowrap;
+  color: var(--basil);
+}
+.tapin-light .rd-accent::after {
+  content: "";
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  bottom: 0.07em;
+  height: 0.34em;
+  background: linear-gradient(90deg, rgba(166, 176, 154, 0.7), rgba(166, 176, 154, 0.25));
+  z-index: -1;
+  border-radius: 2px;
+}
+
 .tapin-light .rd-rule {
   height: 1px;
   width: 100%;
-  background: linear-gradient(90deg, rgba(17, 17, 17, 0.18), rgba(17, 17, 17, 0));
+  background: linear-gradient(90deg, rgba(18, 18, 18, 0.16), rgba(18, 18, 18, 0));
 }
 
 .tapin-light .rd-yuzu-dot {
@@ -170,35 +175,43 @@ html.tapin-light-active body {
   letter-spacing: -0.01em;
   cursor: pointer;
   border: 1px solid transparent;
+  text-decoration: none;
   transition: transform 0.5s var(--ease-liquid), background-color 0.4s ease,
     color 0.4s ease, border-color 0.4s ease;
   will-change: transform;
 }
-
 .tapin-light .rd-btn--primary {
   background: var(--ink);
   color: var(--warm-white);
 }
 .tapin-light .rd-btn--primary:hover {
   transform: translateY(-2px);
+  background: var(--basil);
 }
-
 .tapin-light .rd-btn--ghost {
   background: transparent;
   color: var(--ink);
-  border-color: rgba(17, 17, 17, 0.2);
+  border-color: rgba(18, 18, 18, 0.2);
 }
 .tapin-light .rd-btn--ghost:hover {
-  border-color: var(--ink);
+  border-color: var(--basil);
+  color: var(--basil);
   transform: translateY(-2px);
 }
-
 .tapin-light .rd-btn:focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--basil);
   outline-offset: 3px;
 }
 
-/* ---- accessibility: honour reduced motion for CSS-driven motion ---- */
+/* ---- blueprint grid (reusable technical backdrop) ---- */
+.tapin-light .rd-blueprint-grid {
+  background-image:
+    linear-gradient(rgba(46, 70, 54, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 70, 54, 0.06) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* ---- reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   .tapin-light *,
   .tapin-light *::before,

@@ -11,8 +11,8 @@ export function ClosingSection() {
         whileInView="show"
         viewport={inView}
       >
-        <motion.span className="rd-eyebrow" variants={fadeUp} style={{ display: 'inline-block', marginBottom: '1.4rem' }}>
-          Two ways in
+        <motion.span className="rd-tag" variants={fadeUp} style={{ marginBottom: '1.4rem' }}>
+          Give your floor a brain
         </motion.span>
 
         <h2 className="rd-display rd-close__title">
@@ -23,7 +23,7 @@ export function ClosingSection() {
           </span>
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>
-              Just <span className="rd-amber">TapIn</span>.
+              Just <span className="rd-accent">TapIn</span>.
             </motion.span>
           </span>
         </h2>
@@ -33,8 +33,8 @@ export function ClosingSection() {
             Request a restaurant demo
             <span className="rd-yuzu-dot" />
           </a>
-          <a className="rd-btn rd-btn--ghost" href="mailto:hello@tapin.app?subject=Diner%20waitlist">
-            Join the diner waitlist
+          <a className="rd-btn rd-btn--ghost" href="mailto:hello@tapin.app?subject=Talk%20to%20the%20team">
+            Talk to the team
           </a>
         </motion.div>
 

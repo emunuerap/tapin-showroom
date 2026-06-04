@@ -5,6 +5,8 @@ import { NavLight } from '../components/NavLight';
 import { OpeningScene } from '../components/OpeningScene';
 import { GestureFlow } from '../components/GestureFlow';
 import { RestaurantLayer } from '../components/RestaurantLayer';
+import { RestaurantCapabilities } from '../components/RestaurantCapabilities';
+import { InstallFlow } from '../components/InstallFlow';
 import { ClosingSection } from '../components/ClosingSection';
 import '../redesign.css';
 import '../redesign.sections.css';
@@ -36,6 +38,8 @@ export default function HomeRedesign() {
           <OpeningScene />
           <GestureFlow />
           <RestaurantLayer />
+          <RestaurantCapabilities />
+          <InstallFlow />
           <ClosingSection />
         </main>
       </div>

@@ -12,9 +12,6 @@ const DOT = { cx: 1080, cy: 230 };
 
 export function OpeningScene() {
   const reduced = useReducedMotion();
-  // Parallax keyed to global scroll (the hero begins at scroll 0). Avoids a
-  // target-based useScroll, which warns under StrictMode about the scroll
-  // container's position.
   const { scrollY } = useScroll();
   const lineY = useTransform(scrollY, [0, 900], [0, reduced ? 0 : 130]);
   const contentY = useTransform(scrollY, [0, 900], [0, reduced ? 0 : 60]);
@@ -33,7 +30,6 @@ export function OpeningScene() {
         aria-hidden="true"
       >
         <AnimatedPath d={GESTURE} stroke="currentColor" strokeWidth={2} delay={0.5} />
-        {/* leading "tap" point — the one yuzu moment in the hero */}
         <motion.circle
           cx={DOT.cx}
           cy={DOT.cy}
@@ -55,6 +51,25 @@ export function OpeningScene() {
         />
       </motion.svg>
 
+      {/* floating live-intelligence chip */}
+      <motion.aside
+        className="rd-hero__chip"
+        initial={{ opacity: 0, y: 18, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 1.1, duration: 0.8, ease: ease.liquid }}
+        aria-hidden="true"
+      >
+        <div className="rd-hero__chip-row">
+          <span className="rd-yuzu-dot" /> Tetris Agent · live
+        </div>
+        <div className="rd-hero__chip-row">
+          <b>+15%</b> RevPASH today
+        </div>
+        <div className="rd-hero__chip-row">
+          <b>T6</b> ready · seating 8:12
+        </div>
+      </motion.aside>
+
       <motion.div
         className="rd-container rd-hero__grid"
         style={{ y: contentY }}
@@ -62,11 +77,6 @@ export function OpeningScene() {
         initial="hidden"
         animate="show"
       >
-        <motion.div className="rd-hero__eyebrow" variants={fadeUp}>
-          <span className="rd-eyebrow">Hospitality Operating System</span>
-          <span style={{ width: 38, height: 1, background: 'rgba(17,17,17,0.3)' }} />
-        </motion.div>
-
         <h1 className="rd-display rd-hero__title">
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>
@@ -75,25 +85,26 @@ export function OpeningScene() {
           </span>
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>
-              without <span className="rd-amber">friction</span>.
+              without <span className="rd-accent">friction</span>.
             </motion.span>
           </span>
         </h1>
 
         <motion.p className="rd-lead rd-hero__lead" variants={fadeUp}>
-          The invisible OS for modern restaurants — and the people they serve.
-          One gesture replaces the call, the wait, the friction.
+          The operating system behind the modern dining room — booking, seating,
+          and floor intelligence working as one. Reservations in five seconds.
+          Tables that never sit empty.
         </motion.p>
 
         <motion.div
           variants={fadeUp}
-          style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '0.6rem' }}
+          style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '0.4rem' }}
         >
           <button type="button" className="rd-btn rd-btn--primary" onClick={() => scrollToId('contact')}>
             Book a demo
           </button>
-          <button type="button" className="rd-btn rd-btn--ghost" onClick={() => scrollToId('gesture')}>
-            See how it works
+          <button type="button" className="rd-btn rd-btn--ghost" onClick={() => scrollToId('restaurants')}>
+            See the floor
           </button>
         </motion.div>
 
@@ -101,17 +112,12 @@ export function OpeningScene() {
           <span>
             <span className="rd-yuzu-dot" /> Reserve in under 5 seconds
           </span>
+          <span>Live POS sync</span>
           <span>No app required</span>
-          <span>Liquid Motion UX</span>
         </motion.div>
       </motion.div>
 
-      <button
-        type="button"
-        className="rd-cue"
-        onClick={() => scrollToId('gesture')}
-        aria-label="Scroll to see how it works"
-      >
+      <button type="button" className="rd-cue" onClick={() => scrollToId('gesture')} aria-label="Scroll to see how it works">
         <span>Scroll</span>
         <span className="rd-cue__track">
           <span className="rd-cue__bead" />

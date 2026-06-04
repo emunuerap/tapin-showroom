@@ -1,6 +1,6 @@
 /**
  * Atmosphere — the warm, living backdrop for the light direction.
- * Fixed behind every section: slow amber + sage radial washes plus a faint
+ * Fixed behind every section: slow sage + basil radial washes plus a faint
  * paper grain. Replaces the dark site's yuzu-on-black ambient glow. Purely
  * decorative, so it is aria-hidden and pointer-events:none (set in CSS).
  */
