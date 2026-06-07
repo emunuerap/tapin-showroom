@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { fadeUp, lineReveal, staggerParent, inView } from '../motion/variants';
+import { Reveal } from './Reveal';
 import { ease } from '../../design/light-tokens';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -55,30 +55,22 @@ export function RestaurantCapabilities() {
 
   return (
     <section id="capabilities" ref={sectionRef} className="rd-section rd-caps">
-      <motion.div
-        className="rd-container rd-head"
-        variants={staggerParent}
-        initial="hidden"
-        whileInView="show"
-        viewport={inView}
-      >
+      <Reveal className="rd-container rd-head">
         <h2 className="rd-display rd-head__title">
           <span className="rd-line">
-            <motion.span className="rd-line__inner" variants={lineReveal}>
-              Everything the room needs,
-            </motion.span>
+            <span className="rd-line__inner">Everything the room needs,</span>
           </span>
           <span className="rd-line">
-            <motion.span className="rd-line__inner" variants={lineReveal}>
+            <span className="rd-line__inner">
               running <span className="rd-accent">quietly</span>.
-            </motion.span>
+            </span>
           </span>
         </h2>
-        <motion.p className="rd-lead" variants={fadeUp}>
+        <p className="rd-lead">
           Not another dashboard to babysit. One system, working the floor while
           your team works the guests. Explore what&rsquo;s running underneath.
-        </motion.p>
-      </motion.div>
+        </p>
+      </Reveal>
 
       <div className="rd-caps__pin" ref={pinRef}>
       <motion.div

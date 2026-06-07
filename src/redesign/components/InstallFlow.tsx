@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
 import { FlowLine } from '../visuals/FlowLine';
-import { fadeUp, lineReveal, riseIn, staggerParent, inView } from '../motion/variants';
+import { Reveal } from './Reveal';
 import { scrollToId } from '../motion/scrollTo';
 
 type Step = { no: string; title: string; desc: string };
@@ -17,25 +16,19 @@ const CONNECTOR = 'M 0 20 C 250 6, 250 34, 500 20 C 750 6, 750 34, 1000 20';
 export function InstallFlow() {
   return (
     <section id="install" className="rd-section rd-install">
-      <motion.div
-        className="rd-container rd-head"
-        variants={staggerParent}
-        initial="hidden"
-        whileInView="show"
-        viewport={inView}
-      >
+      <Reveal className="rd-container rd-head">
         <h2 className="rd-display rd-head__title">
           <span className="rd-line">
-            <motion.span className="rd-line__inner" variants={lineReveal}>
+            <span className="rd-line__inner">
               Live by <span className="rd-accent">dinner service</span>.
-            </motion.span>
+            </span>
           </span>
         </h2>
-        <motion.p className="rd-lead" variants={fadeUp}>
+        <p className="rd-lead">
           No new hardware, no migration project. TapIn slots onto the system you
           already run and goes live in a day — not a quarter.
-        </motion.p>
-      </motion.div>
+        </p>
+      </Reveal>
 
       <div className="rd-container">
         <div className="rd-steps">
@@ -50,33 +43,20 @@ export function InstallFlow() {
             travelDur={4}
           />
           {STEPS.map((step) => (
-            <motion.div
-              key={step.no}
-              className="rd-step"
-              variants={riseIn}
-              initial="hidden"
-              whileInView="show"
-              viewport={inView}
-            >
+            <Reveal key={step.no} className="rd-step" y={30}>
               <span className="rd-step__no">{step.no}</span>
               <h3 className="rd-step__title">{step.title}</h3>
               <p className="rd-step__desc">{step.desc}</p>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
 
-        <motion.div
-          className="rd-install__foot"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={inView}
-        >
+        <Reveal className="rd-install__foot" y={20}>
           <span>Works with your existing POS · no new hardware · cancel anytime.</span>
           <button type="button" className="rd-btn rd-btn--primary" onClick={() => scrollToId('contact')}>
             Book a demo
           </button>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

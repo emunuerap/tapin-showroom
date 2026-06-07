@@ -7,7 +7,7 @@ import {
   useTransform,
 } from 'framer-motion';
 import { FlowLine } from '../visuals/FlowLine';
-import { fadeUp, lineReveal, riseIn, staggerParent, inView } from '../motion/variants';
+import { Reveal } from './Reveal';
 import { useReducedMotion } from '../motion/useReducedMotion';
 import { ease } from '../../design/light-tokens';
 
@@ -18,30 +18,22 @@ export function GestureFlow() {
 
   return (
     <section id="gesture" className="rd-section rd-gesture">
-      <motion.div
-        className="rd-container rd-head"
-        variants={staggerParent}
-        initial="hidden"
-        whileInView="show"
-        viewport={inView}
-      >
+      <Reveal className="rd-container rd-head">
         <h2 className="rd-display rd-head__title">
           <span className="rd-line">
-            <motion.span className="rd-line__inner" variants={lineReveal}>
-              Three seconds from
-            </motion.span>
+            <span className="rd-line__inner">Three seconds from</span>
           </span>
           <span className="rd-line">
-            <motion.span className="rd-line__inner" variants={lineReveal}>
+            <span className="rd-line__inner">
               craving to <span className="rd-accent">confirmed</span>.
-            </motion.span>
+            </span>
           </span>
         </h2>
-        <motion.p className="rd-lead" variants={fadeUp}>
+        <p className="rd-lead">
           No phone call. No waiting on hold. Choose, swipe, done — the whole
           reservation collapses into a single, deliberate motion.
-        </motion.p>
-      </motion.div>
+        </p>
+      </Reveal>
 
       <div className="rd-container">
         <div className="rd-beats">
@@ -57,13 +49,7 @@ export function GestureFlow() {
           />
 
           {/* Beat 1 — Choose */}
-          <motion.div
-            className="rd-beat"
-            variants={riseIn}
-            initial="hidden"
-            whileInView="show"
-            viewport={inView}
-          >
+          <Reveal className="rd-beat" y={36}>
             <span className="rd-beat__index">01</span>
             <span className="rd-beat__label">Choose</span>
             <p className="rd-beat__note">Time, table, party — surfaced before you ask.</p>
@@ -78,41 +64,27 @@ export function GestureFlow() {
                 <span className="rd-chip">2 guests</span>
               </div>
             </div>
-          </motion.div>
+          </Reveal>
 
           {/* Beat 2 — Swipe */}
-          <motion.div
-            className="rd-beat"
-            variants={riseIn}
-            initial="hidden"
-            whileInView="show"
-            viewport={inView}
-            transition={{ delay: 0.08 }}
-          >
+          <Reveal className="rd-beat" y={36}>
             <span className="rd-beat__index">02</span>
             <span className="rd-beat__label">Swipe</span>
             <p className="rd-beat__note">One decisive motion commits the table.</p>
             <div className="rd-beat__stage">
               <SwipeToBook confirmed={confirmed} onConfirm={() => setConfirmed(true)} />
             </div>
-          </motion.div>
+          </Reveal>
 
           {/* Beat 3 — Confirm */}
-          <motion.div
-            className="rd-beat"
-            variants={riseIn}
-            initial="hidden"
-            whileInView="show"
-            viewport={inView}
-            transition={{ delay: 0.16 }}
-          >
+          <Reveal className="rd-beat" y={36}>
             <span className="rd-beat__index">03</span>
             <span className="rd-beat__label">Confirm</span>
             <p className="rd-beat__note">Held instantly. The kitchen already knows.</p>
             <div className="rd-beat__stage">
               <ConfirmMark active={confirmed} />
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </div>
     </section>
