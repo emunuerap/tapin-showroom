@@ -1,9 +1,14 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { lazy, Suspense, useRef } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { AnimatedPath } from '../visuals/AnimatedPath';
 import { fadeUp, lineReveal, staggerParent } from '../motion/variants';
 import { useReducedMotion } from '../motion/useReducedMotion';
+import { useMediaQuery } from '../motion/useMediaQuery';
 import { scrollToId } from '../motion/scrollTo';
 import { ease } from '../../design/light-tokens';
+
+// WebGL hero field — lazy so three.js only loads on desktop, when shown.
+const HeroCanvas = lazy(() => import('../visuals/HeroCanvas'));
 
 /** A single expressive gesture stroke that resolves into a clean intention. */
 const GESTURE =
@@ -12,12 +17,23 @@ const DOT = { cx: 1080, cy: 230 };
 
 export function OpeningScene() {
   const reduced = useReducedMotion();
+  const isWide = useMediaQuery('(min-width: 1024px)');
+  const sectionRef = useRef<HTMLElement>(null);
+  // mount the canvas only while the hero is on screen (frees the GPU after)
+  const inHero = useInView(sectionRef, { margin: '200px' });
+  const showField = isWide && !reduced && inHero;
   const { scrollY } = useScroll();
   const lineY = useTransform(scrollY, [0, 900], [0, reduced ? 0 : 130]);
   const contentY = useTransform(scrollY, [0, 900], [0, reduced ? 0 : 60]);
 
   return (
-    <section id="top" className="rd-section rd-hero">
+    <section id="top" ref={sectionRef} className="rd-section rd-hero">
+      {showField && (
+        <Suspense fallback={null}>
+          <HeroCanvas />
+        </Suspense>
+      )}
+
       {/* the gesture: draws across, lands on a yuzu intention point */}
       <motion.svg
         className="rd-hero__line"

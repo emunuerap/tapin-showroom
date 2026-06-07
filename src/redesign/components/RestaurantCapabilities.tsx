@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useGSAP } from '@gsap/react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { fadeUp, lineReveal, staggerParent, inView } from '../motion/variants';
 import { ease } from '../../design/light-tokens';
+
+gsap.registerPlugin(ScrollTrigger);
 
 type Capability = { no: string; title: string; desc: string; metric: string; sub: string };
 
@@ -17,9 +22,39 @@ const CAPS: Capability[] = [
 export function RestaurantCapabilities() {
   const [active, setActive] = useState(0);
   const cap = CAPS[active];
+  const sectionRef = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const lastIdx = useRef(0);
+
+  // Cinematic pin/scrub (desktop, non-reduced): pin the explorer and scrub
+  // through the six capabilities as the user scrolls. Falls back to the plain
+  // hover explorer on mobile / reduced motion. (CODEGRID pinned-scene pattern.)
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add('(min-width: 861px) and (prefers-reduced-motion: no-preference)', () => {
+        ScrollTrigger.create({
+          trigger: pinRef.current,
+          start: 'top 16%',
+          end: '+=1800',
+          pin: true,
+          scrub: true,
+          onUpdate: (self) => {
+            const idx = Math.min(CAPS.length - 1, Math.floor(self.progress * CAPS.length));
+            if (idx !== lastIdx.current) {
+              lastIdx.current = idx;
+              setActive(idx);
+            }
+          },
+        });
+      });
+      return () => mm.revert();
+    },
+    { scope: sectionRef }
+  );
 
   return (
-    <section id="capabilities" className="rd-section rd-caps">
+    <section id="capabilities" ref={sectionRef} className="rd-section rd-caps">
       <motion.div
         className="rd-container rd-head"
         variants={staggerParent}
@@ -45,6 +80,7 @@ export function RestaurantCapabilities() {
         </motion.p>
       </motion.div>
 
+      <div className="rd-caps__pin" ref={pinRef}>
       <motion.div
         className="rd-container rd-explorer"
         initial={{ opacity: 0, y: 36 }}
@@ -92,6 +128,7 @@ export function RestaurantCapabilities() {
           </AnimatePresence>
         </div>
       </motion.div>
+      </div>
     </section>
   );
 }

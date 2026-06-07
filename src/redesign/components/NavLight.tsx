@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+} from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { scrollToId } from '../motion/scrollTo';
 import { useReducedMotion } from '../motion/useReducedMotion';
 import { ease } from '../../design/light-tokens';
@@ -11,54 +19,136 @@ const LINKS = [
   { label: 'Install', id: 'install' },
 ] as const;
 
+type Lenis = { stop?: () => void; start?: () => void };
+function getLenis(): Lenis | undefined {
+  return (window as unknown as { __tapin_lenis?: Lenis }).__tapin_lenis;
+}
+
 export function NavLight() {
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
 
-  return (
-    <motion.header
-      className="rd-nav"
-      data-scrolled={scrolled}
-      initial={{ y: -28, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: ease.reveal, delay: 0.15 }}
-    >
-      <div className="rd-nav__inner">
-        <button type="button" className="rd-nav__brand" onClick={() => scrollToId('top')} aria-label="TapIn — back to top">
-          <span className="rd-nav__wordmark">TapIn</span>
-          <span className="rd-nav__tap" aria-hidden="true" />
-        </button>
+  // lock scroll while the mobile menu is open
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const lenis = getLenis();
+    if (menuOpen) {
+      lenis?.stop?.();
+      document.body.style.overflow = 'hidden';
+    } else {
+      lenis?.start?.();
+      document.body.style.overflow = '';
+    }
+    return () => {
+      lenis?.start?.();
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
 
-        <nav className="rd-nav__capsule" aria-label="Primary" onMouseLeave={() => setHovered(null)}>
-          {LINKS.map((link) => (
+  const go = (id: string) => {
+    setMenuOpen(false);
+    requestAnimationFrame(() => scrollToId(id));
+  };
+
+  return (
+    <>
+      <motion.header
+        className="rd-nav"
+        data-scrolled={scrolled}
+        initial={{ y: -28, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: ease.reveal, delay: 0.15 }}
+      >
+        <div className="rd-nav__inner">
+          <button type="button" className="rd-nav__brand" onClick={() => go('top')} aria-label="TapIn — back to top">
+            <span className="rd-nav__wordmark">TapIn</span>
+            <span className="rd-nav__tap" aria-hidden="true" />
+          </button>
+
+          <nav className="rd-nav__capsule" aria-label="Primary" onMouseLeave={() => setHovered(null)}>
+            {LINKS.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                className="rd-nav__link"
+                onMouseEnter={() => setHovered(link.id)}
+                onFocus={() => setHovered(link.id)}
+                onClick={() => go(link.id)}
+              >
+                {hovered === link.id && (
+                  <motion.span layoutId="rd-nav-hl" className="rd-nav__highlight" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />
+                )}
+                {link.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="rd-nav__right">
+            <CoversCounter />
+            <MagneticCTA />
             <button
-              key={link.id}
               type="button"
-              className="rd-nav__link"
-              onMouseEnter={() => setHovered(link.id)}
-              onFocus={() => setHovered(link.id)}
-              onClick={() => scrollToId(link.id)}
+              className="rd-nav__burger"
+              data-open={menuOpen}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
             >
-              {hovered === link.id && (
-                <motion.span
-                  layoutId="rd-nav-hl"
-                  className="rd-nav__highlight"
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                />
-              )}
-              {link.label}
+              <span />
+              <span />
             </button>
+          </div>
+        </div>
+      </motion.header>
+
+      <AnimatePresence>{menuOpen && <MobileMenu onGo={go} />}</AnimatePresence>
+    </>
+  );
+}
+
+/* ---------- full-screen mobile menu (clip-path reveal) ---------- */
+const overlayVariants: Variants = {
+  closed: {
+    clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)',
+    transition: { duration: 0.5, ease: ease.liquid },
+  },
+  open: {
+    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+    transition: { duration: 0.7, ease: ease.liquid },
+  },
+};
+
+// each row self-animates with a staggered delay (robust against nesting)
+const rise = (i: number) => ({
+  initial: { y: 26, opacity: 0 },
+  animate: { y: 0, opacity: 1, transition: { delay: 0.22 + i * 0.07, duration: 0.5, ease: ease.liquid } },
+  exit: { y: 16, opacity: 0, transition: { duration: 0.2 } },
+});
+
+function MobileMenu({ onGo }: { onGo: (id: string) => void }) {
+  return (
+    <motion.div className="rd-menu" variants={overlayVariants} initial="closed" animate="open" exit="closed">
+      <div className="rd-menu__inner">
+        <nav className="rd-menu__links" aria-label="Menu">
+          {LINKS.map((link, i) => (
+            <motion.button key={link.id} type="button" className="rd-menu__link" {...rise(i)} onClick={() => onGo(link.id)}>
+              <span className="rd-menu__no">0{i + 1}</span>
+              {link.label}
+            </motion.button>
           ))}
         </nav>
-
-        <div className="rd-nav__right">
-          <CoversCounter />
-          <MagneticCTA />
-        </div>
+        <motion.button type="button" className="rd-btn rd-btn--primary rd-menu__cta" {...rise(LINKS.length)} onClick={() => onGo('contact')}>
+          Book a demo <span className="rd-yuzu-dot" />
+        </motion.button>
+        <motion.div className="rd-menu__foot" {...rise(LINKS.length + 1)}>
+          <span className="rd-menu__brand">TapIn</span>
+          <span>The invisible OS for modern hospitality</span>
+        </motion.div>
       </div>
-    </motion.header>
+    </motion.div>
   );
 }
 

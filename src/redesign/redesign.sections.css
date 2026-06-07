@@ -114,15 +114,66 @@
 @keyframes rd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .tapin-light .rd-nav__cta { padding: 0.65rem 1.15rem; font-size: 0.9rem; will-change: transform; }
 
+/* burger (mobile) */
+.tapin-light .rd-nav__burger {
+  display: none;
+  width: 44px; height: 44px; border-radius: 999px;
+  background: var(--ink); border: 0; position: relative; cursor: pointer;
+  align-items: center; justify-content: center; flex: 0 0 auto;
+  z-index: 61;
+}
+.tapin-light .rd-nav__burger span {
+  position: absolute; left: 13px; width: 18px; height: 1.6px; border-radius: 2px;
+  background: var(--sand); transition: transform 0.4s var(--ease-liquid), opacity 0.3s ease;
+}
+.tapin-light .rd-nav__burger span:nth-child(1) { transform: translateY(-3.5px); }
+.tapin-light .rd-nav__burger span:nth-child(2) { transform: translateY(3.5px); }
+.tapin-light .rd-nav__burger[data-open='true'] span:nth-child(1) { transform: rotate(45deg); }
+.tapin-light .rd-nav__burger[data-open='true'] span:nth-child(2) { transform: rotate(-45deg); }
+
 @media (max-width: 940px) {
   .tapin-light .rd-nav__capsule { display: none; }
   .tapin-light .rd-nav__live { display: none; }
+  .tapin-light .rd-nav__cta { display: none; }
+  .tapin-light .rd-nav__burger { display: inline-flex; }
   .tapin-light .rd-nav[data-scrolled='true'] {
     background: linear-gradient(180deg, rgba(244, 231, 208, 0.94) 45%, rgba(244, 231, 208, 0));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
 }
+
+/* full-screen mobile menu */
+.tapin-light .rd-menu {
+  position: fixed; inset: 0; z-index: 60;
+  background: linear-gradient(165deg, var(--pine), #152a1e);
+  color: var(--sand);
+  display: flex; align-items: center;
+  will-change: clip-path;
+}
+.tapin-light .rd-menu__inner {
+  width: min(100% - 2.5rem, 1280px); margin-inline: auto;
+  display: flex; flex-direction: column; gap: 1.5rem; padding-block: 6rem 2rem;
+}
+.tapin-light .rd-menu__links { display: flex; flex-direction: column; }
+.tapin-light .rd-menu__link {
+  display: flex; align-items: baseline; gap: 1rem;
+  background: none; border: 0; cursor: pointer; text-align: left;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(2.2rem, 1.4rem + 5vw, 3.4rem); letter-spacing: -0.02em;
+  color: var(--sand); padding: 0.5rem 0;
+  transition: color 0.3s ease, padding-left 0.4s var(--ease-liquid);
+}
+.tapin-light .rd-menu__link:hover { color: var(--honey); padding-left: 0.75rem; }
+.tapin-light .rd-menu__no { font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600; color: var(--honey); }
+.tapin-light .rd-menu__cta { align-self: flex-start; margin-top: 1rem; background: var(--honey); color: var(--ink); }
+.tapin-light .rd-menu__cta:hover { background: var(--sand); }
+.tapin-light .rd-menu__foot {
+  margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(244, 231, 208, 0.18);
+  display: flex; flex-direction: column; gap: 0.3rem;
+  font-family: var(--font-sans); font-size: 0.85rem; color: rgba(244, 231, 208, 0.7);
+}
+.tapin-light .rd-menu__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; color: var(--sand); }
 
 /* =================== HERO =================== */
 .tapin-light .rd-hero {
