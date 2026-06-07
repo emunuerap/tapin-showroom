@@ -14,19 +14,26 @@ export default {
         glass: 'rgba(255,255,255,0.08)',
 
         // --- light-immersive redesign tokens (/redesign, .tapin-light) ---
-        // Primary + accent are the canonical brand roles for the new direction.
-        primary: '#121212', // ink — primary actions / type
-        accent: '#1FA85D', // fresh green — the brand accent
+        // Brand direction: Warm Sand × Pine.
+        primary: '#2E1E16', // espresso — primary actions / type (warm black)
+        accent: '#214335', // pine — the brand green accent
+        honey: '#DDA84C', // spark — action / intelligence moments
         leaf: {
-          DEFAULT: '#1FA85D',
-          deep: '#15633C',
+          DEFAULT: '#214335',
+          deep: '#16301F',
         },
-        pine: '#16412B',
-        sage: '#AFC6A6',
-        paper: '#F7F4EE',
-        porcelain: '#EFEAE1',
-        mist: '#D9D4CA',
-        ink: '#121212',
+        pine: {
+          DEFAULT: '#214335',
+          deep: '#16301F',
+        },
+        sage: '#A9B89E',
+        sand: '#F4E7D0',
+        paper: '#F4E7D0',
+        cream: '#FAF3E6',
+        porcelain: '#FAF3E6',
+        mist: '#EADFC8',
+        ink: '#2E1E16',
+        espresso: '#2E1E16',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

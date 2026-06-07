@@ -4,7 +4,8 @@
    ============================================================ */
 
 .tapin-light .rd-container {
-  width: min(100% - 2.5rem, 1280px);
+  /* aligned to the Golden Canon content column (see golden-canon.css) */
+  width: var(--gc-content);
   margin-inline: auto;
 }
 .tapin-light .rd-section {
@@ -52,7 +53,7 @@
   height: 8px;
   border-radius: 999px;
   background: var(--yuzu);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.22);
+  box-shadow: 0 0 0 3px rgba(221, 168, 76, 0.22);
   animation: rd-tap 3.2s var(--ease-liquid) infinite;
 }
 @keyframes rd-tap {
@@ -71,11 +72,11 @@
     backdrop-filter 0.5s ease, box-shadow 0.5s ease;
 }
 .tapin-light .rd-nav[data-scrolled='true'] .rd-nav__capsule {
-  background: rgba(247, 244, 238, 0.72);
-  border-color: rgba(31, 168, 93, 0.16);
+  background: rgba(244, 231, 208, 0.72);
+  border-color: rgba(33, 67, 53, 0.16);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: 0 14px 40px -28px rgba(18, 18, 18, 0.5);
+  box-shadow: 0 14px 40px -28px rgba(46, 30, 22, 0.5);
 }
 .tapin-light .rd-nav__link {
   position: relative;
@@ -108,7 +109,7 @@
 .tapin-light .rd-nav__live b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .tapin-light .rd-nav__live i {
   width: 7px; height: 7px; border-radius: 999px; background: var(--yuzu);
-  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.2); animation: rd-pulse 2.4s ease-in-out infinite;
+  box-shadow: 0 0 0 3px rgba(221, 168, 76, 0.2); animation: rd-pulse 2.4s ease-in-out infinite;
 }
 @keyframes rd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .tapin-light .rd-nav__cta { padding: 0.65rem 1.15rem; font-size: 0.9rem; will-change: transform; }
@@ -117,7 +118,7 @@
   .tapin-light .rd-nav__capsule { display: none; }
   .tapin-light .rd-nav__live { display: none; }
   .tapin-light .rd-nav[data-scrolled='true'] {
-    background: linear-gradient(180deg, rgba(247, 244, 238, 0.94) 45%, rgba(247, 244, 238, 0));
+    background: linear-gradient(180deg, rgba(244, 231, 208, 0.94) 45%, rgba(244, 231, 208, 0));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -142,16 +143,16 @@
 .tapin-light .rd-hero__meta span { display: inline-flex; align-items: center; gap: 0.5rem; }
 .tapin-light .rd-hero__line {
   position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
-  pointer-events: none; color: rgba(31, 168, 93, 0.34);
+  pointer-events: none; color: rgba(33, 67, 53, 0.34);
 }
 .tapin-light .rd-hero__chip {
   position: absolute; z-index: 2; right: 4%; top: 30%;
   display: flex; flex-direction: column; gap: 0.5rem;
   padding: 1rem 1.15rem; border-radius: 1.1rem;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(31, 168, 93, 0.14);
+  background: rgba(255, 251, 243, 0.68);
+  border: 1px solid rgba(33, 67, 53, 0.14);
   backdrop-filter: blur(10px);
-  box-shadow: 0 28px 60px -40px rgba(18, 18, 18, 0.5);
+  box-shadow: 0 28px 60px -40px rgba(46, 30, 22, 0.5);
 }
 .tapin-light .rd-hero__chip-row {
   display: flex; align-items: center; gap: 0.55rem;
@@ -168,7 +169,7 @@
 }
 .tapin-light .rd-cue__track {
   width: 1px; height: 46px; overflow: hidden; position: relative;
-  background: linear-gradient(180deg, rgba(31, 168, 93, 0.5), rgba(31, 168, 93, 0));
+  background: linear-gradient(180deg, rgba(33, 67, 53, 0.5), rgba(33, 67, 53, 0));
 }
 .tapin-light .rd-cue__bead {
   position: absolute; top: 0; left: 0; width: 1px; height: 14px; background: var(--leaf);
@@ -189,13 +190,13 @@
 /* =================== GESTURE =================== */
 .tapin-light .rd-gesture { padding-block: 6.5rem; }
 .tapin-light .rd-beats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-.tapin-light .rd-connector { position: absolute; top: 92px; left: 8%; width: 84%; height: 60px; z-index: 0; color: rgba(31, 168, 93, 0.4); }
+.tapin-light .rd-connector { position: absolute; top: 92px; left: 8%; width: 84%; height: 60px; z-index: 0; color: rgba(33, 67, 53, 0.4); }
 .tapin-light .rd-beat {
   position: relative; z-index: 1;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(31, 168, 93, 0.12);
+  background: rgba(255, 251, 243, 0.55);
+  border: 1px solid rgba(33, 67, 53, 0.12);
   border-radius: 1.5rem; padding: 1.6rem 1.5rem 1.8rem;
-  box-shadow: 0 24px 50px -38px rgba(18, 18, 18, 0.4);
+  box-shadow: 0 24px 50px -38px rgba(46, 30, 22, 0.4);
   backdrop-filter: blur(6px); min-height: 230px; display: flex; flex-direction: column;
 }
 .tapin-light .rd-beat__index { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--leaf-deep); }
@@ -206,20 +207,20 @@
 .tapin-light .rd-chip {
   font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
   padding: 0.5rem 0.85rem; border-radius: 999px;
-  border: 1px solid rgba(31, 168, 93, 0.18); color: var(--charcoal); background: rgba(247, 244, 238, 0.6);
+  border: 1px solid rgba(33, 67, 53, 0.18); color: var(--charcoal); background: rgba(244, 231, 208, 0.6);
 }
 .tapin-light .rd-chip[data-active='true'] { background: var(--pine); color: var(--warm-white); border-color: var(--pine); }
 .tapin-light .rd-swipe {
   position: relative; height: 56px; border-radius: 999px;
-  background: rgba(31, 168, 93, 0.07); border: 1px solid rgba(31, 168, 93, 0.16);
+  background: rgba(33, 67, 53, 0.07); border: 1px solid rgba(33, 67, 53, 0.16);
   overflow: hidden; display: flex; align-items: center; user-select: none; touch-action: pan-y;
 }
-.tapin-light .rd-swipe__fill { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(204, 255, 0, 0.9), rgba(204, 255, 0, 0.55)); transform-origin: left; }
+.tapin-light .rd-swipe__fill { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(221, 168, 76, 0.9), rgba(221, 168, 76, 0.55)); transform-origin: left; }
 .tapin-light .rd-swipe__label { position: relative; width: 100%; text-align: center; font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600; color: var(--charcoal); pointer-events: none; }
 .tapin-light .rd-swipe__knob {
   position: absolute; left: 5px; top: 5px; width: 46px; height: 46px; border-radius: 999px;
   background: var(--ink); color: var(--warm-white); display: grid; place-items: center; z-index: 2; border: 0;
-  box-shadow: 0 8px 18px -8px rgba(18, 18, 18, 0.5);
+  box-shadow: 0 8px 18px -8px rgba(46, 30, 22, 0.5);
 }
 .tapin-light .rd-confirm { display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem; }
 .tapin-light .rd-confirm__check { width: 52px; height: 52px; color: var(--leaf); }
@@ -238,8 +239,8 @@
   overflow: hidden;
   display: grid;
   place-items: center;
-  border-top: 1px solid rgba(31, 168, 93, 0.18);
-  border-bottom: 1px solid rgba(31, 168, 93, 0.18);
+  border-top: 1px solid rgba(33, 67, 53, 0.18);
+  border-bottom: 1px solid rgba(33, 67, 53, 0.18);
   background: var(--porcelain);
   touch-action: none;
 }
@@ -257,29 +258,29 @@
 .tapin-light .rd-floor__tip {
   position: absolute; z-index: 6; width: 250px;
   padding: 0.95rem 1.05rem; border-radius: 0.9rem;
-  background: rgba(18, 18, 18, 0.95); color: var(--warm-white);
-  pointer-events: none; box-shadow: 0 24px 50px -18px rgba(18, 18, 18, 0.6);
+  background: rgba(46, 30, 22, 0.95); color: var(--warm-white);
+  pointer-events: none; box-shadow: 0 24px 50px -18px rgba(46, 30, 22, 0.6);
 }
 .tapin-light .rd-floor__tip-head {
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--font-sans); font-size: 0.74rem; letter-spacing: 0.03em;
-  color: rgba(247, 244, 238, 0.6); margin-bottom: 0.55rem; padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(244, 231, 208, 0.6); margin-bottom: 0.55rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 251, 243, 0.12);
 }
 .tapin-light .rd-floor__tip-head b { color: var(--yuzu); font-weight: 600; }
 .tapin-light .rd-floor__seat { display: flex; justify-content: space-between; gap: 0.6rem; font-family: var(--font-sans); font-size: 0.82rem; padding: 0.15rem 0; }
 .tapin-light .rd-floor__seat span:first-child { font-weight: 600; }
-.tapin-light .rd-floor__seat span:last-child { color: rgba(247, 244, 238, 0.55); text-align: right; }
-.tapin-light .rd-floor__tip-free { font-size: 0.82rem; color: rgba(247, 244, 238, 0.55); font-style: italic; }
-.tapin-light .rd-floor__bar { margin-top: 0.6rem; padding-top: 0.55rem; border-top: 1px solid rgba(255, 255, 255, 0.12); }
-.tapin-light .rd-floor__bar-track { height: 3px; border-radius: 3px; background: rgba(255, 255, 255, 0.14); overflow: hidden; margin-top: 0.4rem; }
+.tapin-light .rd-floor__seat span:last-child { color: rgba(244, 231, 208, 0.55); text-align: right; }
+.tapin-light .rd-floor__tip-free { font-size: 0.82rem; color: rgba(244, 231, 208, 0.55); font-style: italic; }
+.tapin-light .rd-floor__bar { margin-top: 0.6rem; padding-top: 0.55rem; border-top: 1px solid rgba(255, 251, 243, 0.12); }
+.tapin-light .rd-floor__bar-track { height: 3px; border-radius: 3px; background: rgba(255, 251, 243, 0.14); overflow: hidden; margin-top: 0.4rem; }
 .tapin-light .rd-floor__bar-fill { height: 100%; background: var(--yuzu); border-radius: 3px; }
-.tapin-light .rd-floor__bar-label { display: flex; justify-content: space-between; font-family: var(--font-sans); font-size: 0.68rem; color: rgba(247, 244, 238, 0.6); }
+.tapin-light .rd-floor__bar-label { display: flex; justify-content: space-between; font-family: var(--font-sans); font-size: 0.68rem; color: rgba(244, 231, 208, 0.6); }
 .tapin-light .rd-floor__aitag {
   position: absolute; z-index: 6; display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.5rem 0.85rem; border-radius: 999px; background: var(--ink); color: var(--warm-white);
   font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600; white-space: nowrap;
-  box-shadow: 0 14px 30px -16px rgba(18, 18, 18, 0.7);
+  box-shadow: 0 14px 30px -16px rgba(46, 30, 22, 0.7);
 }
 
 /* the pinned HUD over the floor (KPIs, legend, feed, hint) */
@@ -291,8 +292,8 @@
 }
 .tapin-light .rd-kpi {
   display: grid; gap: 0.15rem; padding: 0.7rem 0.95rem; border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.74); border: 1px solid rgba(31, 168, 93, 0.14);
-  backdrop-filter: blur(12px); box-shadow: 0 16px 36px -26px rgba(18, 18, 18, 0.5); min-width: 96px;
+  background: rgba(255, 251, 243, 0.74); border: 1px solid rgba(33, 67, 53, 0.14);
+  backdrop-filter: blur(12px); box-shadow: 0 16px 36px -26px rgba(46, 30, 22, 0.5); min-width: 96px;
 }
 .tapin-light .rd-kpi__v { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; line-height: 1; color: var(--ink); display: flex; align-items: center; gap: 0.35rem; }
 .tapin-light .rd-kpi__v em { font-style: normal; color: var(--leaf); }
@@ -300,30 +301,30 @@
 .tapin-light .rd-hud__legend {
   position: absolute; top: 4.75rem; right: 1.25rem; display: flex; gap: 0.8rem;
   padding: 0.55rem 0.8rem; border-radius: 999px;
-  background: rgba(255, 255, 255, 0.74); border: 1px solid rgba(31, 168, 93, 0.14); backdrop-filter: blur(12px);
+  background: rgba(255, 251, 243, 0.74); border: 1px solid rgba(33, 67, 53, 0.14); backdrop-filter: blur(12px);
 }
 .tapin-light .rd-hud__legend span { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-sans); font-size: 0.7rem; color: var(--slate); }
 .tapin-light .rd-hud__legend i { width: 11px; height: 11px; border-radius: 3px; }
 .tapin-light .rd-hud__legend i[data-k='occupied'] { background: var(--pine); }
-.tapin-light .rd-hud__legend i[data-k='free'] { border: 1px dashed rgba(31, 168, 93, 0.5); }
+.tapin-light .rd-hud__legend i[data-k='free'] { border: 1px dashed rgba(33, 67, 53, 0.5); }
 .tapin-light .rd-hud__legend i[data-k='next'] { box-shadow: inset 0 0 0 2px var(--yuzu); }
 .tapin-light .rd-hud__feed {
   position: absolute; right: 1.25rem; bottom: 1.25rem; width: 320px; max-width: 78%;
-  padding: 1rem; border-radius: 1rem; background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(31, 168, 93, 0.14); backdrop-filter: blur(14px);
-  box-shadow: 0 24px 50px -30px rgba(18, 18, 18, 0.5);
+  padding: 1rem; border-radius: 1rem; background: rgba(255, 251, 243, 0.78);
+  border: 1px solid rgba(33, 67, 53, 0.14); backdrop-filter: blur(14px);
+  box-shadow: 0 24px 50px -30px rgba(46, 30, 22, 0.5);
 }
 .tapin-light .rd-feed__head { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-sans); font-size: 0.74rem; letter-spacing: 0.03em; color: var(--leaf-deep); font-weight: 600; margin-bottom: 0.7rem; }
 .tapin-light .rd-feed__list { display: flex; flex-direction: column; gap: 0.5rem; }
-.tapin-light .rd-feed__item { display: grid; gap: 0.25rem; padding: 0.55rem 0.65rem; border-radius: 0.6rem; background: rgba(247, 244, 238, 0.7); border: 1px solid rgba(31, 168, 93, 0.08); }
+.tapin-light .rd-feed__item { display: grid; gap: 0.25rem; padding: 0.55rem 0.65rem; border-radius: 0.6rem; background: rgba(244, 231, 208, 0.7); border: 1px solid rgba(33, 67, 53, 0.08); }
 .tapin-light .rd-feed__meta { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-sans); font-size: 0.64rem; color: var(--slate); }
 .tapin-light .rd-feed__meta i { width: 6px; height: 6px; border-radius: 999px; background: var(--leaf); }
-.tapin-light .rd-feed__item[data-yuzu='true'] .rd-feed__meta i { background: var(--yuzu); box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.2); }
+.tapin-light .rd-feed__item[data-yuzu='true'] .rd-feed__meta i { background: var(--yuzu); box-shadow: 0 0 0 3px rgba(221, 168, 76, 0.2); }
 .tapin-light .rd-feed__text { font-family: var(--font-sans); font-size: 0.8rem; color: var(--charcoal); line-height: 1.35; }
 .tapin-light .rd-hud__hint {
   position: absolute; left: 1.25rem; bottom: 1.25rem;
   display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.5rem 0.85rem; border-radius: 999px; background: rgba(18, 18, 18, 0.86); color: var(--warm-white);
+  padding: 0.5rem 0.85rem; border-radius: 999px; background: rgba(46, 30, 22, 0.86); color: var(--warm-white);
   font-family: var(--font-sans); font-size: 0.74rem; font-weight: 500;
 }
 .tapin-light .rd-hud__hint svg { width: 16px; height: 16px; }
@@ -344,13 +345,13 @@
 .tapin-light .rd-exp {
   position: relative; text-align: left; background: none; border: 0;
   padding: 1.35rem 0.5rem 1.35rem 1.5rem;
-  border-top: 1px solid rgba(18, 18, 18, 0.12);
+  border-top: 1px solid rgba(46, 30, 22, 0.12);
   display: flex; align-items: baseline; gap: 1rem;
   font-family: var(--font-display); font-weight: 600;
   font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem); letter-spacing: -0.02em;
-  color: rgba(18, 18, 18, 0.32); transition: color 0.4s var(--ease-liquid), padding-left 0.4s var(--ease-liquid);
+  color: rgba(46, 30, 22, 0.32); transition: color 0.4s var(--ease-liquid), padding-left 0.4s var(--ease-liquid);
 }
-.tapin-light .rd-explorer__list .rd-exp:last-child { border-bottom: 1px solid rgba(18, 18, 18, 0.12); }
+.tapin-light .rd-explorer__list .rd-exp:last-child { border-bottom: 1px solid rgba(46, 30, 22, 0.12); }
 .tapin-light .rd-exp__no { font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600; color: var(--leaf); flex: 0 0 auto; }
 .tapin-light .rd-exp[data-active='true'] { color: var(--ink); padding-left: 2rem; }
 .tapin-light .rd-exp[data-active='true']::before {
@@ -362,19 +363,19 @@
 .tapin-light .rd-explorer__detail {
   position: relative; border-radius: 1.5rem; overflow: hidden;
   padding: 2.25rem; min-height: 22rem;
-  background: linear-gradient(160deg, var(--pine), #0e2c1d);
+  background: linear-gradient(160deg, var(--pine), #152a1e);
   color: var(--warm-white); display: flex; flex-direction: column; justify-content: space-between;
-  box-shadow: 0 50px 90px -55px rgba(18, 18, 18, 0.6);
+  box-shadow: 0 50px 90px -55px rgba(46, 30, 22, 0.6);
 }
 .tapin-light .rd-explorer__detail .rd-blueprint-grid { position: absolute; inset: 0; opacity: 0.5; mix-blend-mode: overlay; }
 .tapin-light .rd-detail__no { font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; color: var(--yuzu); position: relative; }
 .tapin-light .rd-detail__title { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem); letter-spacing: -0.02em; line-height: 1; margin-top: 0.5rem; position: relative; }
-.tapin-light .rd-detail__desc { font-family: var(--font-sans); font-size: 1.02rem; line-height: 1.55; color: rgba(247, 244, 238, 0.82); max-width: 42ch; margin-top: 1rem; position: relative; }
+.tapin-light .rd-detail__desc { font-family: var(--font-sans); font-size: 1.02rem; line-height: 1.55; color: rgba(244, 231, 208, 0.82); max-width: 42ch; margin-top: 1rem; position: relative; }
 .tapin-light .rd-detail__metric {
   position: relative; margin-top: 2rem; display: inline-flex; align-items: center; gap: 0.6rem;
   font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; color: var(--yuzu);
 }
-.tapin-light .rd-detail__metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.9rem; color: rgba(247, 244, 238, 0.7); }
+.tapin-light .rd-detail__metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.9rem; color: rgba(244, 231, 208, 0.7); }
 
 @media (max-width: 860px) {
   .tapin-light .rd-explorer { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -385,11 +386,11 @@
 /* =================== INSTALL FLOW =================== */
 .tapin-light .rd-install { padding-block: 7rem; }
 .tapin-light .rd-steps { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
-.tapin-light .rd-steps__line { position: absolute; top: 22px; left: 6%; width: 88%; height: 40px; z-index: 0; color: rgba(31, 168, 93, 0.4); }
+.tapin-light .rd-steps__line { position: absolute; top: 22px; left: 6%; width: 88%; height: 40px; z-index: 0; color: rgba(33, 67, 53, 0.4); }
 .tapin-light .rd-step { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0.55rem; }
 .tapin-light .rd-step__no {
   width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center;
-  background: var(--warm-white); border: 1px solid rgba(31, 168, 93, 0.3);
+  background: var(--warm-white); border: 1px solid rgba(33, 67, 53, 0.3);
   font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--leaf-deep);
 }
 .tapin-light .rd-step__title { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; }
@@ -401,7 +402,7 @@
 .tapin-light .rd-close__title { font-size: var(--d2); margin-inline: auto; max-width: 18ch; }
 .tapin-light .rd-close__actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
 .tapin-light .rd-foot {
-  margin-top: 6rem; padding-top: 2rem; border-top: 1px solid rgba(31, 168, 93, 0.16);
+  margin-top: 6rem; padding-top: 2rem; border-top: 1px solid rgba(33, 67, 53, 0.16);
   display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
   font-family: var(--font-sans); font-size: 0.82rem; color: var(--slate);
 }

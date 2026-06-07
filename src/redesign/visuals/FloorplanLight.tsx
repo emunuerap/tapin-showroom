@@ -8,11 +8,11 @@ import { ease } from '../../design/light-tokens';
 /**
  * FloorplanLight — the full-bleed, drag-to-explore restaurant blueprint.
  *
- * A large pannable floor (drag anywhere to move around the room), with a
- * pinned HUD of live KPIs + activity feed, hoverable tables that reveal
- * seat-level POS data, a yuzu-traced route to the next party, and the Tetris
- * Agent working in the background. Inherits the intelligence of the dark
- * site's HospitalityCockpit, reimagined as one immersive ops canvas.
+ * Warm Sand × Pine palette. A large pannable floor (drag with inertia), a
+ * cursor-follow spotlight over the blueprint, magnet-hover tables that reveal
+ * seat-level POS data, a yuzu→honey-traced route to the next party, and a
+ * pinned HUD of live KPIs + activity feed. Inherits the intelligence of the
+ * dark site's HospitalityCockpit, reimagined as one immersive ops canvas.
  */
 
 type Seat = { n: string; o: string };
@@ -25,6 +25,12 @@ type Table = {
 
 const PLANE_W = 1700;
 const PLANE_H = 1050;
+
+// brand palette (kept in sync with redesign.css)
+const PINE = '#214335';
+const SAND = '#F4E7D0';
+const HONEY = '#DDA84C';
+const PINE_45 = 'rgba(33,67,53,0.45)';
 
 const TABLES: Table[] = [
   { id: '01', shape: 'rect', x: 150, y: 175, w: 150, h: 110, status: 'occupied', score: 9.2, turn: 72, pax: 2, seats: [{ n: 'Alex', o: 'Oysters · Chablis' }, { n: 'Emma', o: 'Truffle risotto' }] },
@@ -58,8 +64,6 @@ const FEED: { t: string; yuzu: boolean }[] = [
 ];
 
 type FeedEntry = { id: string; time: string; t: string; yuzu: boolean };
-// Module-scoped monotonic id — never collides across instances or StrictMode
-// double-invocation (which is what produced duplicate-key warnings).
 let FEED_SEQ = 0;
 function clockNow(): string {
   const d = new Date();
@@ -81,6 +85,7 @@ export function FloorplanLight() {
   const reduced = useReducedMotion();
   const isWide = useMediaQuery('(min-width: 768px)');
   const zoneRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
   const [hovered, setHovered] = useState<string | null>(null);
   const [dragged, setDragged] = useState(false);
   const interacted = useRef(false);
@@ -108,18 +113,35 @@ export function FloorplanLight() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced, isWide]);
 
+  // cursor-follow spotlight over the blueprint
+  const onZoneMove = (e: React.MouseEvent) => {
+    if (reduced || rafRef.current) return;
+    const el = zoneRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = 0;
+      el.style.setProperty('--mx', `${x}px`);
+      el.style.setProperty('--my', `${y}px`);
+    });
+  };
+
   const active = hovered ? TABLES.find((t) => t.id === hovered) ?? null : null;
 
   return (
-    <div className="rd-floorzone" ref={zoneRef}>
+    <div className="rd-floorzone" ref={zoneRef} onMouseMove={onZoneMove}>
       <div className="rd-floorzone__grid rd-blueprint-grid" aria-hidden="true" />
+      <div className="rd-floor__spot" aria-hidden="true" />
 
       <motion.div
         className="rd-floor__plane"
         drag
         dragConstraints={zoneRef}
-        dragElastic={0.05}
-        dragMomentum={false}
+        dragElastic={0.06}
+        dragMomentum={!reduced}
+        dragTransition={{ power: 0.22, timeConstant: 320 }}
         onDragStart={() => {
           interacted.current = true;
           setDragged(true);
@@ -127,13 +149,13 @@ export function FloorplanLight() {
       >
         <svg viewBox={`0 0 ${PLANE_W} ${PLANE_H}`} width={PLANE_W} height={PLANE_H} fill="none" aria-label="Restaurant floor plan">
           {/* pass / bar */}
-          <rect x={150} y={92} width={520} height={40} rx={18} fill="rgba(175,198,166,0.5)" />
-          <text x={170} y={118} fontFamily="General Sans, sans-serif" fontSize={18} fill="#16412B" letterSpacing="2">THE PASS</text>
+          <rect x={150} y={92} width={520} height={40} rx={18} fill="rgba(169,184,158,0.5)" />
+          <text x={170} y={118} fontFamily="General Sans, sans-serif" fontSize={18} fill={PINE} letterSpacing="2">THE PASS</text>
 
           {/* route to the next party */}
-          <AnimatedPath d={ROUTE} stroke="rgba(31,168,93,0.5)" strokeWidth={3} delay={0.3} />
+          <AnimatedPath d={ROUTE} stroke="rgba(33,67,53,0.5)" strokeWidth={3} delay={0.3} />
           {!reduced && (
-            <circle r={8} fill="#CCFF00">
+            <circle r={8} fill={HONEY}>
               <animateMotion dur="4s" repeatCount="indefinite" path={ROUTE} begin="1s" />
               <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.12;0.85;1" dur="4s" repeatCount="indefinite" begin="1s" />
             </circle>
@@ -143,8 +165,8 @@ export function FloorplanLight() {
             const isHovered = hovered === t.id;
             const occ = t.status === 'occupied';
             const next = t.status === 'next';
-            const stroke = isHovered || next ? '#CCFF00' : occ ? 'transparent' : 'rgba(31,168,93,0.45)';
-            const fill = occ ? '#16412B' : next ? 'rgba(247,244,238,0.85)' : 'transparent';
+            const stroke = isHovered || next ? HONEY : occ ? 'transparent' : PINE_45;
+            const fill = occ ? PINE : next ? 'rgba(244,231,208,0.85)' : 'transparent';
             const dash = t.status === 'free' ? '8 8' : undefined;
             const { cx, cy } = center(t);
             const common = {
@@ -158,26 +180,31 @@ export function FloorplanLight() {
               },
             };
             return (
-              <g key={t.id}>
+              <motion.g
+                key={t.id}
+                whileHover={isWide ? { scale: 1.045 } : undefined}
+                transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+              >
                 {t.shape === 'circle' ? (
                   <circle cx={t.x} cy={t.y} r={t.r} {...common} />
                 ) : (
                   <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={18} {...common} />
                 )}
-                <text x={cx} y={cy + (occ ? 2 : 6)} textAnchor="middle" fontFamily="General Sans, sans-serif" fontWeight={600} fontSize={22} fill={occ ? '#F7F4EE' : next ? '#16412B' : 'rgba(31,168,93,0.6)'} style={{ pointerEvents: 'none' }}>
+                <text x={cx} y={cy + (occ ? 2 : 6)} textAnchor="middle" fontFamily="General Sans, sans-serif" fontWeight={600} fontSize={22} fill={occ ? SAND : next ? PINE : 'rgba(33,67,53,0.6)'} style={{ pointerEvents: 'none' }}>
                   T{t.id}
                 </text>
                 {occ && (
-                  <text x={cx} y={cy + 24} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={14} fill="rgba(247,244,238,0.7)" style={{ pointerEvents: 'none' }}>
+                  <text x={cx} y={cy + 24} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={14} fill="rgba(244,231,208,0.72)" style={{ pointerEvents: 'none' }}>
                     {t.pax}P · {t.turn}%
                   </text>
                 )}
-              </g>
+              </motion.g>
             );
           })}
 
-          <line x1={150} y1={1000} x2={1480} y2={1000} stroke="rgba(31,168,93,0.3)" strokeWidth={1.5} />
-          <text x={815} y={1024} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={15} fill="rgba(31,168,93,0.55)" letterSpacing="4">OSTERIA LUMINA · DINING ROOM · 86 COVERS</text>
+          <line x1={150} y1={1000} x2={1480} y2={1000} stroke="rgba(33,67,53,0.3)" strokeWidth={1.5} />
+          <text x={815} y={1024} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={15} fill="rgba(33,67,53,0.55)" letterSpacing="4">OSTERIA LUMINA · DINING ROOM · 86 COVERS</text>
         </svg>
 
         {/* AI cue near the next table — pans with the plane */}
@@ -191,7 +218,6 @@ export function FloorplanLight() {
           <span className="rd-yuzu-dot" /> Seat the 8:00 → T08 · ready 8:12
         </motion.div>
 
-        {/* hover tooltip — desktop only */}
         <AnimatePresence>
           {isWide && active && <TableTip key={active.id} table={active} />}
         </AnimatePresence>

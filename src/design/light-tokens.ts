@@ -15,21 +15,25 @@
 export type Cubic = [number, number, number, number];
 
 export const colors = {
-  // Base — warm paper canvas
-  warmWhite: '#F7F4EE',
-  porcelain: '#EFEAE1',
-  mist: '#D9D4CA',
-  // Ink
-  ink: '#121212',
-  charcoal: '#2A2A2A',
-  slate: '#6B675F',
-  // Green identity — fresh, not muted
-  leaf: '#1FA85D', // vivid primary green — accents, links, highlights
-  leafDeep: '#15633C', // deeper green for small text on light
-  pine: '#16412B', // deep green — table fills / strong surfaces
-  sage: '#AFC6A6', // soft light-green wash
-  // Spark
-  yuzu: '#CCFF00', // electric green — intelligence / action only
+  // Base — warm sand paper
+  sand: '#F4E7D0',
+  warmWhite: '#F4E7D0', // alias: paper
+  cream: '#FAF3E6',
+  porcelain: '#FAF3E6',
+  mist: '#EADFC8',
+  // Ink — warm espresso (replaces harsh black)
+  ink: '#2E1E16',
+  charcoal: '#3D2A20',
+  slate: '#7A6A5C',
+  // Green identity — pine (premium, not acid)
+  pine: '#214335', // brand green — accents, surfaces, links
+  pineDeep: '#16301F',
+  leaf: '#214335', // alias of pine for existing refs
+  leafDeep: '#16301F',
+  sage: '#A9B89E', // soft sage wash
+  // Spark — honey (replaces yuzu for action / intelligence)
+  honey: '#DDA84C',
+  yuzu: '#DDA84C', // alias: spark
 } as const;
 
 export const fonts = {

@@ -34,7 +34,7 @@ export function OpeningScene() {
           cx={DOT.cx}
           cy={DOT.cy}
           r={26}
-          fill="#CCFF00"
+          fill="#DDA84C"
           opacity={0.16}
           variants={{ hidden: { opacity: 0 }, show: { opacity: 0.16, transition: { delay: 2.1, duration: 0.6 } } }}
         />
@@ -42,7 +42,7 @@ export function OpeningScene() {
           cx={DOT.cx}
           cy={DOT.cy}
           r={9}
-          fill="#CCFF00"
+          fill="#DDA84C"
           variants={{
             hidden: { opacity: 0, scale: 0 },
             show: { opacity: 1, scale: 1, transition: { delay: 2.05, duration: 0.5, ease: ease.liquid } },

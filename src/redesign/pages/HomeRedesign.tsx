@@ -9,6 +9,7 @@ import { RestaurantCapabilities } from '../components/RestaurantCapabilities';
 import { InstallFlow } from '../components/InstallFlow';
 import { ClosingSection } from '../components/ClosingSection';
 import '../redesign.css';
+import '../golden-canon.css';
 import '../redesign.sections.css';
 
 /**

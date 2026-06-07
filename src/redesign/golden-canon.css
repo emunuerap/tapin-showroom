@@ -1,0 +1,57 @@
+/* ============================================================
+   The Golden Canon Grid — structural layout system for TapIn.
+   Encodes the GoldenCanonGrid freebie (12 cols, φ margins,
+   canonical ¼/⅓/⅔ splits + diagonals). See docs/GOLDEN_CANON_GRID.md.
+   Scoped under `.tapin-light`.
+   ============================================================ */
+
+.tapin-light {
+  --phi: 1.618;
+  /* canon side margin: 113.5 / 1920 ≈ 5.91%, clamped */
+  --gc-margin: clamp(20px, 5.9vw, 120px);
+  --gc-gutter: clamp(16px, 1.6vw, 30px);
+  --gc-cols: 12;
+  /* content width caps at the canon's 1693px */
+  --gc-content: min(100% - 2 * var(--gc-margin), 1693px);
+}
+
+/* the canon content column */
+.tapin-light .gc-shell {
+  width: var(--gc-content);
+  margin-inline: auto;
+}
+
+/* 12-column grid with canon gutter */
+.tapin-light .gc-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--gc-cols), minmax(0, 1fr));
+  column-gap: var(--gc-gutter);
+}
+
+/* canonical ¾ : ¼ split */
+.tapin-light .gc-major { grid-column: span 9; }
+.tapin-light .gc-minor { grid-column: span 3; }
+
+/* golden split — 7 : 5 columns ≈ φ */
+.tapin-light .gc-phi-major { grid-column: span 7; }
+.tapin-light .gc-phi-minor { grid-column: span 5; }
+
+@media (max-width: 860px) {
+  .tapin-light .gc-major,
+  .tapin-light .gc-minor,
+  .tapin-light .gc-phi-major,
+  .tapin-light .gc-phi-minor { grid-column: 1 / -1; }
+}
+
+/* faint canon diagonals — a discovered motif behind editorial moments.
+   Full + reciprocal corner diagonals + the ½ and ⅔ verticals. */
+.tapin-light .gc-diagonals {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(to bottom right, transparent calc(50% - 0.5px), var(--gc-line, rgba(46,30,22,0.06)) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom left, transparent calc(50% - 0.5px), var(--gc-line, rgba(46,30,22,0.06)) 50%, transparent calc(50% + 0.5px));
+}

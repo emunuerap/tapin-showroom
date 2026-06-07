@@ -49,10 +49,10 @@ export function GestureFlow() {
             className="rd-connector"
             viewBox="0 0 1000 60"
             d={CONNECTOR}
-            stroke="rgba(17,17,17,0.28)"
+            stroke="rgba(46,30,22,0.28)"
             strokeWidth={1.5}
             travel
-            travelColor="#CCFF00"
+            travelColor="#DDA84C"
             travelDur={3.6}
           />
 
@@ -218,7 +218,7 @@ function ConfirmMark({ active }: { active: boolean }) {
           cx={26}
           cy={26}
           r={24}
-          stroke="rgba(17,17,17,0.2)"
+          stroke="rgba(46,30,22,0.2)"
           strokeWidth={1.5}
           fill="none"
           initial={{ pathLength: 0 }}
@@ -227,7 +227,7 @@ function ConfirmMark({ active }: { active: boolean }) {
         />
         <motion.path
           d="M14 27 L23 36 L40 17"
-          stroke="#111111"
+          stroke="#2E1E16"
           strokeWidth={3}
           strokeLinecap="round"
           strokeLinejoin="round"

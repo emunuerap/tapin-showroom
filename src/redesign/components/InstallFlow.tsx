@@ -43,10 +43,10 @@ export function InstallFlow() {
             className="rd-steps__line"
             viewBox="0 0 1000 40"
             d={CONNECTOR}
-            stroke="rgba(46,70,54,0.3)"
+            stroke="rgba(33,67,53,0.3)"
             strokeWidth={1.4}
             travel
-            travelColor="#CCFF00"
+            travelColor="#DDA84C"
             travelDur={4}
           />
           {STEPS.map((step) => (
