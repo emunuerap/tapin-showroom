@@ -28,8 +28,20 @@ export function NavLight() {
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
+  const lastY = useRef(0);
   const { scrollY } = useScroll();
-  useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 24));
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    setScrolled(y > 24);
+    const last = lastY.current;
+    lastY.current = y;
+    if (menuOpen) return;
+    if (y < 140) {
+      setNavHidden(false);
+      return;
+    }
+    if (Math.abs(y - last) > 6) setNavHidden(y > last);
+  });
 
   // lock scroll while the mobile menu is open
   useEffect(() => {
@@ -55,12 +67,14 @@ export function NavLight() {
 
   return (
     <>
+      {/* a thin hover zone at the very top reveals the nav again */}
+      <div className="rd-nav__peek" aria-hidden="true" onMouseEnter={() => setNavHidden(false)} />
       <motion.header
         className="rd-nav"
         data-scrolled={scrolled}
         initial={{ y: -28, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: ease.reveal, delay: 0.15 }}
+        animate={{ y: navHidden ? -96 : 0, opacity: navHidden ? 0 : 1 }}
+        transition={{ duration: 0.5, ease: ease.liquid }}
       >
         <div className="rd-nav__inner">
           <button type="button" className="rd-nav__brand" onClick={() => go('top')} aria-label="TapIn — back to top">
@@ -81,7 +95,7 @@ export function NavLight() {
                 {hovered === link.id && (
                   <motion.span layoutId="rd-nav-hl" className="rd-nav__highlight" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />
                 )}
-                {link.label}
+                <RollText>{link.label}</RollText>
               </button>
             ))}
           </nav>
@@ -136,7 +150,7 @@ function MobileMenu({ onGo }: { onGo: (id: string) => void }) {
           {LINKS.map((link, i) => (
             <motion.button key={link.id} type="button" className="rd-menu__link" {...rise(i)} onClick={() => onGo(link.id)}>
               <span className="rd-menu__no">0{i + 1}</span>
-              {link.label}
+              <RollText>{link.label}</RollText>
             </motion.button>
           ))}
         </nav>
@@ -149,6 +163,16 @@ function MobileMenu({ onGo }: { onGo: (id: string) => void }) {
         </motion.div>
       </div>
     </motion.div>
+  );
+}
+
+/** Text that rolls over itself on hover (two stacked copies). */
+function RollText({ children }: { children: string }) {
+  return (
+    <span className="rd-roll">
+      <span className="rd-roll__a">{children}</span>
+      <span className="rd-roll__b" aria-hidden="true">{children}</span>
+    </span>
   );
 }
 

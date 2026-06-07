@@ -228,6 +228,46 @@ html.tapin-light-active body {
   transition: opacity 0.4s ease;
 }
 
+/* ---- entrance preloader ---- */
+.tapin-light .rd-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(165deg, var(--pine), #152a1e);
+  will-change: clip-path;
+}
+.tapin-light .rd-preloader__brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+.tapin-light .rd-preloader__word {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  letter-spacing: -0.04em;
+  color: var(--sand);
+  line-height: 1;
+}
+.tapin-light .rd-preloader__dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: var(--honey);
+  box-shadow: 0 0 0 5px rgba(221, 168, 76, 0.22);
+}
+.tapin-light .rd-preloader__line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--honey);
+  transform-origin: left;
+}
+
 /* ---- reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   .tapin-light *,

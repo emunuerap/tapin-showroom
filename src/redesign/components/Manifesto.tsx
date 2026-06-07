@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { FlowLine } from '../visuals/FlowLine';
 import { staggerParent, wordReveal, fadeUp, maskReveal, inView } from '../motion/variants';
 
 /**
@@ -15,6 +16,19 @@ export function Manifesto() {
       <div className="gc-diagonals" aria-hidden="true" />
 
       <div className="rd-container rd-mf__inner">
+        {/* diagonal intention line connecting statement → stat card */}
+        <FlowLine
+          className="rd-mf__diag"
+          viewBox="0 0 100 50"
+          d="M 2 16 C 38 16, 44 40, 82 42"
+          stroke="rgba(33,67,53,0.42)"
+          strokeWidth={0.7}
+          travel
+          travelColor="#DDA84C"
+          travelDur={4.2}
+          travelRadius={0.9}
+          preserveAspectRatio="none"
+        />
         <motion.div
           className="rd-mf__text gc-baseline"
           variants={staggerParent}
