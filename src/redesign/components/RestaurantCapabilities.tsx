@@ -85,7 +85,7 @@ export function RestaurantCapabilities() {
         className="rd-container rd-explorer"
         initial={{ opacity: 0, y: 36 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8, ease: ease.liquid }}
       >
         <div className="rd-explorer__list">
@@ -107,6 +107,7 @@ export function RestaurantCapabilities() {
 
         <div className="rd-explorer__detail">
           <div className="rd-blueprint-grid" aria-hidden="true" />
+          <div className="rd-detail__ghost" aria-hidden="true">{cap.no}</div>
           <AnimatePresence mode="wait">
             <motion.div
               key={cap.no}

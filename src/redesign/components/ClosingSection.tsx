@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { EditorialImage } from '../visuals/EditorialImage';
 import { fadeUp, lineReveal, staggerParent, inView } from '../motion/variants';
 
 export function ClosingSection() {
@@ -12,13 +11,6 @@ export function ClosingSection() {
         whileInView="show"
         viewport={inView}
       >
-        <EditorialImage
-          className="rd-close__img"
-          src="/redesign/img/plated-dish.jpg"
-          alt="A plated fine-dining dish, sauce and seasonal vegetables"
-          tint="soft"
-        />
-
         <h2 className="rd-display rd-close__title">
           <span className="rd-line">
             <motion.span className="rd-line__inner" variants={lineReveal}>

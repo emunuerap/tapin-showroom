@@ -64,5 +64,9 @@ export const riseIn: Variants = {
   },
 };
 
-/** Default viewport config for whileInView reveals. */
-export const inView = { once: true, amount: 0.35 } as const;
+/**
+ * Default viewport config for whileInView reveals.
+ * `once: false` so elements REVERSE on scroll-up — they re-appear exactly as
+ * they disappeared, instead of leaving a static page behind you.
+ */
+export const inView = { once: false, amount: 0.25 } as const;

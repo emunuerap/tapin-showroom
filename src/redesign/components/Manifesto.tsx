@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { FlowLine } from '../visuals/FlowLine';
-import { EditorialImage } from '../visuals/EditorialImage';
-import { staggerParent, wordReveal, fadeUp, inView } from '../motion/variants';
+import { staggerParent, wordReveal, fadeUp, maskReveal, inView } from '../motion/variants';
 
 /**
  * Manifesto — the "friction problem" beat of the journey.
@@ -49,25 +48,18 @@ export function Manifesto() {
           </motion.p>
         </motion.div>
 
-        <aside className="rd-mf__aside">
-          <EditorialImage
-            className="rd-mf__aside-img"
-            src="/redesign/img/dining-room.jpg"
-            alt="A restaurant dining room at dusk, tables set under warm light"
-            tint="strong"
-          />
-          <motion.div
-            className="rd-mf__aside-body"
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ delay: 0.35, duration: 0.6 }}
-          >
-            <div className="rd-mf__stat">5s</div>
-            <div className="rd-mf__stat-l">from craving to confirmed</div>
-            <div className="rd-mf__aside-line">No app. No call. No hold music — just a tap.</div>
-          </motion.div>
-        </aside>
+        <motion.aside
+          className="rd-mf__aside"
+          variants={maskReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={inView}
+        >
+          <div className="rd-mf__aside-grid" aria-hidden="true" />
+          <div className="rd-mf__stat">5s</div>
+          <div className="rd-mf__stat-l">from craving to confirmed</div>
+          <div className="rd-mf__aside-line">No app. No call. No hold music — just a tap.</div>
+        </motion.aside>
       </div>
     </section>
   );

@@ -28,19 +28,14 @@ export function NavLight() {
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [navHidden, setNavHidden] = useState(false);
-  const lastY = useRef(0);
+  // once you've scrolled past the hero the nav condenses to a minimal "T●"
+  // mark; hovering it expands the full bar back, elegantly.
+  const [collapsed, setCollapsed] = useState(false);
+  const [hoverNav, setHoverNav] = useState(false);
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, 'change', (y) => {
     setScrolled(y > 24);
-    const last = lastY.current;
-    lastY.current = y;
-    if (menuOpen) return;
-    if (y < 140) {
-      setNavHidden(false);
-      return;
-    }
-    if (Math.abs(y - last) > 6) setNavHidden(y > last);
+    setCollapsed(y > 170);
   });
 
   // lock scroll while the mobile menu is open
@@ -67,18 +62,22 @@ export function NavLight() {
 
   return (
     <>
-      {/* a thin hover zone at the very top reveals the nav again */}
-      <div className="rd-nav__peek" aria-hidden="true" onMouseEnter={() => setNavHidden(false)} />
       <motion.header
         className="rd-nav"
         data-scrolled={scrolled}
+        data-collapsed={collapsed && !hoverNav && !menuOpen}
+        onMouseEnter={() => setHoverNav(true)}
+        onMouseLeave={() => setHoverNav(false)}
         initial={{ y: -28, opacity: 0 }}
-        animate={{ y: navHidden ? -96 : 0, opacity: navHidden ? 0 : 1 }}
-        transition={{ duration: 0.5, ease: ease.liquid }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: ease.reveal, delay: 0.15 }}
       >
         <div className="rd-nav__inner">
           <button type="button" className="rd-nav__brand" onClick={() => go('top')} aria-label="TapIn — back to top">
-            <span className="rd-nav__wordmark">TapIn</span>
+            <span className="rd-nav__wordmark">
+              <span className="rd-nav__wm-lead">T</span>
+              <span className="rd-nav__wm-rest">apIn</span>
+            </span>
             <span className="rd-nav__tap" aria-hidden="true" />
           </button>
 
