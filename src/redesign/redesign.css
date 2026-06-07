@@ -228,6 +228,47 @@ html.tapin-light-active body {
   transition: opacity 0.4s ease;
 }
 
+/* ---- editorial photography (brand-treated) ---- */
+.tapin-light .rd-figure {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  margin: 0;
+  background: var(--pine);
+  box-shadow: 0 50px 90px -55px rgba(46, 30, 22, 0.55);
+}
+.tapin-light .rd-figure__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+/* depth + brand colour unification (multiply) */
+.tapin-light .rd-figure__tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: linear-gradient(180deg, rgba(33, 67, 53, 0.14), rgba(46, 30, 22, 0.34));
+}
+.tapin-light .rd-figure[data-tint='strong'] .rd-figure__tint {
+  background: linear-gradient(180deg, rgba(33, 67, 53, 0.5), rgba(21, 42, 30, 0.58));
+}
+/* warm highlight wash + fine grain */
+.tapin-light .rd-figure::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(130% 100% at 50% 0%, rgba(244, 231, 208, 0.2), transparent 58%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-blend-mode: soft-light;
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+}
+
 /* ---- entrance preloader ---- */
 .tapin-light .rd-preloader {
   position: fixed;

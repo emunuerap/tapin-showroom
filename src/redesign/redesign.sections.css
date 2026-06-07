@@ -285,9 +285,17 @@
   grid-column: 8 / 13; align-self: center; justify-self: end;
   transform: translateY(2.5rem);
   width: min(100%, 24rem);
-  background: linear-gradient(160deg, var(--pine), #152a1e);
-  color: var(--sand); border-radius: 1.5rem; padding: 2rem;
+  position: relative; overflow: hidden; display: flex;
+  min-height: 20rem;
+  color: var(--sand); border-radius: 1.5rem;
   box-shadow: 0 50px 90px -55px rgba(46, 30, 22, 0.6);
+}
+.tapin-light .rd-mf__aside-img.rd-figure {
+  position: absolute; inset: 0; border-radius: inherit; box-shadow: none; z-index: 0;
+}
+.tapin-light .rd-mf__aside-body {
+  position: relative; z-index: 1; padding: 2rem; width: 100%;
+  display: flex; flex-direction: column; justify-content: flex-end;
 }
 .tapin-light .rd-mf__stat { font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 2rem + 4vw, 5rem); line-height: 0.9; color: var(--honey); }
 .tapin-light .rd-mf__stat-l { font-family: var(--font-sans); font-size: 1rem; margin-top: 0.5rem; color: rgba(244, 231, 208, 0.85); }
@@ -340,6 +348,24 @@
 
 /* =================== RESTAURANT — FULL-BLEED FLOOR =================== */
 .tapin-light .rd-rest { padding-block: 6.5rem 0; }
+.tapin-light .rd-rest__intro {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.tapin-light .rd-rest__intro-text { display: grid; gap: 1.2rem; }
+.tapin-light .rd-rest__intro-img {
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  max-height: 30rem;
+  justify-self: end;
+}
+@media (max-width: 860px) {
+  .tapin-light .rd-rest__intro { grid-template-columns: 1fr; gap: 2rem; }
+  .tapin-light .rd-rest__intro-img { aspect-ratio: 16 / 11; max-height: 18rem; }
+}
 
 .tapin-light .rd-floorzone {
   position: relative;
@@ -521,7 +547,12 @@
 .tapin-light .rd-install__foot { margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-family: var(--font-sans); color: var(--slate); font-size: 0.9rem; }
 
 /* =================== CLOSING =================== */
-.tapin-light .rd-close { padding-block: 8rem 4rem; text-align: center; }
+.tapin-light .rd-close { padding-block: 7rem 4rem; text-align: center; }
+.tapin-light .rd-close__img {
+  width: min(100%, 34rem);
+  aspect-ratio: 16 / 10;
+  margin: 0 auto 3rem;
+}
 .tapin-light .rd-close__title { font-size: var(--d2); margin-inline: auto; max-width: 18ch; }
 .tapin-light .rd-close__actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
 .tapin-light .rd-foot {
