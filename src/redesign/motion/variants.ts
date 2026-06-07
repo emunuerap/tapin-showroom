@@ -34,6 +34,25 @@ export const lineReveal: Variants = {
   },
 };
 
+/** Word-by-word reveal for editorial statements (wrap each word). */
+export const wordReveal: Variants = {
+  hidden: { opacity: 0, y: '0.6em' },
+  show: {
+    opacity: 1,
+    y: '0em',
+    transition: { duration: duration.base, ease: ease.liquid },
+  },
+};
+
+/** CODEGRID-style clip-path wipe — content reveals left→right behind a mask. */
+export const maskReveal: Variants = {
+  hidden: { clipPath: 'inset(0 100% 0 0)' },
+  show: {
+    clipPath: 'inset(0 0% 0 0)',
+    transition: { duration: duration.scene, ease: ease.liquid },
+  },
+};
+
 /** Soft scale-in for cards / panels. */
 export const riseIn: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.98 },

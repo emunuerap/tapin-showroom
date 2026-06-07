@@ -3,6 +3,7 @@ import { MotionConfig } from 'framer-motion';
 import { Atmosphere } from '../visuals/Atmosphere';
 import { NavLight } from '../components/NavLight';
 import { OpeningScene } from '../components/OpeningScene';
+import { Manifesto } from '../components/Manifesto';
 import { GestureFlow } from '../components/GestureFlow';
 import { RestaurantLayer } from '../components/RestaurantLayer';
 import { RestaurantCapabilities } from '../components/RestaurantCapabilities';
@@ -37,6 +38,7 @@ export default function HomeRedesign() {
         <NavLight />
         <main>
           <OpeningScene />
+          <Manifesto />
           <GestureFlow />
           <RestaurantLayer />
           <RestaurantCapabilities />

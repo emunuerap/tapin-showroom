@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import { AnimatedPath } from './AnimatedPath';
 import { useReducedMotion } from '../motion/useReducedMotion';
 import { useMediaQuery } from '../motion/useMediaQuery';
@@ -90,6 +90,10 @@ export function FloorplanLight() {
   const [dragged, setDragged] = useState(false);
   const interacted = useRef(false);
 
+  // subtle depth: the blueprint grid parallaxes against the tables on scroll
+  const { scrollYProgress } = useScroll({ target: zoneRef, offset: ['start end', 'end start'] });
+  const gridY = useTransform(scrollYProgress, [0, 1], [reduced ? 0 : -52, reduced ? 0 : 52]);
+
   const occupiedIds = TABLES.filter((t) => t.status === 'occupied').map((t) => t.id);
 
   useEffect(() => {
@@ -132,7 +136,7 @@ export function FloorplanLight() {
 
   return (
     <div className="rd-floorzone" ref={zoneRef} onMouseMove={onZoneMove}>
-      <div className="rd-floorzone__grid rd-blueprint-grid" aria-hidden="true" />
+      <motion.div className="rd-floorzone__grid rd-blueprint-grid" style={{ y: gridY }} aria-hidden="true" />
       <div className="rd-floor__spot" aria-hidden="true" />
 
       <motion.div
