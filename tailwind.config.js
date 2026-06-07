@@ -41,7 +41,7 @@ export default {
         mono: ['JetBrains Mono', 'monospace'],
         // redesign type pair
         display: ['"Clash Display"', '"Hanken Grotesk"', 'sans-serif'],
-        grotesk: ['"General Sans"', 'system-ui', 'sans-serif'],
+        grotesk: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       letterSpacing: {
         tighter: '-0.05em',

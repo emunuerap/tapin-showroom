@@ -13,12 +13,43 @@
   --gc-cols: 12;
   /* content width caps at the canon's 1693px */
   --gc-content: min(100% - 2 * var(--gc-margin), 1693px);
+  /* micro grid (BONT step 1) + nav margin (kept OFF the canon, step 2) */
+  --gc-micro: 10px;
+  --gc-baseline: 8px;
+  --gc-nav-margin: clamp(20px, 4vw, 60px);
 }
 
 /* the canon content column */
 .tapin-light .gc-shell {
   width: var(--gc-content);
   margin-inline: auto;
+}
+
+/* --- the 6 professional grids (interior sections) --- */
+
+/* Modular: identical cells + gutter (give a hero block ~70%) */
+.tapin-light .gc-modular {
+  display: grid;
+  grid-template-columns: repeat(var(--gc-cols), minmax(0, 1fr));
+  gap: var(--gc-gutter);
+}
+
+/* Hierarchical: split by importance — main 50 / support ~33 / rest */
+.tapin-light .gc-hierarchical {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gc-gutter);
+}
+@media (min-width: 861px) {
+  .tapin-light .gc-hierarchical {
+    grid-template-columns: 6fr 4fr;
+    grid-auto-rows: minmax(0, auto);
+  }
+}
+
+/* Baseline rhythm: snap stacked text to a consistent vertical beat */
+.tapin-light .gc-baseline > * + * {
+  margin-top: calc(var(--gc-baseline) * 3);
 }
 
 /* 12-column grid with canon gutter */

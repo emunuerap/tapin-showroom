@@ -66,3 +66,42 @@ Utilities:
   — it should feel discovered, not decorative noise.
 
 Source files (local): `…/GoldenCanonGrid-FreebieByBont-v3/*.{sketch,xd,fig}`.
+
+---
+
+## Hero workflow (BONT, 4 steps)
+
+1. **Canvas & base grids** — design the hero on a `1440 × 900` artboard (a
+   multiple of 10). Drop the Golden Canon over the *full* canvas for the big
+   blocks; add a `10px` micro-grid for small margins/spacing.
+2. **Margins & nav** — apply fixed perimeter margins (~`60px`) for the nav and
+   repeating chrome. **Do NOT structure the navbar with the Golden Canon** —
+   keep the nav separate from the editorial grid. (In TapIn, `.rd-nav__inner`
+   uses its own fixed width, not `--gc-content`. Keep it that way.)
+3. **Sketch freely** — place imagery, headline and CTAs and iterate *before*
+   snapping to the grid. Pull text colours from the imagery for harmony. One
+   loud primary CTA + a quieter solid-background secondary.
+4. **Snap to the grid last** — turn the grid on and align edges to the diagonal
+   *intersections*. If an element won't sit on the diagonals, don't force it —
+   give it clean mathematical margins (e.g. 30px) and align only its top/left.
+   A complex grid doesn't make the design better; design free, correct with grid.
+
+## The 6 professional grids (for interior sections)
+
+Alternate these so internal pages don't feel monotonous:
+
+1. **Diagonal / "Excel"** — one primary diagonal; mass (image) on one side,
+   text on the other. Dynamic, breaks the box. (`.gc-diagonals` motif.)
+2. **Modular** — identical cells + gutters (chessboard). Give ~70% to a hero
+   media block, fill the rest with copy/links. (`.gc-modular`.)
+3. **Radial** — everything radiates from a focal centre. Good for a single
+   product/logo hero.
+4. **Column** — classic vertical columns; guide the eye top→bottom. Good for
+   features/services. (`.gc-grid` 12-col.)
+5. **Baseline** — sequential horizontal lines all text sits on. Mandatory for
+   blog/manifesto/text walls — identical vertical rhythm. (`--gc-baseline`.)
+6. **Hierarchical** — no fixed geometry; split by importance (main 50% / support
+   30% / details the rest). The safety net when stuck. (`.gc-hierarchical`.)
+
+Reference: BONT — *Design the hero with the Golden Canon Grid*; GraphiqVibe —
+*Better layouts with 6 professional grids*.

@@ -4,7 +4,7 @@
      sand    #F4E7D0  paper        espresso #2E1E16  ink (warm black)
      pine    #214335  brand green  honey    #DDA84C  spark / action
    Espresso replaces harsh black; pine replaces acid yuzu.
-   Type: Clash Display + General Sans (index.html). Grid: golden-canon.css.
+   Type: Clash Display + Plus Jakarta Sans (index.html). Grid: golden-canon.css.
    Scoped under `.tapin-light`.
    ============================================================ */
 
@@ -58,7 +58,7 @@ html.tapin-light-active body {
 
   /* type */
   --font-display: "Clash Display", "Hanken Grotesk", system-ui, sans-serif;
-  --font-sans: "General Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* fluid display scale */
   --d1: clamp(3rem, 1.4rem + 6.8vw, 9rem);

@@ -150,7 +150,7 @@ export function FloorplanLight() {
         <svg viewBox={`0 0 ${PLANE_W} ${PLANE_H}`} width={PLANE_W} height={PLANE_H} fill="none" aria-label="Restaurant floor plan">
           {/* pass / bar */}
           <rect x={150} y={92} width={520} height={40} rx={18} fill="rgba(169,184,158,0.5)" />
-          <text x={170} y={118} fontFamily="General Sans, sans-serif" fontSize={18} fill={PINE} letterSpacing="2">THE PASS</text>
+          <text x={170} y={118} fontFamily="Plus Jakarta Sans, sans-serif" fontSize={18} fill={PINE} letterSpacing="2">THE PASS</text>
 
           {/* route to the next party */}
           <AnimatedPath d={ROUTE} stroke="rgba(33,67,53,0.5)" strokeWidth={3} delay={0.3} />
@@ -191,11 +191,11 @@ export function FloorplanLight() {
                 ) : (
                   <rect x={t.x} y={t.y} width={t.w} height={t.h} rx={18} {...common} />
                 )}
-                <text x={cx} y={cy + (occ ? 2 : 6)} textAnchor="middle" fontFamily="General Sans, sans-serif" fontWeight={600} fontSize={22} fill={occ ? SAND : next ? PINE : 'rgba(33,67,53,0.6)'} style={{ pointerEvents: 'none' }}>
+                <text x={cx} y={cy + (occ ? 2 : 6)} textAnchor="middle" fontFamily="Plus Jakarta Sans, sans-serif" fontWeight={600} fontSize={22} fill={occ ? SAND : next ? PINE : 'rgba(33,67,53,0.6)'} style={{ pointerEvents: 'none' }}>
                   T{t.id}
                 </text>
                 {occ && (
-                  <text x={cx} y={cy + 24} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={14} fill="rgba(244,231,208,0.72)" style={{ pointerEvents: 'none' }}>
+                  <text x={cx} y={cy + 24} textAnchor="middle" fontFamily="Plus Jakarta Sans, sans-serif" fontSize={14} fill="rgba(244,231,208,0.72)" style={{ pointerEvents: 'none' }}>
                     {t.pax}P · {t.turn}%
                   </text>
                 )}
@@ -204,7 +204,7 @@ export function FloorplanLight() {
           })}
 
           <line x1={150} y1={1000} x2={1480} y2={1000} stroke="rgba(33,67,53,0.3)" strokeWidth={1.5} />
-          <text x={815} y={1024} textAnchor="middle" fontFamily="General Sans, sans-serif" fontSize={15} fill="rgba(33,67,53,0.55)" letterSpacing="4">OSTERIA LUMINA · DINING ROOM · 86 COVERS</text>
+          <text x={815} y={1024} textAnchor="middle" fontFamily="Plus Jakarta Sans, sans-serif" fontSize={15} fill="rgba(33,67,53,0.55)" letterSpacing="4">OSTERIA LUMINA · DINING ROOM · 86 COVERS</text>
         </svg>
 
         {/* AI cue near the next table — pans with the plane */}

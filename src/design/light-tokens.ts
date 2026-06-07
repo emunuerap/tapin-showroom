@@ -9,7 +9,7 @@
  * leaf / paper / ink…) so they can be used as utilities, and into
  * src/redesign/redesign.css as CSS variables under `.tapin-light`.
  *
- * Type: Clash Display (display) + General Sans (UI) — loaded in index.html.
+ * Type: Clash Display (display) + Plus Jakarta Sans (UI) — loaded in index.html.
  */
 
 export type Cubic = [number, number, number, number];
@@ -38,7 +38,7 @@ export const colors = {
 
 export const fonts = {
   display: '"Clash Display", "Hanken Grotesk", system-ui, sans-serif',
-  sans: '"General Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
+  sans: '"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif',
 } as const;
 
 export const ease = {
