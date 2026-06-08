@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import {
   AnimatePresence,
   motion,
@@ -100,7 +101,6 @@ export function NavLight() {
           </nav>
 
           <div className="rd-nav__right">
-            <CoversCounter />
             <MagneticCTA />
             <button
               type="button"
@@ -165,30 +165,19 @@ function MobileMenu({ onGo }: { onGo: (id: string) => void }) {
   );
 }
 
-/** Text that rolls over itself on hover (two stacked copies). */
+/** Per-letter roll: each character flips over itself on hover, in sequence. */
 function RollText({ children }: { children: string }) {
   return (
-    <span className="rd-roll">
-      <span className="rd-roll__a">{children}</span>
-      <span className="rd-roll__b" aria-hidden="true">{children}</span>
-    </span>
-  );
-}
-
-/** A quietly-living "covers seated today" readout. */
-function CoversCounter() {
-  const reduced = useReducedMotion();
-  const [covers, setCovers] = useState(1284);
-
-  useEffect(() => {
-    if (reduced) return;
-    const id = window.setInterval(() => setCovers((c) => c + 1), 5200);
-    return () => window.clearInterval(id);
-  }, [reduced]);
-
-  return (
-    <span className="rd-nav__live" aria-hidden="true">
-      <i /> <b>{covers.toLocaleString('en-US')}</b> covers seated today
+    <span className="rd-roll" aria-label={children}>
+      {children.split('').map((ch, i) => {
+        const c = ch === ' ' ? ' ' : ch;
+        return (
+          <span className="rd-roll__ch" key={i} style={{ '--i': i } as CSSProperties} aria-hidden="true">
+            <span className="rd-roll__a">{c}</span>
+            <span className="rd-roll__b">{c}</span>
+          </span>
+        );
+      })}
     </span>
   );
 }

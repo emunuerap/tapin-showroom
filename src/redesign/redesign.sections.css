@@ -24,7 +24,7 @@
 }
 .tapin-light .rd-nav[data-scrolled='true'] { padding: 0.7rem 0; }
 .tapin-light .rd-nav__inner {
-  width: min(100% - 2rem, 1320px);
+  width: min(100% - 3rem, 1160px);
   margin-inline: auto;
   display: flex;
   align-items: center;
@@ -50,35 +50,32 @@
   display: inline-flex;
   align-items: baseline;
   overflow: hidden;
-  transition: font-size 0.5s var(--ease-liquid);
+  transition: font-size 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tapin-light .rd-nav__wm-lead { display: inline-block; }
-.tapin-light .rd-nav__wm-rest { transition: max-width 0.55s var(--ease-liquid), opacity 0.4s ease, transform 0.5s var(--ease-liquid); }
 .tapin-light .rd-nav__wm-rest {
   display: inline-block;
   max-width: 6ch;
   opacity: 1;
-  transition: max-width 0.55s var(--ease-liquid), opacity 0.4s ease;
+  transition: max-width 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease,
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* condensed "T●" mark: hide the rest of the wordmark + the bar contents,
-   and give the brand a soft floating pill. Hovering the nav expands it back. */
+/* condensed "T●" mark — a clean, slow, elegant collapse (no box). */
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wm-rest {
   max-width: 0;
   opacity: 0;
-  transform: translateX(-4px);
+  transform: translateX(-6px);
 }
-/* condensed mark = a clean "T●", no box. The dot keeps its gentle tap pulse. */
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wordmark { font-size: 1.7rem; }
 .tapin-light .rd-nav__capsule,
 .tapin-light .rd-nav__right {
-  transition: opacity 0.45s var(--ease-liquid), transform 0.5s var(--ease-liquid);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__capsule,
-.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__live,
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__cta {
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   pointer-events: none;
 }
 .tapin-light .rd-nav__tap {
@@ -208,19 +205,21 @@
 }
 .tapin-light .rd-menu__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; color: var(--sand); }
 
-/* roll-over text (two stacked copies slide on hover) */
-.tapin-light .rd-roll {
-  display: inline-flex; flex-direction: column; overflow: hidden;
-  position: relative; vertical-align: top; line-height: 1.05;
+/* per-letter roll: each char flips over itself in sequence on hover */
+.tapin-light .rd-roll { display: inline-flex; vertical-align: bottom; }
+.tapin-light .rd-roll__ch {
+  position: relative; display: inline-block; overflow: hidden; white-space: pre;
 }
 .tapin-light .rd-roll__a,
 .tapin-light .rd-roll__b {
-  display: block; transition: transform 0.5s var(--ease-liquid);
+  display: block;
+  transition: transform 0.55s var(--ease-liquid);
+  transition-delay: calc(var(--i, 0) * 16ms);
 }
-.tapin-light .rd-roll__b { position: absolute; inset: 0; transform: translateY(105%); }
+.tapin-light .rd-roll__b { position: absolute; top: 0; left: 0; transform: translateY(100%); }
 .tapin-light .rd-nav__link:hover .rd-roll__a,
 .tapin-light .rd-nav__link:focus-visible .rd-roll__a,
-.tapin-light .rd-menu__link:hover .rd-roll__a { transform: translateY(-105%); }
+.tapin-light .rd-menu__link:hover .rd-roll__a { transform: translateY(-100%); }
 .tapin-light .rd-nav__link:hover .rd-roll__b,
 .tapin-light .rd-nav__link:focus-visible .rd-roll__b,
 .tapin-light .rd-menu__link:hover .rd-roll__b { transform: translateY(0); }
@@ -409,9 +408,10 @@
   overflow: hidden;
   display: grid;
   place-items: center;
-  /* the floor's surface sits a touch deeper than the page, but fades to sand
-     at the edges so there's no hard cut entering or leaving */
-  background: linear-gradient(180deg, var(--sand) 0%, var(--dune) 24%, var(--dune) 76%, var(--sand) 100%);
+  /* the floor surface (dune) sits a touch deeper than the page; the ::before
+     and ::after gradients dissolve it into the sand at top and bottom so it
+     reads as part of the background, not a cropped block. */
+  background: linear-gradient(180deg, var(--sand) 0%, var(--dune) 22%, var(--dune) 100%);
   touch-action: none;
 }
 .tapin-light .rd-floorzone::before,
@@ -420,12 +420,24 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: 180px;
   z-index: 3;
   pointer-events: none;
 }
-.tapin-light .rd-floorzone::before { top: 0; background: linear-gradient(180deg, var(--sand), transparent); }
-.tapin-light .rd-floorzone::after { bottom: 0; background: linear-gradient(0deg, var(--sand), transparent); }
+.tapin-light .rd-floorzone::before {
+  top: 0; height: 180px;
+  background: linear-gradient(180deg, var(--sand) 0%, transparent 100%);
+}
+/* a long, eased dissolve at the bottom so the floor melts back into the page */
+.tapin-light .rd-floorzone::after {
+  bottom: 0; height: 340px;
+  background: linear-gradient(
+    0deg,
+    var(--sand) 0%,
+    var(--sand) 14%,
+    rgba(244, 231, 208, 0.55) 50%,
+    transparent 100%
+  );
+}
 .tapin-light .rd-floorzone__grid { position: absolute; inset: -200px; z-index: 0; opacity: 0.8; }
 .tapin-light .rd-floor__plane {
   position: relative;
@@ -536,12 +548,6 @@
   display: flex;
 }
 .tapin-light .rd-caps__stage .rd-blueprint-grid { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
-.tapin-light .rd-caps__ghost {
-  position: absolute; right: clamp(0.5rem, 2vw, 2.5rem); top: 50%; transform: translateY(-50%);
-  font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(15rem, 12rem + 16vw, 34rem); line-height: 0.7;
-  color: rgba(244, 231, 208, 0.05); pointer-events: none; user-select: none; z-index: 0;
-}
 .tapin-light .rd-caps__index {
   position: absolute; left: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%);
   list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; z-index: 2;
@@ -561,8 +567,22 @@
 .tapin-light .rd-caps__scene-desc { font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.55; color: rgba(244, 231, 208, 0.82); margin-top: 1.2rem; }
 .tapin-light .rd-caps__scene-metric { margin-top: 2rem; display: inline-flex; align-items: baseline; gap: 0.7rem; font-family: var(--font-display); font-weight: 600; font-size: 2rem; color: var(--honey); }
 .tapin-light .rd-caps__scene-metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.95rem; color: rgba(244, 231, 208, 0.7); }
-.tapin-light .rd-caps__scene-visual { display: grid; place-items: center; }
-.tapin-light .rd-caps__svg { width: min(100%, 30rem); height: auto; }
+/* the capability image — pine-duotoned so it reads as part of the stage */
+.tapin-light .rd-caps__photo {
+  position: relative; margin: 0; justify-self: end;
+  width: 100%; max-width: 30rem; aspect-ratio: 4 / 5; max-height: 32rem;
+  border-radius: 1.25rem; overflow: hidden;
+  box-shadow: 0 50px 90px -55px rgba(16, 34, 26, 0.85);
+}
+.tapin-light .rd-caps__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tapin-light .rd-caps__photo-tint {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply;
+  background: linear-gradient(155deg, rgba(33, 67, 53, 0.4), rgba(16, 34, 26, 0.62));
+}
+.tapin-light .rd-caps__photo::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(221, 168, 76, 0.2), transparent 60%);
+}
 
 .tapin-light .rd-caps__progress { position: absolute; left: 0; bottom: 0; width: 100%; height: 3px; background: rgba(244, 231, 208, 0.1); z-index: 2; }
 .tapin-light .rd-caps__progress span { display: block; height: 100%; background: var(--honey); transform-origin: left; transition: transform 0.5s var(--ease-liquid); }
@@ -574,9 +594,7 @@
   background: linear-gradient(155deg, var(--pine), #152a1e); color: var(--sand);
   box-shadow: 0 40px 80px -55px rgba(46, 30, 22, 0.6); display: grid; gap: 1rem;
 }
-.tapin-light .rd-caps__card .rd-caps__ghost { font-size: clamp(8rem, 30vw, 12rem); right: 0.5rem; }
-.tapin-light .rd-caps__card .rd-caps__scene-visual { justify-items: start; }
-.tapin-light .rd-caps__card .rd-caps__svg { width: min(55%, 12rem); }
+.tapin-light .rd-caps__card .rd-caps__photo { max-width: none; aspect-ratio: 16 / 10; max-height: 16rem; justify-self: stretch; }
 .tapin-light .rd-caps__card .rd-caps__scene-title { font-size: clamp(1.9rem, 7vw, 2.4rem); }
 .tapin-light .rd-caps__card .rd-caps__scene-desc { font-size: 0.95rem; }
 .tapin-light .rd-caps__card .rd-caps__scene-metric { font-size: 1.6rem; }
