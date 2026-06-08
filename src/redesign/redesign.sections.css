@@ -50,8 +50,10 @@
   display: inline-flex;
   align-items: baseline;
   overflow: hidden;
+  transition: font-size 0.5s var(--ease-liquid);
 }
 .tapin-light .rd-nav__wm-lead { display: inline-block; }
+.tapin-light .rd-nav__wm-rest { transition: max-width 0.55s var(--ease-liquid), opacity 0.4s ease, transform 0.5s var(--ease-liquid); }
 .tapin-light .rd-nav__wm-rest {
   display: inline-block;
   max-width: 6ch;
@@ -64,19 +66,10 @@
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wm-rest {
   max-width: 0;
   opacity: 0;
+  transform: translateX(-4px);
 }
-.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__brand {
-  padding: 0.5rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(244, 231, 208, 0.82);
-  border: 1px solid rgba(33, 67, 53, 0.14);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 14px 34px -22px rgba(46, 30, 22, 0.55);
-}
-.tapin-light .rd-nav__brand {
-  transition: padding 0.5s var(--ease-liquid), background-color 0.5s ease,
-    box-shadow 0.5s ease;
-}
+/* condensed mark = a clean "T●", no box. The dot keeps its gentle tap pulse. */
+.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wordmark { font-size: 1.7rem; }
 .tapin-light .rd-nav__capsule,
 .tapin-light .rd-nav__right {
   transition: opacity 0.45s var(--ease-liquid), transform 0.5s var(--ease-liquid);
@@ -527,56 +520,66 @@
   .tapin-light .rd-hud__feed { display: none; }
 }
 
-/* =================== CAPABILITIES — INTERACTIVE EXPLORER =================== */
+/* =================== CAPABILITIES — CINEMATIC SCENE =================== */
 .tapin-light .rd-caps { padding-block: 7rem; }
-.tapin-light .rd-explorer { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 2.5rem; align-items: stretch; }
-.tapin-light .rd-explorer__list { display: flex; flex-direction: column; }
-.tapin-light .rd-exp {
-  position: relative; text-align: left; background: none; border: 0;
-  padding: 1.35rem 0.5rem 1.35rem 1.5rem;
-  border-top: 1px solid rgba(46, 30, 22, 0.12);
-  display: flex; align-items: baseline; gap: 1rem;
-  font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem); letter-spacing: -0.02em;
-  color: rgba(46, 30, 22, 0.32); transition: color 0.4s var(--ease-liquid), padding-left 0.4s var(--ease-liquid);
-}
-.tapin-light .rd-explorer__list .rd-exp:last-child { border-bottom: 1px solid rgba(46, 30, 22, 0.12); }
-.tapin-light .rd-exp__no { font-family: var(--font-sans); font-size: 0.78rem; font-weight: 600; color: var(--leaf); flex: 0 0 auto; }
-.tapin-light .rd-exp[data-active='true'] { color: var(--ink); padding-left: 2rem; }
-.tapin-light .rd-exp[data-active='true']::before {
-  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-  width: 6px; height: 60%; border-radius: 4px; background: var(--leaf);
-}
-.tapin-light .rd-exp:hover { color: var(--leaf-deep); }
 
-.tapin-light .rd-explorer__detail {
-  position: relative; border-radius: 1.5rem; overflow: hidden;
-  padding: 2.25rem; min-height: 22rem;
-  background: linear-gradient(160deg, var(--pine), #152a1e);
-  color: var(--warm-white); display: flex; flex-direction: column; justify-content: space-between;
-  box-shadow: 0 50px 90px -55px rgba(46, 30, 22, 0.6);
+.tapin-light .rd-caps__stage {
+  position: relative;
+  width: 100%;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  min-height: min(80vh, 760px);
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: linear-gradient(155deg, var(--pine), #10221a);
+  color: var(--sand);
+  box-shadow: 0 60px 120px -65px rgba(46, 30, 22, 0.7);
+  display: flex;
 }
-.tapin-light .rd-explorer__detail .rd-blueprint-grid { position: absolute; inset: 0; opacity: 0.5; mix-blend-mode: overlay; }
-.tapin-light .rd-detail__ghost {
-  position: absolute; right: 1.2rem; bottom: -2.5rem; z-index: 0;
+.tapin-light .rd-caps__stage .rd-blueprint-grid { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
+.tapin-light .rd-caps__ghost {
+  position: absolute; right: clamp(0.5rem, 2vw, 2.5rem); top: 50%; transform: translateY(-50%);
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(9rem, 7rem + 8vw, 16rem); line-height: 0.8;
-  color: rgba(244, 231, 208, 0.07); pointer-events: none; user-select: none;
+  font-size: clamp(15rem, 12rem + 16vw, 34rem); line-height: 0.7;
+  color: rgba(244, 231, 208, 0.05); pointer-events: none; user-select: none; z-index: 0;
 }
-.tapin-light .rd-detail__no { font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; color: var(--yuzu); position: relative; }
-.tapin-light .rd-detail__title { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem); letter-spacing: -0.02em; line-height: 1; margin-top: 0.5rem; position: relative; }
-.tapin-light .rd-detail__desc { font-family: var(--font-sans); font-size: 1.02rem; line-height: 1.55; color: rgba(244, 231, 208, 0.82); max-width: 42ch; margin-top: 1rem; position: relative; }
-.tapin-light .rd-detail__metric {
-  position: relative; margin-top: 2rem; display: inline-flex; align-items: center; gap: 0.6rem;
-  font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; color: var(--yuzu);
+.tapin-light .rd-caps__index {
+  position: absolute; left: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%);
+  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; z-index: 2;
+  font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600;
 }
-.tapin-light .rd-detail__metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.9rem; color: rgba(244, 231, 208, 0.7); }
+.tapin-light .rd-caps__index li { color: rgba(244, 231, 208, 0.3); transition: color 0.4s ease, transform 0.4s var(--ease-liquid); }
+.tapin-light .rd-caps__index li[data-active='true'] { color: var(--honey); transform: translateX(5px); }
 
-@media (max-width: 860px) {
-  .tapin-light .rd-explorer { grid-template-columns: 1fr; gap: 1.5rem; }
-  .tapin-light .rd-explorer__detail { min-height: 16rem; order: 2; }
-  .tapin-light .rd-explorer__list { order: 1; }
+.tapin-light .rd-caps__scene {
+  position: relative; z-index: 1; width: 100%;
+  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2.5rem; align-items: center;
+  padding-left: clamp(2rem, 4vw, 3.5rem);
 }
+.tapin-light .rd-caps__scene-text { max-width: 44ch; }
+.tapin-light .rd-caps__scene-no { font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600; color: var(--honey); letter-spacing: 0.06em; }
+.tapin-light .rd-caps__scene-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.4rem, 1.6rem + 3vw, 4.4rem); letter-spacing: -0.03em; line-height: 0.98; margin-top: 0.6rem; }
+.tapin-light .rd-caps__scene-desc { font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.55; color: rgba(244, 231, 208, 0.82); margin-top: 1.2rem; }
+.tapin-light .rd-caps__scene-metric { margin-top: 2rem; display: inline-flex; align-items: baseline; gap: 0.7rem; font-family: var(--font-display); font-weight: 600; font-size: 2rem; color: var(--honey); }
+.tapin-light .rd-caps__scene-metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.95rem; color: rgba(244, 231, 208, 0.7); }
+.tapin-light .rd-caps__scene-visual { display: grid; place-items: center; }
+.tapin-light .rd-caps__svg { width: min(100%, 30rem); height: auto; }
+
+.tapin-light .rd-caps__progress { position: absolute; left: 0; bottom: 0; width: 100%; height: 3px; background: rgba(244, 231, 208, 0.1); z-index: 2; }
+.tapin-light .rd-caps__progress span { display: block; height: 100%; background: var(--honey); transform-origin: left; transition: transform 0.5s var(--ease-liquid); }
+
+/* mobile stacked fallback */
+.tapin-light .rd-caps__stack { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2rem; }
+.tapin-light .rd-caps__card {
+  position: relative; overflow: hidden; border-radius: 1.5rem; padding: 1.8rem;
+  background: linear-gradient(155deg, var(--pine), #152a1e); color: var(--sand);
+  box-shadow: 0 40px 80px -55px rgba(46, 30, 22, 0.6); display: grid; gap: 1rem;
+}
+.tapin-light .rd-caps__card .rd-caps__ghost { font-size: clamp(8rem, 30vw, 12rem); right: 0.5rem; }
+.tapin-light .rd-caps__card .rd-caps__scene-visual { justify-items: start; }
+.tapin-light .rd-caps__card .rd-caps__svg { width: min(55%, 12rem); }
+.tapin-light .rd-caps__card .rd-caps__scene-title { font-size: clamp(1.9rem, 7vw, 2.4rem); }
+.tapin-light .rd-caps__card .rd-caps__scene-desc { font-size: 0.95rem; }
+.tapin-light .rd-caps__card .rd-caps__scene-metric { font-size: 1.6rem; }
 
 /* =================== INSTALL FLOW =================== */
 .tapin-light .rd-install { padding-block: 7rem; }

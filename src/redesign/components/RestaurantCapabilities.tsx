@@ -4,6 +4,8 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Reveal } from './Reveal';
+import { CapabilityVisual } from '../visuals/CapabilityVisual';
+import { useMediaQuery } from '../motion/useMediaQuery';
 import { ease } from '../../design/light-tokens';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -20,23 +22,24 @@ const CAPS: Capability[] = [
 ];
 
 export function RestaurantCapabilities() {
+  const isWide = useMediaQuery('(min-width: 861px)');
   const [active, setActive] = useState(0);
   const cap = CAPS[active];
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const lastIdx = useRef(0);
 
-  // Cinematic pin/scrub (desktop, non-reduced): pin the explorer and scrub
-  // through the six capabilities as the user scrolls. Falls back to the plain
-  // hover explorer on mobile / reduced motion. (CODEGRID pinned-scene pattern.)
+  // Cinematic pin/scrub (desktop): pin the stage and scrub through the six
+  // capabilities, each a full visual scene. Mobile gets a stacked fallback.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add('(min-width: 861px) and (prefers-reduced-motion: no-preference)', () => {
+        if (!pinRef.current) return;
         ScrollTrigger.create({
           trigger: pinRef.current,
-          start: 'top 16%',
-          end: '+=1800',
+          start: 'top 12%',
+          end: '+=2100',
           pin: true,
           scrub: true,
           onUpdate: (self) => {
@@ -50,7 +53,7 @@ export function RestaurantCapabilities() {
       });
       return () => mm.revert();
     },
-    { scope: sectionRef }
+    { scope: sectionRef, dependencies: [isWide] }
   );
 
   return (
@@ -68,60 +71,72 @@ export function RestaurantCapabilities() {
         </h2>
         <p className="rd-lead">
           Not another dashboard to babysit. One system, working the floor while
-          your team works the guests. Explore what&rsquo;s running underneath.
+          your team works the guests — scroll through what&rsquo;s running underneath.
         </p>
       </Reveal>
 
-      <div className="rd-caps__pin" ref={pinRef}>
-      <motion.div
-        className="rd-container rd-explorer"
-        initial={{ opacity: 0, y: 36 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.2 }}
-        transition={{ duration: 0.8, ease: ease.liquid }}
-      >
-        <div className="rd-explorer__list">
-          {CAPS.map((c, i) => (
-            <button
-              key={c.no}
-              type="button"
-              className="rd-exp"
-              data-active={i === active}
-              onMouseEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onClick={() => setActive(i)}
-            >
-              <span className="rd-exp__no">{c.no}</span>
-              {c.title}
-            </button>
+      {isWide ? (
+        <div className="rd-caps__pin" ref={pinRef}>
+          <div className="rd-container">
+            <div className="rd-caps__stage">
+              <div className="rd-blueprint-grid" aria-hidden="true" />
+              <div className="rd-caps__ghost" aria-hidden="true">{cap.no}</div>
+
+              <ol className="rd-caps__index" aria-hidden="true">
+                {CAPS.map((c, i) => (
+                  <li key={c.no} data-active={i === active}>{c.no}</li>
+                ))}
+              </ol>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={cap.no}
+                  className="rd-caps__scene"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -18 }}
+                  transition={{ duration: 0.45, ease: ease.liquid }}
+                >
+                  <div className="rd-caps__scene-text">
+                    <div className="rd-caps__scene-no">{cap.no} — 06</div>
+                    <h3 className="rd-caps__scene-title">{cap.title}</h3>
+                    <p className="rd-caps__scene-desc">{cap.desc}</p>
+                    <div className="rd-caps__scene-metric">
+                      {cap.metric} <span>{cap.sub}</span>
+                    </div>
+                  </div>
+                  <div className="rd-caps__scene-visual">
+                    <CapabilityVisual id={cap.no} />
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="rd-caps__progress" aria-hidden="true">
+                <span style={{ transform: `scaleX(${(active + 1) / CAPS.length})` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="rd-container rd-caps__stack">
+          {CAPS.map((c) => (
+            <Reveal key={c.no} className="rd-caps__card" y={34}>
+              <div className="rd-caps__ghost" aria-hidden="true">{c.no}</div>
+              <div className="rd-caps__scene-visual">
+                <CapabilityVisual id={c.no} />
+              </div>
+              <div className="rd-caps__scene-text">
+                <div className="rd-caps__scene-no">{c.no} — 06</div>
+                <h3 className="rd-caps__scene-title">{c.title}</h3>
+                <p className="rd-caps__scene-desc">{c.desc}</p>
+                <div className="rd-caps__scene-metric">
+                  {c.metric} <span>{c.sub}</span>
+                </div>
+              </div>
+            </Reveal>
           ))}
         </div>
-
-        <div className="rd-explorer__detail">
-          <div className="rd-blueprint-grid" aria-hidden="true" />
-          <div className="rd-detail__ghost" aria-hidden="true">{cap.no}</div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={cap.no}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.4, ease: ease.liquid }}
-              style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}
-            >
-              <div>
-                <div className="rd-detail__no">{cap.no} / 06</div>
-                <h3 className="rd-detail__title">{cap.title}</h3>
-                <p className="rd-detail__desc">{cap.desc}</p>
-              </div>
-              <div className="rd-detail__metric">
-                {cap.metric} <span>{cap.sub}</span>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </motion.div>
-      </div>
+      )}
     </section>
   );
 }
