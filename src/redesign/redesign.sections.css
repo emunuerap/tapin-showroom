@@ -36,9 +36,15 @@
   align-items: baseline;
   gap: 0.3rem;
   background: none;
-  border: 0;
-  padding: 0;
+  border: 1px solid transparent;
+  padding: 0.34rem 0.5rem;
+  border-radius: 999px;
   flex: 0 0 auto;
+  cursor: pointer;
+  /* slides to the top-left corner + gains a legible badge when collapsed */
+  transition: transform 1.15s cubic-bezier(0.19, 1, 0.22, 1),
+    background-color 0.9s ease, border-color 0.9s ease, box-shadow 0.9s ease,
+    padding 1.15s cubic-bezier(0.19, 1, 0.22, 1);
 }
 .tapin-light .rd-nav__wordmark {
   font-family: var(--font-display);
@@ -50,32 +56,46 @@
   display: inline-flex;
   align-items: baseline;
   overflow: hidden;
-  transition: font-size 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: font-size 1.15s cubic-bezier(0.19, 1, 0.22, 1);
 }
 .tapin-light .rd-nav__wm-lead { display: inline-block; }
 .tapin-light .rd-nav__wm-rest {
   display: inline-block;
   max-width: 6ch;
   opacity: 1;
-  transition: max-width 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease,
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-width 1.15s cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 0.9s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 1.1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* condensed "T●" mark — a clean, slow, elegant collapse (no box). */
+/* condensed "T●" mark — slides into the top-left corner as a legible badge so
+   it never sits mid-bar colliding with content, and reads over dark photos too. */
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wm-rest {
   max-width: 0;
   opacity: 0;
   transform: translateX(-6px);
 }
-.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wordmark { font-size: 1.7rem; }
+.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__wordmark { font-size: 1.6rem; }
+.tapin-light .rd-nav[data-collapsed='true'] .rd-nav__brand {
+  /* pull from the centered container's left edge out to the viewport corner */
+  transform: translateX(calc(-1 * max(0px, 50vw - 580px - 1.5rem)));
+  background: rgba(250, 243, 230, 0.74);
+  border-color: rgba(33, 67, 53, 0.12);
+  box-shadow: 0 16px 38px -26px rgba(46, 30, 22, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
 .tapin-light .rd-nav__capsule,
 .tapin-light .rd-nav__right {
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1),
+    transform 1.15s cubic-bezier(0.19, 1, 0.22, 1),
+    filter 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__capsule,
 .tapin-light .rd-nav[data-collapsed='true'] .rd-nav__cta {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
+  filter: blur(3px);
   pointer-events: none;
 }
 .tapin-light .rd-nav__tap {
@@ -119,18 +139,29 @@
   letter-spacing: -0.01em;
   padding: 0.5rem 0.95rem;
   border-radius: 999px;
-  z-index: 1;
-  transition: color 0.3s ease;
+  isolation: isolate;
+  /* color flips with the pill, both driven by the same :hover so there is
+     never a mid-transition brown flash or a layout-animation stuck state. */
+  transition: color 0.28s var(--ease-liquid);
   white-space: nowrap;
 }
-.tapin-light .rd-nav__link:hover { color: var(--warm-white); }
-.tapin-light .rd-nav__highlight {
+/* the pill is an opaque CSS pseudo — no framer layoutId, so it can't get
+   "stuck" between links; it fades+scales in cleanly and reverses cleanly. */
+.tapin-light .rd-nav__link::before {
+  content: '';
   position: absolute;
   inset: 0;
+  z-index: -1;
   border-radius: 999px;
   background: var(--leaf);
-  z-index: -1;
+  opacity: 0;
+  transform: scale(0.78);
+  transition: opacity 0.24s var(--ease-liquid), transform 0.46s var(--ease-liquid);
 }
+.tapin-light .rd-nav__link:hover,
+.tapin-light .rd-nav__link:focus-visible { color: var(--warm-white); }
+.tapin-light .rd-nav__link:hover::before,
+.tapin-light .rd-nav__link:focus-visible::before { opacity: 1; transform: scale(1); }
 .tapin-light .rd-nav__right { display: flex; align-items: center; gap: 1rem; flex: 0 0 auto; }
 .tapin-light .rd-nav__live {
   display: inline-flex; align-items: center; gap: 0.45rem;
@@ -233,6 +264,13 @@
   padding-block: 9rem 5rem;
   overflow: hidden;
 }
+/* melt the hero (WebGL field + gesture line) into the page sand — no band */
+.tapin-light .rd-hero::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: 0; height: 26vh; z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(244, 231, 208, 0.7) 60%, var(--sand) 100%);
+}
 .tapin-light .rd-hero__grid { position: relative; z-index: 2; display: grid; gap: 1.7rem; }
 .tapin-light .rd-hero__title { font-size: var(--d1); max-width: 15ch; }
 .tapin-light .rd-hero__lead { margin-top: 0.2rem; }
@@ -287,55 +325,55 @@
 .tapin-light .rd-head--center { margin-inline: auto; text-align: center; justify-items: center; }
 .tapin-light .rd-head--center .rd-lead { margin-inline: auto; }
 
-/* =================== MANIFESTO (diagonal grid) =================== */
-.tapin-light .rd-mf { position: relative; padding-block: 7rem; overflow: hidden; }
-.tapin-light .rd-mf .gc-diagonals { --gc-line: rgba(33, 67, 53, 0.08); }
+/* =============== MANIFESTO (chaos → a full house, with a filling room) ====== */
+.tapin-light .rd-mf { position: relative; padding-block: 10rem; overflow: hidden; }
 .tapin-light .rd-mf__inner {
   position: relative; z-index: 1;
-  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--gc-gutter); align-items: center;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 2.8rem;
 }
-.tapin-light .rd-mf__text { grid-column: 1 / 8; align-self: center; }
+.tapin-light .rd-mf__text { display: grid; justify-items: center; gap: 1rem; max-width: 60rem; }
+.tapin-light .rd-mf__eyebrow {
+  font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pine);
+}
 .tapin-light .rd-mf__problem {
-  font-size: clamp(1.6rem, 1.05rem + 2.4vw, 2.9rem);
-  line-height: 1.1; color: var(--taupe); max-width: 17ch;
+  font-family: var(--font-sans);
+  font-size: clamp(1.02rem, 0.9rem + 0.8vw, 1.32rem);
+  line-height: 1.5; color: var(--taupe); max-width: 48ch; margin-inline: auto;
 }
 .tapin-light .rd-mf__word { display: inline-block; margin-right: 0.26em; }
 .tapin-light .rd-mf__turn {
-  font-size: clamp(1.9rem, 1.2rem + 3vw, 3.6rem);
-  margin-top: 1.3rem; color: var(--ink); max-width: 15ch;
+  font-size: clamp(2.1rem, 1.3rem + 3.8vw, 4.4rem);
+  margin-top: 0.6rem; color: var(--ink); max-width: 19ch; margin-inline: auto;
 }
-/* the diagonal "intention" line that links statement → stat card */
-.tapin-light .rd-mf__diag {
-  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
-  pointer-events: none;
+
+/* the room: a grid of tables that fills (pine = booked) as you scroll in,
+   driven entirely by --p (a live scroll progress 0→1 bound from framer). */
+.tapin-light .rd-mf__floor {
+  --p: 0;
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 0.6rem;
+  width: min(92vw, 38rem);
 }
-.tapin-light .rd-mf__aside {
-  grid-column: 8 / 13; align-self: center; justify-self: end;
-  transform: translateY(2.5rem);
-  width: min(100%, 24rem);
-  position: relative; overflow: hidden;
-  background: linear-gradient(160deg, var(--pine), #152a1e);
-  color: var(--sand); border-radius: 1.5rem; padding: 2rem;
-  box-shadow: 0 50px 90px -55px rgba(46, 30, 22, 0.6);
+.tapin-light .rd-mf__seat {
+  position: relative; aspect-ratio: 1.5; border-radius: 5px;
+  border: 1px solid rgba(33, 67, 53, 0.2); overflow: hidden;
 }
-.tapin-light .rd-mf__aside-grid {
-  position: absolute; inset: 0; opacity: 0.6;
-  background-image:
-    linear-gradient(rgba(244, 231, 208, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(244, 231, 208, 0.06) 1px, transparent 1px);
-  background-size: 26px 26px;
+.tapin-light .rd-mf__seat-fill {
+  position: absolute; inset: 0;
+  background: linear-gradient(155deg, var(--pine), var(--leaf-deep));
+  opacity: clamp(0, 1, calc((var(--p) - var(--s)) * 9));
 }
-.tapin-light .rd-mf__stat,
-.tapin-light .rd-mf__stat-l,
-.tapin-light .rd-mf__aside-line { position: relative; z-index: 1; }
-.tapin-light .rd-mf__stat { font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 2rem + 4vw, 5rem); line-height: 0.9; color: var(--honey); }
-.tapin-light .rd-mf__stat-l { font-family: var(--font-sans); font-size: 1rem; margin-top: 0.5rem; color: rgba(244, 231, 208, 0.85); }
-.tapin-light .rd-mf__aside-line { font-family: var(--font-sans); font-size: 0.86rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid rgba(244, 231, 208, 0.18); color: rgba(244, 231, 208, 0.7); }
+.tapin-light .rd-mf__caption {
+  font-family: var(--font-sans); font-size: 0.95rem; line-height: 1.5;
+  color: var(--taupe); max-width: 44ch;
+}
 @media (max-width: 860px) {
-  .tapin-light .rd-mf__text { grid-column: 1 / -1; }
-  .tapin-light .rd-mf__aside { grid-column: 1 / -1; justify-self: stretch; transform: none; margin-top: 2rem; }
-  .tapin-light .rd-mf__diag { display: none; }
+  .tapin-light .rd-mf { padding-block: 7rem; }
+  .tapin-light .rd-mf__floor { grid-template-columns: repeat(6, 1fr); width: min(92vw, 24rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tapin-light .rd-mf__floor { --p: 1; }
 }
 
 /* =================== GESTURE (modular grid) =================== */
@@ -424,19 +462,14 @@
   pointer-events: none;
 }
 .tapin-light .rd-floorzone::before {
-  top: 0; height: 180px;
+  top: 0; height: 140px;
   background: linear-gradient(180deg, var(--sand) 0%, transparent 100%);
 }
-/* a long, eased dissolve at the bottom so the floor melts back into the page */
+/* a tighter dissolve at the bottom so the floor hands off to the gallery
+   without a long empty gradient band */
 .tapin-light .rd-floorzone::after {
-  bottom: 0; height: 340px;
-  background: linear-gradient(
-    0deg,
-    var(--sand) 0%,
-    var(--sand) 14%,
-    rgba(244, 231, 208, 0.55) 50%,
-    transparent 100%
-  );
+  bottom: 0; height: 180px;
+  background: linear-gradient(0deg, var(--sand) 0%, rgba(244, 231, 208, 0.6) 45%, transparent 100%);
 }
 .tapin-light .rd-floorzone__grid { position: absolute; inset: -200px; z-index: 0; opacity: 0.8; }
 .tapin-light .rd-floor__plane {
@@ -532,72 +565,169 @@
   .tapin-light .rd-hud__feed { display: none; }
 }
 
-/* =================== CAPABILITIES — CINEMATIC SCENE =================== */
-.tapin-light .rd-caps { padding-block: 7rem; }
+/* =============== CAPABILITIES — A FRAMED, IMMERSIVE GALLERY =============== */
+/* The gallery GROWS from a rounded card sitting in the page into full-bleed
+   immersion, then RECEDES back — so it reads as part of the web, not a separate
+   fullscreen app. Capability photos are revealed through scrubbed SVG-mask
+   blinds. Scroll-linked, so scrolling up mirrors expand → reveals → recede. */
+.tapin-light .rd-capsx {
+  /* continuous with the page — the body sand shows through, no section band */
+  background: transparent;
+}
 
-.tapin-light .rd-caps__stage {
+/* the tall, slow driver — generous scroll per reveal for an elegant pace */
+.tapin-light .rd-capsx__stage {
   position: relative;
-  width: 100%;
-  border-radius: 1.75rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 840vh;
+}
+
+/* the fixed viewport stage that "pins" via sticky — transparent so the card
+   sits on the page sand at its inset start/end */
+.tapin-light .rd-capsx__layers {
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
-  min-height: min(80vh, 760px);
-  padding: clamp(2rem, 4vw, 3.5rem);
-  background: linear-gradient(155deg, var(--pine), #10221a);
+  background: transparent;
+}
+
+/* the card that grows to full-bleed and recedes — its inset start state reads
+   as an embedded panel thanks to the soft shadow on the surrounding sand */
+.tapin-light .rd-capsx__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--cream);
+  box-shadow: 0 60px 120px -60px rgba(46, 30, 22, 0.55);
+  will-change: transform, border-radius;
+}
+
+/* the photography group */
+.tapin-light .rd-capsx__media { position: absolute; inset: 0; z-index: 0; }
+
+/* stacked SVG image layers — masks reveal each through the blinds */
+.tapin-light .rd-capsx__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.tapin-light .rd-capsx__layer image { filter: brightness(0.9) saturate(1.02); }
+
+/* pine duotone wash (fades in with the first reveal so the intro sand stays
+   clean) — keeps all six photos reading as one cohesive cinematic surface */
+.tapin-light .rd-capsx__tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(16, 34, 26, 0.48) 0%, rgba(16, 34, 26, 0.1) 24%, rgba(16, 34, 26, 0.22) 58%, rgba(16, 34, 26, 0.84) 100%),
+    linear-gradient(118deg, rgba(33, 67, 53, 0.52), rgba(16, 34, 26, 0.18) 55%, rgba(33, 67, 53, 0.48));
+  mix-blend-mode: multiply;
+}
+
+/* copy layer */
+.tapin-light .rd-capsx__texts {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.tapin-light .rd-capsx__txt {
+  position: absolute;
+  left: clamp(1.5rem, 7vw, 8rem);
+  bottom: clamp(5rem, 16vh, 11rem);
+  width: min(90vw, 48ch);
   color: var(--sand);
-  box-shadow: 0 60px 120px -65px rgba(46, 30, 22, 0.7);
-  display: flex;
+  clip-path: inset(100% 0 0 0);
+  transform: translateY(40px);
+  text-shadow: 0 2px 40px rgba(16, 34, 26, 0.5);
 }
-.tapin-light .rd-caps__stage .rd-blueprint-grid { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
-.tapin-light .rd-caps__index {
-  position: absolute; left: clamp(1rem, 3vw, 2.5rem); top: 50%; transform: translateY(-50%);
-  list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; z-index: 2;
-  font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600;
-}
-.tapin-light .rd-caps__index li { color: rgba(244, 231, 208, 0.3); transition: color 0.4s ease, transform 0.4s var(--ease-liquid); }
-.tapin-light .rd-caps__index li[data-active='true'] { color: var(--honey); transform: translateX(5px); }
-
-.tapin-light .rd-caps__scene {
-  position: relative; z-index: 1; width: 100%;
-  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2.5rem; align-items: center;
-  padding-left: clamp(2rem, 4vw, 3.5rem);
-}
-.tapin-light .rd-caps__scene-text { max-width: 44ch; }
-.tapin-light .rd-caps__scene-no { font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600; color: var(--honey); letter-spacing: 0.06em; }
-.tapin-light .rd-caps__scene-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.4rem, 1.6rem + 3vw, 4.4rem); letter-spacing: -0.03em; line-height: 0.98; margin-top: 0.6rem; }
-.tapin-light .rd-caps__scene-desc { font-family: var(--font-sans); font-size: 1.05rem; line-height: 1.55; color: rgba(244, 231, 208, 0.82); margin-top: 1.2rem; }
-.tapin-light .rd-caps__scene-metric { margin-top: 2rem; display: inline-flex; align-items: baseline; gap: 0.7rem; font-family: var(--font-display); font-weight: 600; font-size: 2rem; color: var(--honey); }
-.tapin-light .rd-caps__scene-metric span { font-family: var(--font-sans); font-weight: 500; font-size: 0.95rem; color: rgba(244, 231, 208, 0.7); }
-/* the capability image — pine-duotoned so it reads as part of the stage */
-.tapin-light .rd-caps__photo {
-  position: relative; margin: 0; justify-self: end;
-  width: 100%; max-width: 30rem; aspect-ratio: 4 / 5; max-height: 32rem;
-  border-radius: 1.25rem; overflow: hidden;
-  box-shadow: 0 50px 90px -55px rgba(16, 34, 26, 0.85);
-}
-.tapin-light .rd-caps__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tapin-light .rd-caps__photo-tint {
-  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply;
-  background: linear-gradient(155deg, rgba(33, 67, 53, 0.4), rgba(16, 34, 26, 0.62));
-}
-.tapin-light .rd-caps__photo::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
-  background: radial-gradient(120% 90% at 50% 0%, rgba(221, 168, 76, 0.2), transparent 60%);
+/* localized dark backing behind capability copy, for legibility on bright photos */
+.tapin-light .rd-capsx__txt:not(.rd-capsx__txt--intro)::before {
+  content: ''; position: absolute; z-index: -1;
+  left: -8vw; right: -20vw; top: -2rem; bottom: -8rem;
+  background: radial-gradient(120% 120% at 0% 100%, rgba(16, 34, 26, 0.55), transparent 70%);
 }
 
-.tapin-light .rd-caps__progress { position: absolute; left: 0; bottom: 0; width: 100%; height: 3px; background: rgba(244, 231, 208, 0.1); z-index: 2; }
-.tapin-light .rd-caps__progress span { display: block; height: 100%; background: var(--honey); transform-origin: left; transition: transform 0.5s var(--ease-liquid); }
-
-/* mobile stacked fallback */
-.tapin-light .rd-caps__stack { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2rem; }
-.tapin-light .rd-caps__card {
-  position: relative; overflow: hidden; border-radius: 1.5rem; padding: 1.8rem;
-  background: linear-gradient(155deg, var(--pine), #152a1e); color: var(--sand);
-  box-shadow: 0 40px 80px -55px rgba(46, 30, 22, 0.6); display: grid; gap: 1rem;
+/* the intro frame — dark editorial type ON SAND (no photo yet) */
+.tapin-light .rd-capsx__txt--intro {
+  bottom: auto; top: 50%; transform: translateY(-50%);
+  width: min(92vw, 46rem); color: var(--ink); text-shadow: none;
 }
-.tapin-light .rd-caps__card .rd-caps__photo { max-width: none; aspect-ratio: 16 / 10; max-height: 16rem; justify-self: stretch; }
-.tapin-light .rd-caps__card .rd-caps__scene-title { font-size: clamp(1.9rem, 7vw, 2.4rem); }
-.tapin-light .rd-caps__card .rd-caps__scene-desc { font-size: 0.95rem; }
-.tapin-light .rd-caps__card .rd-caps__scene-metric { font-size: 1.6rem; }
+.tapin-light .rd-capsx__kicker {
+  font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pine);
+}
+.tapin-light .rd-capsx__lead-title {
+  font-size: clamp(2.6rem, 1.6rem + 3.6vw, 5rem); letter-spacing: -0.035em;
+  line-height: 0.98; margin-top: 1rem; color: var(--ink); max-width: 18ch;
+}
+.tapin-light .rd-capsx__lead-p {
+  font-family: var(--font-sans); font-size: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem);
+  line-height: 1.55; color: var(--charcoal); margin-top: 1.4rem; max-width: 46ch;
+}
+
+.tapin-light .rd-capsx__no {
+  font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+  color: var(--sage); letter-spacing: 0.12em; text-transform: uppercase;
+}
+.tapin-light .rd-capsx__title {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(2.8rem, 1.6rem + 5vw, 6rem); letter-spacing: -0.035em;
+  line-height: 0.94; margin-top: 0.7rem;
+}
+.tapin-light .rd-capsx__desc {
+  font-family: var(--font-sans); font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  line-height: 1.55; color: rgba(244, 231, 208, 0.92); margin-top: 1.3rem; max-width: 46ch;
+}
+.tapin-light .rd-capsx__metric {
+  margin-top: 1.8rem; display: inline-flex; align-items: baseline; gap: 0.7rem;
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 1.3rem + 1.5vw, 2.6rem);
+  color: var(--sage);
+}
+.tapin-light .rd-capsx__metric span {
+  font-family: var(--font-sans); font-weight: 500; font-size: 0.95rem; color: rgba(244, 231, 208, 0.72);
+}
+
+/* one clean progress line — fills smoothly across the whole reveal sequence */
+.tapin-light .rd-capsx__bar {
+  position: absolute; left: clamp(1.5rem, 7vw, 8rem); right: clamp(1.5rem, 7vw, 8rem);
+  bottom: clamp(2rem, 4vh, 3.2rem); z-index: 4; height: 2px;
+  background: rgba(244, 231, 208, 0.22); overflow: hidden; border-radius: 2px;
+}
+.tapin-light .rd-capsx__bar-fill {
+  position: absolute; inset: 0; transform: scaleX(0); transform-origin: left;
+  background: var(--sage); will-change: transform;
+}
+
+/* mobile / reduced-motion fallback — clean full-bleed stacked frames, no card */
+.tapin-light .rd-capsx__stack { display: flex; flex-direction: column; gap: 3.5rem; padding-block: 5.5rem; }
+.tapin-light .rd-capsx__m-intro { margin-bottom: 0.5rem; }
+.tapin-light .rd-capsx__m-intro .rd-capsx__lead-title { font-size: clamp(2.2rem, 9vw, 3rem); margin-top: 0.8rem; }
+.tapin-light .rd-capsx__m-photo {
+  position: relative; margin: 0; border-radius: 1.25rem; overflow: hidden;
+  aspect-ratio: 4 / 5; max-height: 30rem;
+  box-shadow: 0 40px 80px -55px rgba(16, 34, 26, 0.8);
+}
+.tapin-light .rd-capsx__m-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tapin-light .rd-capsx__m-tint {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(16, 34, 26, 0.15), rgba(16, 34, 26, 0.78));
+}
+.tapin-light .rd-capsx__m-text {
+  position: absolute; left: 1.4rem; right: 1.4rem; bottom: 1.4rem; color: var(--sand);
+}
+.tapin-light .rd-capsx__m-text .rd-capsx__title { font-size: clamp(2rem, 9vw, 2.6rem); margin-top: 0.4rem; }
+.tapin-light .rd-capsx__m-text .rd-capsx__metric { margin-top: 0.9rem; font-size: 1.6rem; }
+.tapin-light .rd-capsx__desc--m { margin-top: 1rem; color: var(--charcoal); }
 
 /* =================== INSTALL FLOW =================== */
 .tapin-light .rd-install { padding-block: 7rem; }
@@ -613,21 +743,65 @@
 .tapin-light .rd-step__desc { font-family: var(--font-sans); font-size: 0.86rem; color: var(--slate); line-height: 1.45; }
 .tapin-light .rd-install__foot { margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; font-family: var(--font-sans); color: var(--slate); font-size: 0.9rem; }
 
-/* =================== CLOSING =================== */
-.tapin-light .rd-close { padding-block: 7rem 4rem; text-align: center; }
-.tapin-light .rd-close__img {
-  width: min(100%, 34rem);
-  aspect-ratio: 16 / 10;
-  margin: 0 auto 3rem;
+/* =============== CLOSING — IMMERSIVE PINE FOOTER (letters emerge) =========== */
+.tapin-light .rd-close {
+  position: relative;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding-block: 12rem 3rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--pine) 0%, var(--pine-deep) 100%);
+  color: var(--sand);
 }
-.tapin-light .rd-close__title { font-size: var(--d2); margin-inline: auto; max-width: 18ch; }
-.tapin-light .rd-close__actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+/* the page sand melts up into the pine so the footer is not a hard band */
+.tapin-light .rd-close::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 34vh; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, var(--sand) 0%, rgba(33, 67, 53, 0.4) 55%, transparent 100%);
+}
+.tapin-light .rd-close__grain {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.5; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(244, 231, 208, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 231, 208, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 60%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(120% 90% at 50% 60%, #000 30%, transparent 75%);
+}
+.tapin-light .rd-close__inner { position: relative; z-index: 1; display: grid; justify-items: start; }
+.tapin-light .rd-close__kicker {
+  display: block; overflow: hidden;
+  font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--sage);
+}
+.tapin-light .rd-close__title {
+  font-size: clamp(3rem, 1.8rem + 6vw, 7.5rem); letter-spacing: -0.04em; line-height: 0.92;
+  margin-top: 1.4rem; color: var(--sand); max-width: 16ch;
+}
+.tapin-light .rd-close__line { display: block; overflow: hidden; padding-bottom: 0.08em; }
+.tapin-light .rd-close__rise { display: block; will-change: transform; }
+.tapin-light .rd-close__mark { position: relative; white-space: nowrap; color: var(--sage); }
+.tapin-light .rd-close__mark::after {
+  content: ''; position: absolute; left: -0.02em; right: -0.02em; bottom: 0.08em; height: 0.28em;
+  background: linear-gradient(90deg, rgba(169, 184, 158, 0.4), rgba(169, 184, 158, 0.12));
+  z-index: -1; border-radius: 2px;
+}
+.tapin-light .rd-close__sub {
+  overflow: hidden; margin-top: 1.8rem;
+  font-family: var(--font-sans); font-size: clamp(1.02rem, 0.95rem + 0.5vw, 1.25rem);
+  line-height: 1.55; color: rgba(244, 231, 208, 0.82); max-width: 48ch;
+}
+.tapin-light .rd-close__actions { margin-top: 2.6rem; display: flex; flex-wrap: wrap; gap: 1rem; }
+.tapin-light .rd-btn--paper { background: var(--cream); color: var(--ink); }
+.tapin-light .rd-btn--paper:hover { transform: translateY(-2px); background: var(--sand); }
+.tapin-light .rd-btn--ghost-light { background: transparent; border-color: rgba(244, 231, 208, 0.4); color: var(--sand); }
+.tapin-light .rd-btn--ghost-light:hover { border-color: var(--sand); background: rgba(244, 231, 208, 0.08); }
 .tapin-light .rd-foot {
-  margin-top: 6rem; padding-top: 2rem; border-top: 1px solid rgba(33, 67, 53, 0.16);
+  margin-top: 6rem; padding-top: 2rem; border-top: 1px solid rgba(244, 231, 208, 0.16);
+  width: 100%;
   display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
-  font-family: var(--font-sans); font-size: 0.82rem; color: var(--slate);
+  font-family: var(--font-sans); font-size: 0.82rem; color: rgba(244, 231, 208, 0.62);
 }
-.tapin-light .rd-foot__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--ink); letter-spacing: -0.03em; }
+.tapin-light .rd-foot__brand { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; color: var(--sand); letter-spacing: -0.03em; }
 
 /* =================== RESPONSIVE =================== */
 @media (max-width: 860px) {

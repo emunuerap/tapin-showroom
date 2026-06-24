@@ -15,9 +15,8 @@ import { ease } from '../../design/light-tokens';
 
 const LINKS = [
   { label: 'How it works', id: 'gesture' },
-  { label: 'For restaurants', id: 'restaurants' },
-  { label: 'What it does', id: 'capabilities' },
-  { label: 'Install', id: 'install' },
+  { label: 'Capabilities', id: 'capabilities' },
+  { label: 'Restaurants', id: 'restaurants' },
 ] as const;
 
 type Lenis = { stop?: () => void; start?: () => void };
@@ -27,7 +26,6 @@ function getLenis(): Lenis | undefined {
 
 export function NavLight() {
   const [scrolled, setScrolled] = useState(false);
-  const [hovered, setHovered] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   // once you've scrolled past the hero the nav condenses to a minimal "T●"
   // mark; hovering it expands the full bar back, elegantly.
@@ -82,19 +80,9 @@ export function NavLight() {
             <span className="rd-nav__tap" aria-hidden="true" />
           </button>
 
-          <nav className="rd-nav__capsule" aria-label="Primary" onMouseLeave={() => setHovered(null)}>
+          <nav className="rd-nav__capsule" aria-label="Primary">
             {LINKS.map((link) => (
-              <button
-                key={link.id}
-                type="button"
-                className="rd-nav__link"
-                onMouseEnter={() => setHovered(link.id)}
-                onFocus={() => setHovered(link.id)}
-                onClick={() => go(link.id)}
-              >
-                {hovered === link.id && (
-                  <motion.span layoutId="rd-nav-hl" className="rd-nav__highlight" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />
-                )}
+              <button key={link.id} type="button" className="rd-nav__link" onClick={() => go(link.id)}>
                 <RollText>{link.label}</RollText>
               </button>
             ))}

@@ -77,7 +77,11 @@ html.tapin-light-active body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) so we still bound horizontal full-bleed elements
+     WITHOUT turning this wrapper into a scroll container — `hidden` forces
+     overflow-y to `auto`, which silently breaks `position: sticky` on the
+     capabilities mask-stage. */
+  overflow-x: clip;
 }
 
 .tapin-light ::selection {

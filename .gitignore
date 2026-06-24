@@ -18,6 +18,9 @@ dist-ssr
 pnpm-lock.yaml
 * 2.ts
 * 2.tsx
+* 3.ts
+* 3.tsx
+src/products/
 public/genome_3d.png
 public/privacy_cube.png
 public/privacy_ring.png
