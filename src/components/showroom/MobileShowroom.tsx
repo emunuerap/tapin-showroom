@@ -208,7 +208,7 @@ const PRIVACY_COMMITMENTS = [
 
 /* ─── ROOT ─────────────────────────────────────────────────────────────── */
 
-export default function MobileShowroom({ activeView, setActiveView, routeMode, onNavigateProducts, onNavigateShowroom }: ShowroomProps) {
+export default function MobileShowroom({ activeView, setActiveView, onNavigateShowroom }: ShowroomProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
@@ -226,8 +226,6 @@ export default function MobileShowroom({ activeView, setActiveView, routeMode, o
       <MobileRouteHeader
         activeView={activeView}
         setActiveView={setActiveView}
-        routeMode={routeMode}
-        onNavigateProducts={onNavigateProducts}
         onNavigateShowroom={onNavigateShowroom}
       />
       <main className="relative pb-48">

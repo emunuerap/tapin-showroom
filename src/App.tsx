@@ -8,19 +8,16 @@ import type { RouteMode, ViewMode } from './types/showroom';
 
 const loadDesktopShowroom = () => import('./components/showroom/DesktopShowroom');
 const loadMobileShowroom = () => import('./components/showroom/MobileShowroom');
-const loadProductsPage = () => import('./products/ProductsPage');
-// Light-immersive redesign (redesign/light-immersive-showroom-v1) — served at /redesign.
 const loadHomeRedesign = () => import('./redesign/pages/HomeRedesign');
 
 const DesktopShowroom = lazy(loadDesktopShowroom);
 const MobileShowroom = lazy(loadMobileShowroom);
-const ProductsPage = lazy(loadProductsPage);
 const HomeRedesign = lazy(loadHomeRedesign);
 
 function App() {
   const [activeView, setActiveView] = useState<ViewMode>('guests');
   const [routeMode, setRouteMode] = useState<RouteMode>(() => getRouteMode());
-  const [introComplete, setIntroComplete] = useState(() => getRouteMode() === 'products');
+  const [introComplete, setIntroComplete] = useState(false);
   const isMobile = useIsMobile();
 
   const completeIntro = useCallback(() => {
@@ -31,9 +28,7 @@ function App() {
     if (typeof window === 'undefined') return;
 
     const onPopState = () => {
-      const nextRoute = getRouteMode();
-      setRouteMode(nextRoute);
-      if (nextRoute === 'products') setIntroComplete(true);
+      setRouteMode(getRouteMode());
     };
 
     window.addEventListener('popstate', onPopState);
@@ -41,28 +36,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (routeMode === 'products') {
-      void loadProductsPage();
-      return;
-    }
     if (routeMode === 'redesign') {
       void loadHomeRedesign();
       return;
     }
-
     void loadDesktopShowroom();
     void loadMobileShowroom();
   }, [routeMode]);
-
-  const navigateToProducts = () => {
-    void loadProductsPage();
-    if (typeof window !== 'undefined' && window.location.pathname !== '/products') {
-      window.history.pushState(null, '', '/products');
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }
-    setIntroComplete(true);
-    setRouteMode('products');
-  };
 
   const navigateToShowroom = (view?: ViewMode) => {
     if (view) setActiveView(view);
@@ -73,8 +53,6 @@ function App() {
     setRouteMode('showroom');
   };
 
-  // Light-immersive redesign route — its own clean shell (no dark wrapper,
-  // ambient glow, custom cursor or intro). Lenis smooth scroll is shared.
   if (routeMode === 'redesign') {
     return (
       <SmoothScroll>
@@ -89,15 +67,9 @@ function App() {
 
   return (
     <div className="relative bg-[#050505] min-h-screen text-white font-sans overflow-x-hidden">
-      {/* Custom cursor — auto-disabled on touch / reduced-motion */}
       <CustomCursor />
 
-      {/* Universal ambient layer — fixed behind every section so there are no
-          dead black gaps between sections. Combines 4 quiet yuzu radial glows
-          (each corner + a center warmth) + an ultra-faint paper grain. Sits
-          at z-0; all sections render z-10 above. */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Composite radial glows — different sizes/intensities so it doesn't feel uniform */}
         <div
           className="absolute inset-0"
           style={{
@@ -110,7 +82,6 @@ function App() {
             ].join(', '),
           }}
         />
-        {/* Paper-grain noise overlay — consistent visual texture across all sections */}
         <div
           className="absolute inset-0 mix-blend-overlay opacity-[0.035]"
           style={{
@@ -120,21 +91,9 @@ function App() {
         />
       </div>
 
-      {/* Single Lenis instance — bridges all routes. ProductsPage no longer
-          wraps its own SmoothScroll to avoid a nested Lenis on /products. */}
       <SmoothScroll>
         <AnimatePresence mode="wait">
-          {routeMode === 'products' ? (
-            <Suspense key="products-route" fallback={<ShowroomFallback />}>
-              <ProductsPage
-                activeView={activeView}
-                setActiveView={setActiveView}
-                routeMode={routeMode}
-                onNavigateProducts={navigateToProducts}
-                onNavigateShowroom={navigateToShowroom}
-              />
-            </Suspense>
-          ) : !introComplete ? (
+          {!introComplete ? (
             <IntroSequence key="intro" onComplete={completeIntro} />
           ) : (
             <Suspense key="showroom-route" fallback={<ShowroomFallback />}>
@@ -143,7 +102,6 @@ function App() {
                   activeView={activeView}
                   setActiveView={setActiveView}
                   routeMode={routeMode}
-                  onNavigateProducts={navigateToProducts}
                   onNavigateShowroom={navigateToShowroom}
                 />
               ) : (
@@ -151,7 +109,6 @@ function App() {
                   activeView={activeView}
                   setActiveView={setActiveView}
                   routeMode={routeMode}
-                  onNavigateProducts={navigateToProducts}
                   onNavigateShowroom={navigateToShowroom}
                 />
               )}
@@ -166,7 +123,6 @@ function App() {
 function getRouteMode(): RouteMode {
   if (typeof window === 'undefined') return 'showroom';
   const path = window.location.pathname;
-  if (path === '/products') return 'products';
   if (path === '/redesign') return 'redesign';
   return 'showroom';
 }
@@ -189,9 +145,7 @@ function useIsMobile() {
 }
 
 function ShowroomFallback() {
-  return (
-    <div aria-hidden="true" className="min-h-screen bg-[#050505]" />
-  );
+  return <div aria-hidden="true" className="min-h-screen bg-[#050505]" />;
 }
 
 export default App;

@@ -1,22 +1,18 @@
 import { motion } from 'framer-motion';
-
-import type { RouteMode, ViewMode } from '../../types/showroom';
+import type { ViewMode } from '../../types/showroom';
 
 interface MobileRouteHeaderProps {
   activeView: ViewMode;
   setActiveView: (view: ViewMode) => void;
-  routeMode?: RouteMode;
-  onNavigateProducts?: () => void;
   onNavigateShowroom?: (view?: ViewMode) => void;
 }
 
-export function MobileRouteHeader({
-  activeView,
-  setActiveView,
-  routeMode = 'showroom',
-  onNavigateProducts,
-  onNavigateShowroom,
-}: MobileRouteHeaderProps) {
+const TABS: { id: ViewMode; label: string }[] = [
+  { id: 'guests', label: 'Guests' },
+  { id: 'venues', label: 'Venues' },
+];
+
+export function MobileRouteHeader({ activeView, setActiveView, onNavigateShowroom }: MobileRouteHeaderProps) {
   const selectView = (view: ViewMode) => {
     setActiveView(view);
     onNavigateShowroom?.(view);
@@ -24,45 +20,78 @@ export function MobileRouteHeader({
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 overflow-hidden px-3 pt-[max(14px,env(safe-area-inset-top))] md:hidden">
-      <div className="mx-auto grid w-[calc(100vw-1.5rem)] max-w-[340px] grid-cols-[2.9rem_minmax(0,1fr)] items-center gap-1.5 rounded-full border border-white/10 bg-[#080808]/88 px-2 py-2 shadow-[0_10px_34px_rgba(0,0,0,0.55)] backdrop-blur-2xl min-[390px]:max-w-[352px]">
-        <div className="flex min-w-0 items-baseline text-xs font-bold tracking-normal text-silver">
-          TapIn
-          <span className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.85)]" />
+      <div
+        className="mx-auto flex w-[calc(100vw-1.5rem)] max-w-[340px] items-center gap-2 px-2.5 py-2 min-[390px]:max-w-[352px]"
+        style={{
+          background: 'rgba(8,8,8,0.82)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          borderRadius: '20px',
+          boxShadow: '0 10px 34px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.10)',
+        }}
+      >
+        {/* Wordmark */}
+        <div
+          className="flex min-w-0 items-baseline shrink-0"
+          style={{ paddingRight: '10px', borderRight: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <span className="text-xs font-bold tracking-tight text-white/90">TapIn</span>
+          <span
+            aria-hidden="true"
+            className="ml-[3px] inline-block h-1.5 w-1.5 rounded-full"
+            style={{ background: '#ccff00', boxShadow: '0 0 8px rgba(204,255,0,0.85)' }}
+          />
         </div>
-        <div className="grid min-w-0 grid-cols-3 rounded-full border border-white/8 bg-black/70 p-0.5">
-          <MobileRouteButton active={routeMode === 'showroom' && activeView === 'guests'} onClick={() => selectView('guests')}>
-            Guest
-          </MobileRouteButton>
-          <MobileRouteButton active={routeMode === 'products'} onClick={() => onNavigateProducts?.()}>
-            Products
-          </MobileRouteButton>
-          <MobileRouteButton active={routeMode === 'showroom' && activeView === 'venues'} onClick={() => selectView('venues')}>
-            Venue
-          </MobileRouteButton>
+
+        {/* Two-tab toggle */}
+        <div
+          className="flex flex-1 items-center p-[3px]"
+          style={{
+            background: 'rgba(0,0,0,0.4)',
+            borderRadius: '14px',
+            border: '1px solid rgba(255,255,255,0.07)',
+          }}
+        >
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              aria-pressed={activeView === tab.id}
+              onClick={() => selectView(tab.id)}
+              className="relative flex-1 py-1.5 text-center select-none"
+              style={{
+                fontSize: '9px',
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                borderRadius: '11px',
+                color: activeView === tab.id ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.32)',
+                transition: 'color 0.22s ease',
+              }}
+            >
+              {activeView === tab.id && (
+                <motion.span
+                  layoutId="mobile-active-tab"
+                  className="absolute inset-0 -z-10"
+                  transition={{ type: 'spring', stiffness: 400, damping: 36 }}
+                  style={{
+                    borderRadius: '11px',
+                    background: 'rgba(255,255,255,0.10)',
+                    boxShadow: [
+                      'inset 0 1px 0 rgba(255,255,255,0.20)',
+                      'inset 0 -1px 0 rgba(0,0,0,0.16)',
+                      '0 2px 6px rgba(0,0,0,0.25)',
+                    ].join(', '),
+                    border: '1px solid rgba(255,255,255,0.12)',
+                  }}
+                />
+              )}
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
     </header>
-  );
-}
-
-function MobileRouteButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: string }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={`relative min-h-8 min-w-0 overflow-hidden rounded-full px-0.5 py-1.5 text-center font-mono text-[7px] font-semibold uppercase tracking-normal transition-colors min-[390px]:text-[8px] ${
-        active ? 'text-white' : 'text-white/35'
-      }`}
-    >
-      {active && (
-        <motion.span
-          layoutId="mobile-active-view"
-          className="absolute inset-0 -z-10 rounded-full border border-yuzu/35 bg-yuzu/15 shadow-[0_0_16px_rgba(204,255,0,0.18)]"
-          transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-        />
-      )}
-      {children}
-    </button>
   );
 }

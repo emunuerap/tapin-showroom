@@ -1,97 +1,173 @@
 import { motion } from 'framer-motion';
-import type { RouteMode, ViewMode } from '../../types/showroom';
+import type { ViewMode } from '../../types/showroom';
 
 interface NavbarProps {
-    activeView: ViewMode;
-    setActiveView: (view: ViewMode) => void;
-    routeMode?: RouteMode;
-    onNavigateProducts?: () => void;
-    onNavigateShowroom?: (view?: ViewMode) => void;
+  activeView: ViewMode;
+  setActiveView: (view: ViewMode) => void;
+  onNavigateShowroom?: (view?: ViewMode) => void;
 }
 
-export function Navbar({ activeView, setActiveView, routeMode = 'showroom', onNavigateProducts, onNavigateShowroom }: NavbarProps) {
-    const selectView = (view: ViewMode) => {
-        setActiveView(view);
-        onNavigateShowroom?.(view);
-    };
+const TABS: { id: ViewMode; label: string }[] = [
+  { id: 'guests', label: 'Guests' },
+  { id: 'venues', label: 'Venues' },
+];
 
-    return (
-        <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] hidden flex-col items-center w-full max-w-[92%] md:flex md:max-w-3xl">
-            {/* Minimalist Dock */}
-            <div className="flex items-center justify-between w-full px-2 py-1.5 bg-[#0A0A0A]/80 backdrop-blur-2xl border border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.6)] rounded-full">
-                {/* Left (Logo) — circular yuzu dot for visual consistency with hero wordmark */}
-                <div className="flex justify-start items-center pl-4">
-                    <span className="text-sm font-bold tracking-tighter text-silver leading-none flex items-baseline">
-                        TapIn
-                        <span
-                            aria-hidden="true"
-                            className="ml-1 inline-block w-[5px] h-[5px] rounded-full bg-yuzu shadow-[0_0_6px_1px_rgba(204,255,0,0.55)]"
-                        />
-                    </span>
-                </div>
+export function Navbar({ activeView, setActiveView, onNavigateShowroom }: NavbarProps) {
+  const selectView = (view: ViewMode) => {
+    setActiveView(view);
+    onNavigateShowroom?.(view);
+  };
 
-                {/* Center (Toggle) */}
-                <div className="flex justify-center items-center">
-                    <div className="flex items-center p-0.5 bg-black/60 border border-white/5 rounded-full relative">
-                        <button
-                            onClick={() => selectView('guests')}
-                            className={`relative z-10 px-4 py-1 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] font-sans uppercase transition-colors duration-300 ${activeView === 'guests' && routeMode === 'showroom' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
-                        >
-                            For Guests
-                            {activeView === 'guests' && routeMode === 'showroom' && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute inset-0 bg-yuzu/15 border border-yuzu/30 shadow-[0_0_12px_rgba(204,255,0,0.18)] rounded-full -z-10"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                />
-                            )}
-                        </button>
-                        <button
-                            onClick={onNavigateProducts}
-                            className={`relative z-10 px-4 py-1 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] font-sans uppercase transition-colors duration-300 ${routeMode === 'products' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
-                        >
-                            Products
-                            {routeMode === 'products' && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute inset-0 bg-yuzu/15 border border-yuzu/30 shadow-[0_0_12px_rgba(204,255,0,0.18)] rounded-full -z-10"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                />
-                            )}
-                        </button>
-                        <button
-                            onClick={() => selectView('venues')}
-                            className={`relative z-10 px-4 py-1 text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] font-sans uppercase transition-colors duration-300 ${activeView === 'venues' && routeMode === 'showroom' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
-                        >
-                            For Venues
-                            {activeView === 'venues' && routeMode === 'showroom' && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute inset-0 bg-yuzu/15 border border-yuzu/30 shadow-[0_0_12px_rgba(204,255,0,0.18)] rounded-full -z-10"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                />
-                            )}
-                        </button>
-                    </div>
-                </div>
+  return (
+    <nav
+      aria-label="Primary navigation"
+      className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] hidden md:flex items-center"
+    >
+      <div
+        className="flex items-center gap-2.5 px-2.5 py-2"
+        style={{
+          background: 'rgba(255,255,255,0.065)',
+          backdropFilter: 'blur(44px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(44px) saturate(180%)',
+          border: '1px solid rgba(255,255,255,0.11)',
+          borderRadius: '22px',
+          boxShadow: [
+            '0 8px 40px rgba(0,0,0,0.55)',
+            'inset 0 1px 0 rgba(255,255,255,0.13)',
+            'inset 0 -1px 0 rgba(0,0,0,0.25)',
+          ].join(', '),
+        }}
+      >
+        {/* Wordmark */}
+        <button
+          type="button"
+          onClick={() => selectView('guests')}
+          aria-label="TapIn — back to top"
+          className="flex items-baseline select-none"
+          style={{ borderRight: '1px solid rgba(255,255,255,0.08)', paddingLeft: '8px', paddingRight: '14px', marginRight: '2px' }}
+        >
+          <span
+            className="text-[13px] font-bold tracking-[-0.02em] text-white/90"
+            style={{ fontFamily: 'var(--font-sans, system-ui)' }}
+          >
+            TapIn
+          </span>
+          <span
+            aria-hidden="true"
+            className="ml-[4px] mb-[1px] inline-block w-[5px] h-[5px] rounded-full"
+            style={{ background: '#ccff00', boxShadow: '0 0 8px 1px rgba(204,255,0,0.65)' }}
+          />
+        </button>
 
-                {/* Right (CTA) */}
-                <div className="flex justify-end pr-1 items-center">
-                    {routeMode === 'products' ? (
-                        <button className="px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold text-obsidian bg-yuzu rounded-full hover:scale-105 transition-all shadow-[0_0_10px_rgba(204,255,0,0.2)] whitespace-nowrap">
-                            Request Demo
-                        </button>
-                    ) : activeView === 'guests' ? (
-                        <button className="px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold text-white/90 bg-white/5 border border-white/5 rounded-full hover:bg-white/10 transition-all whitespace-nowrap">
-                            Get the App
-                        </button>
-                    ) : (
-                        <button className="px-4 py-1.5 text-[10px] sm:text-[11px] font-semibold text-obsidian bg-yuzu rounded-full hover:scale-105 transition-all shadow-[0_0_10px_rgba(204,255,0,0.2)] whitespace-nowrap">
-                            Request Demo
-                        </button>
-                    )}
-                </div>
-            </div>
-        </nav>
-    );
+        {/* Two-tab toggle */}
+        <div
+          className="flex items-center p-[3px]"
+          style={{
+            background: 'rgba(0,0,0,0.35)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255,255,255,0.07)',
+          }}
+        >
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => selectView(tab.id)}
+              className="relative z-10 select-none"
+              style={{
+                padding: '5px 18px',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                fontFamily: 'var(--font-sans, system-ui)',
+                color: activeView === tab.id ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.32)',
+                transition: 'color 0.22s ease',
+                borderRadius: '13px',
+              }}
+            >
+              {activeView === tab.id && (
+                <motion.span
+                  layoutId="nav-active-tab"
+                  className="absolute inset-0 -z-10"
+                  transition={{ type: 'spring', stiffness: 360, damping: 34, mass: 0.9 }}
+                  style={{
+                    borderRadius: '13px',
+                    background: 'rgba(255,255,255,0.11)',
+                    boxShadow: [
+                      'inset 0 1px 0 rgba(255,255,255,0.22)',
+                      'inset 0 -1px 0 rgba(0,0,0,0.18)',
+                      '0 2px 8px rgba(0,0,0,0.28)',
+                    ].join(', '),
+                    border: '1px solid rgba(255,255,255,0.14)',
+                  }}
+                />
+              )}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Context-aware CTA */}
+        <div className="pl-1 pr-1">
+          {activeView === 'guests' ? (
+            <button
+              type="button"
+              className="select-none"
+              style={{
+                padding: '7px 16px',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
+                borderRadius: '14px',
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.09)',
+                color: 'rgba(255,255,255,0.8)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.12)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.95)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.07)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)';
+              }}
+            >
+              Get the App
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="select-none"
+              style={{
+                padding: '7px 16px',
+                fontSize: '11px',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                borderRadius: '14px',
+                background: '#ccff00',
+                border: '1px solid rgba(204,255,0,0.4)',
+                color: '#0a0a0a',
+                boxShadow: '0 0 18px rgba(204,255,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.03)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 28px rgba(204,255,0,0.38), inset 0 1px 0 rgba(255,255,255,0.35)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 18px rgba(204,255,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35)';
+              }}
+            >
+              Request Demo
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 }

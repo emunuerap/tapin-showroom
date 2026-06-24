@@ -3,7 +3,6 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CinematicText } from "../ui/CinematicText";
-import { IPhone3D } from "../../products/components/IPhone3D";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -150,14 +149,58 @@ export function ConsumerAppShowcase() {
           </ul>
         </div>
 
-        {/* Right — iPhone 3D instead of PassportCard */}
-        <div className="iphone-3d-container flex justify-center lg:justify-end h-[600px] md:h-[700px] w-full relative z-10 perspective-[1200px]">
-          {/* A premium backdrop glow for the 3D phone */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(204,255,0,0.12)_0%,transparent_60%)] pointer-events-none" />
-          <IPhone3D active={true} />
+        {/* Right — Passport card visual */}
+        <div className="iphone-3d-container flex justify-center lg:justify-end w-full relative z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(204,255,0,0.10)_0%,transparent_60%)] pointer-events-none" />
+          <PassportCard />
         </div>
       </div>
     </section>
+  );
+}
+
+function PassportCard() {
+  return (
+    <div
+      className="passport-card relative w-[300px] md:w-[340px] rounded-2xl overflow-hidden"
+      style={{
+        background: 'linear-gradient(145deg, rgba(20,20,20,0.95), rgba(10,10,10,0.98))',
+        border: '1px solid rgba(204,255,0,0.18)',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(204,255,0,0.06)',
+        padding: '28px',
+      }}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-white/30">Gastronomic Passport</span>
+        <span className="w-2 h-2 rounded-full bg-yuzu shadow-[0_0_8px_rgba(204,255,0,0.8)]" />
+      </div>
+      <div className="mb-5 flex items-center gap-3">
+        <div className="w-12 h-12 rounded-full border border-yuzu/30 bg-yuzu/5 flex items-center justify-center text-yuzu text-xl font-bold">M</div>
+        <div>
+          <div className="text-white/90 text-sm font-semibold">Marco V.</div>
+          <div className="text-white/30 text-[10px] font-mono">+44 7700 ••• ••• · verified</div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 mb-6">
+        {[['Italian', 94], ['Natural wine', 88], ['Omakase', 76], ['Late seating', 71]].map(([label, pct]) => (
+          <div key={label as string} className="flex items-center gap-2">
+            <span className="text-[10px] text-white/40 w-24 shrink-0">{label as string}</span>
+            <div className="flex-1 h-[3px] rounded-full bg-white/5">
+              <div className="h-full rounded-full bg-yuzu/60" style={{ width: `${pct}%` }} />
+            </div>
+            <span className="text-[9px] font-mono text-yuzu/60 w-7 text-right">{pct}%</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2 mb-5">
+        {['Noma', 'Etxebarri', 'Sushi S.', 'Osteria L.'].map((v) => (
+          <span key={v} className="px-2 py-0.5 rounded-full text-[8px] font-mono text-white/50 border border-white/8 bg-white/3">{v}</span>
+        ))}
+      </div>
+      <div className="font-mono text-[7px] text-white/15 tracking-widest">
+        SHA · 4f9c2a8e1b7d3f0a · verified
+      </div>
+    </div>
   );
 }
 
